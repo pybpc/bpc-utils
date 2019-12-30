@@ -1,0 +1,10 @@
+.vscode
+__pycache__
+*.pyc
+/build/
+/dist/
+/*.egg-info/
+/MANIFEST
+.coverage
+/htmlcov
+/archive
