@@ -33,9 +33,11 @@ else:       # CPU number if multiprocessing supported
     if os.name == 'posix' and 'SC_NPROCESSORS_CONF' in os.sysconf_names:  # pragma: no cover
         CPU_CNT = os.sysconf('SC_NPROCESSORS_CONF')
     elif 'sched_getaffinity' in os.__all__:  # pragma: no cover
-        CPU_CNT = len(os.sched_getaffinity(0))  # pylint: disable=E1101
+        CPU_CNT = len(os.sched_getaffinity(0))  # novermin
+    elif 'cpu_count' in os.__all__:  # pragma: no cover
+        CPU_CNT = os.cpu_count() or 1  # novermin
     else:  # pragma: no cover
-        CPU_CNT = os.cpu_count() or 1
+        CPU_CNT = 1
 finally:    # alias and aftermath
     mp = multiprocessing
     del multiprocessing
@@ -107,7 +109,7 @@ def expand_glob(pathname):
     """
     if sys.version_info[:2] < (3, 5):  # pragma: no cover
         return glob.glob(pathname)
-    return glob.glob(pathname, recursive=True)
+    return glob.glob(pathname, recursive=True)  # novermin
 
 
 def detect_files(files):
