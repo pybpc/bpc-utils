@@ -180,7 +180,7 @@ def archive_files(files, archive_dir):
     with tarfile.open(os.path.join(archive_dir, archive_file), archive_mode) as tarf:
         for arcname, realname in lookup_table.items():
             tarf.add(realname, arcname)
-        with tempfile.NamedTemporaryFile('w', encoding='utf-8', prefix='babel-archive-lookup-', suffix='.json', delete=False) as tmpf:
+        with tempfile.NamedTemporaryFile('w', encoding='utf-8', prefix='bpc-archive-lookup-', suffix='.json', delete=False) as tmpf:
             json.dump(lookup_table, tmpf, indent=4)
         tarf.add(tmpf.name, LOOKUP_TABLE)
         try:
@@ -197,7 +197,7 @@ def recover_files(archive_file):
 
     """
     with tarfile.open(archive_file, 'r') as tarf:
-        with tempfile.TemporaryDirectory(prefix='babel-archive-extract-') as tmpd:
+        with tempfile.TemporaryDirectory(prefix='bpc-archive-extract-') as tmpd:
             tarf.extractall(tmpd)
             with open(os.path.join(tmpd, LOOKUP_TABLE)) as lookupf:
                 lookup_table = json.load(lookupf)

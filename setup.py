@@ -8,12 +8,12 @@ with open('README.md', 'r', encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='babel-utils',
-    version='0.1.0',
-    description='Utility library for the Python babel compiler.',
+    name='bpc-utils',
+    version='0.1.1',
+    description='Utility library for the Python bpc compiler.',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/gousaiyang/babel-utils',
+    url='https://github.com/pybpc/bpc-utils',
     author='Saiyang Gou',
     author_email='gousaiyang223@gmail.com',
     license='MIT',
@@ -34,7 +34,7 @@ setup(
         'Topic :: Software Development',
         'Topic :: Utilities',
     ],
-    keywords='babel utilities',
-    py_modules=['babel_utils'],
+    keywords='bpc backport utilities',
+    py_modules=['bpc_utils'],
     python_requires='>=3.2',
 )

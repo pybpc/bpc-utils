@@ -8,6 +8,6 @@ python:
 install:
   - pip install codecov coverage
 script:
-  - coverage run test_babel_utils.py
+  - coverage run test_bpc_utils.py
 after_success:
   - codecov

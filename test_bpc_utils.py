@@ -5,8 +5,8 @@ import tarfile
 import tempfile
 import unittest
 
-from babel_utils import (LOOKUP_TABLE, UUID4Generator, archive_files, detect_files, expand_glob,
-                         is_python_filename, is_windows, recover_files)
+from bpc_utils import (LOOKUP_TABLE, UUID4Generator, archive_files, detect_files, expand_glob,
+                       is_python_filename, is_windows, recover_files)
 
 
 def read_text_file(filename, encoding='utf-8'):
@@ -25,11 +25,11 @@ def native_path(path):
     return path.replace('/', '\\') if is_windows else path
 
 
-class TestBabelUtils(unittest.TestCase):
+class TestBPCUtils(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.old_cwd = os.getcwd()
-        cls.tmpd = tempfile.mkdtemp(prefix='babel-utils-test-')
+        cls.tmpd = tempfile.mkdtemp(prefix='bpc-utils-test-')
         os.chdir(cls.tmpd)
 
         write_text_file('README.md', 'rrr')
