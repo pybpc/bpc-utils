@@ -5,8 +5,11 @@ import tarfile
 import tempfile
 import unittest
 
-from bpc_utils import (LOOKUP_TABLE, UUID4Generator, archive_files, detect_files, expand_glob,
-                       is_python_filename, is_windows, recover_files)
+import parso
+from bpc_utils import (LOOKUP_TABLE, PARSO_GRAMMAR_VERSIONS, ConvertError, UUID4Generator,
+                       archive_files, detect_encoding, detect_files, detect_indentation,
+                       detect_linesep, expand_glob, get_parso_grammar_versions, is_python_filename,
+                       is_windows, parso_parse, recover_files)
 
 
 def read_text_file(filename, encoding='utf-8'):
@@ -67,6 +70,16 @@ class TestBPCUtils(unittest.TestCase):
 
     def tearDown(self):
         shutil.rmtree('archive', ignore_errors=True)
+
+    def test_parso_grammar_versions(self):
+        self.assertIsInstance(PARSO_GRAMMAR_VERSIONS, list)
+        self.assertIsInstance(PARSO_GRAMMAR_VERSIONS[0], tuple)
+        versions1 = get_parso_grammar_versions()
+        self.assertGreater(len(versions1), 0)
+        self.assertIsInstance(versions1[0], str)
+        self.assertIn('.', versions1[0])
+        versions2 = get_parso_grammar_versions(minimum=versions1[1])
+        self.assertEqual(len(versions1) - len(versions2), 1)
 
     def test_uuid_gen(self):
         for dash in (True, False):
@@ -151,6 +164,65 @@ class TestBPCUtils(unittest.TestCase):
         recover_files(archive_file)
         self.assertEqual(read_text_file('a.py'), 'aaa')
         self.assertEqual(read_text_file(os.path.join('dir', 'e.pyw')), 'eee')
+
+    def test_detect_encoding(self):
+        test_cases = [
+            (b'# coding: gbk\n\xd6\xd0\xce\xc4', 'gbk'),
+            (b'\xef\xbb\xbfhello', 'utf-8-sig'),
+            (b'hello', 'utf-8'),
+        ]
+
+        for test_case in test_cases:
+            code, encoding = test_case
+            with self.subTest(test_case=test_case):
+                self.assertEqual(detect_encoding(code), encoding)
+
+    def test_detect_linesep(self):
+        test_cases = [
+            ('1\n2\n3\n', '\n'),
+            ('1\r2\r3\r', '\r'),
+            ('1\r\n2\r\n3\r\n', '\r\n'),
+            ('1\r2\r3\n', '\r'),
+            ('1\n2\n3\r4\r', '\n'),
+            ('1\n2\r\n3\r\n4\r5\r', '\r\n'),
+            ('1\n2\n3\r4\v\r5\r\n6\r\n', '\n'),
+        ]
+
+        test_cases += [(tc[0].encode(), tc[1]) for tc in test_cases] + [(parso.parse(tc[0]), tc[1]) for tc in test_cases]
+
+        for test_case in test_cases:
+            code, linesep = test_case
+            with self.subTest(test_case=test_case):
+                self.assertEqual(detect_linesep(code), linesep)
+
+    def test_detect_indentation(self):
+        test_cases = [
+            ('foo', '    '),
+            ('for x in [1]:\n    pass', '    '),
+            ('for x in [1]:\n  pass', '  '),
+            ('for x in [1]:\n\tpass', '\t'),
+            ('for x in [1]:\n\t  pass', '    '),
+            ('for x in [1]:\n\tpass\nfor x in [1]:\n    pass', '    '),
+            ('for x in [1]:\n    pass\nfor x in [1]:\n  pass', '  '),
+        ]
+
+        test_cases += [(tc[0].encode(), tc[1]) for tc in test_cases] + [(parso.parse(tc[0]), tc[1]) for tc in test_cases]
+
+        for test_case in test_cases:
+            code, indentation = test_case
+            with self.subTest(test_case=test_case):
+                self.assertEqual(detect_indentation(code), indentation)
+
+    def test_parso_parse(self):
+        parso_parse('1+1')
+        parso_parse(b'1+1')
+        parso_parse('1@1', version='3.5')
+        parso_parse(b'# coding: gbk\n\xd6\xd0\xce\xc4')
+        parso_parse(b'\xd6\xd0\xce\xc4', encoding='gbk', errors='strict')
+        with self.assertRaisesRegex(ConvertError, "source file '<unknown>' contains the following syntax errors"):
+            parso_parse('1@1', version='3.4')
+        with self.assertRaisesRegex(ConvertError, "source file 'temp' contains the following syntax errors"):
+            parso_parse('1@1', version='3.4', file='temp')
 
 
 if __name__ == '__main__':

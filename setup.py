@@ -23,8 +23,6 @@ setup(
         'Intended Audience :: Information Technology',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 3.2',
-        'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
@@ -36,5 +34,6 @@ setup(
     ],
     keywords='bpc backport utilities',
     py_modules=['bpc_utils'],
-    python_requires='>=3.2',
+    python_requires='>=3.4',
+    install_requires=['parso>=0.6.0'],
 )

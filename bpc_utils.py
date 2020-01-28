@@ -1,5 +1,6 @@
 import collections
 import glob
+import io
 import itertools
 import json
 import locale
@@ -10,7 +11,11 @@ import sys
 import tarfile
 import tempfile
 import time
+import token
+import tokenize
 import uuid
+
+import parso
 
 is_windows = platform.system() == 'Windows'
 
@@ -51,6 +56,32 @@ BOOLEAN_STATES = {'1': True, '0': False,
 LOCALE_ENCODING = locale.getpreferredencoding(False)
 
 LOOKUP_TABLE = '_lookup_table.json'
+
+PARSO_GRAMMAR_VERSIONS = []
+for file in glob.iglob(os.path.join(parso.__path__[0], 'python', 'grammar*.txt')):
+    version = os.path.basename(file)[7:-4]
+    PARSO_GRAMMAR_VERSIONS.append((int(version[0]), int(version[1:])))
+PARSO_GRAMMAR_VERSIONS = sorted(PARSO_GRAMMAR_VERSIONS)
+
+del file, version
+
+
+def get_parso_grammar_versions(minimum='0.0'):
+    """Get Python versions that parso supports to parse grammar.
+
+    Args:
+        - `minimum` -- `str`, filter result by this minimum version
+
+    Returns:
+        - `List[str]` -- a list of Python versions that parso supports to parse grammar
+
+    """
+    minimum = tuple(map(int, minimum.split('.')))
+    return ['{}.{}'.format(*v) for v in PARSO_GRAMMAR_VERSIONS if v >= minimum]
+
+
+class ConvertError(SyntaxError):
+    """Convertion error due to syntax error."""
 
 
 class UUID4Generator:
@@ -206,5 +237,124 @@ def recover_files(archive_file):
                 shutil.move(os.path.join(tmpd, arcname), realname)
 
 
-__all__ = ['mp', 'CPU_CNT', 'BOOLEAN_STATES', 'LOCALE_ENCODING', 'UUID4Generator',
-           'detect_files', 'archive_files', 'recover_files']
+def detect_encoding(code):
+    """Detect encoding of Python source code as specified in PEP 263.
+
+    Args:
+     - `code` -- `bytes`, the code to detect encoding
+
+    Returns:
+     - `str` -- the detected encoding, or the default encoding ('utf-8')
+
+    """
+    with io.BytesIO(code) as file:
+        return tokenize.detect_encoding(file.readline)[0]
+
+
+def detect_linesep(code):
+    """Detect linesep of Python source code.
+
+    Args:
+     - `code` -- `Union[str, bytes, parso.tree.NodeOrLeaf]`, the code to detect linesep
+
+    Returns:
+     - `str` -- the detected linesep (one of '\n', '\r\n' and '\r')
+
+    """
+    if isinstance(code, parso.tree.NodeOrLeaf):
+        code = code.get_code()
+    is_bytes = isinstance(code, bytes)
+
+    pool = {
+        'CR': 0,
+        'CRLF': 0,
+        'LF': 0,
+    }
+    CR = b'\r' if is_bytes else '\r'
+    CRLF = b'\r\n' if is_bytes else '\r\n'
+    LF = b'\n' if is_bytes else '\n'
+
+    for line in code.splitlines(keepends=True):
+        if line.endswith(CR):
+            pool['CR'] += 1
+        elif line.endswith(CRLF):
+            pool['CRLF'] += 1
+        elif line.endswith(LF):
+            pool['LF'] += 1
+
+    return max((pool['LF'], 3, '\n'), (pool['CRLF'], 2, '\r\n'), (pool['CR'], 1, '\r'))[2]
+
+
+def detect_indentation(code):
+    """Detect indentation of Python source code.
+
+    Args:
+        - `code` -- `Union[str, bytes, parso.tree.NodeOrLeaf]`, the code to detect indentation
+
+    Returns:
+        - `str` -- the detected indentation sequence
+
+    """
+    if isinstance(code, parso.tree.NodeOrLeaf):
+        code = code.get_code()
+    if isinstance(code, str):
+        code = code.encode()
+
+    pool = {
+        'space': 0,
+        'tab': 0
+    }
+    min_spaces = None
+
+    with io.BytesIO(code) as file:
+        for token_info in tokenize.tokenize(file.readline):
+            if token_info.type == token.INDENT:
+                if '\t' in token_info.string and ' ' in token_info.string:
+                    continue  # skip indentation with mixed spaces and tabs
+                if '\t' in token_info.string:
+                    pool['tab'] += 1
+                else:
+                    pool['space'] += 1
+                    if min_spaces is None:
+                        min_spaces = len(token_info.string)
+                    else:
+                        min_spaces = min(min_spaces, len(token_info.string))
+
+    if pool['space'] > pool['tab']:
+        return ' ' * min_spaces
+    if pool['space'] < pool['tab']:
+        return '\t'
+    return ' ' * 4  # same number of spaces and tabs, prefer 4 spaces for PEP 8
+
+
+def parso_parse(code, file=None, version=None, encoding=None, errors='strict'):
+    """Parse Python source code with parso.
+
+    Args:
+     - `code` -- `Union[str, bytes]`, the code to be parsed
+     - `file` -- `str`, an optional source file name to provide a context in case of error
+     - `version` -- `str`, parse the code as this version (uses the latest version by default)
+     - `encoding` -- `str`, the encoding to decode `code` if it is `bytes`, if not specified
+        the encoding will be detected as specified in PEP 263
+     - `errors` -- `str`, decoding error handling scheme
+
+    Returns:
+     - `parso.python.tree.Module` -- parso AST
+
+    Raises:
+     - `ConvertError` -- when source code contains syntax errors
+
+    """
+    grammar = parso.load_grammar(version=version or get_parso_grammar_versions()[-1])
+    if isinstance(code, bytes):
+        code = code.decode(encoding or detect_encoding(code), errors)
+    module = grammar.parse(code, error_recovery=True)
+    errors = grammar.iter_errors(module)
+    if errors:
+        error_messages = '\n'.join('[L%dC%d] %s' % (error.start_pos[0], error.start_pos[1], error.message) for error in errors)
+        raise ConvertError('source file %r contains the following syntax errors:\n' % (file or '<unknown>') + error_messages)
+    return module
+
+
+__all__ = ['mp', 'CPU_CNT', 'BOOLEAN_STATES', 'LOCALE_ENCODING', 'get_parso_grammar_versions', 'ConvertError', 'UUID4Generator',
+           'detect_files', 'archive_files', 'recover_files', 'detect_encoding', 'detect_linesep', 'detect_indentation', 'parso_parse']
