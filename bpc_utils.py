@@ -1,3 +1,4 @@
+import binascii
 import collections
 import glob
 import io
@@ -202,7 +203,7 @@ def archive_files(files, archive_dir):
     """
     uuid_gen = UUID4Generator()
     lookup_table = {uuid_gen.gen() + '.py': file for file in files}
-    archive_file = 'archive-{}-{}.tar'.format(time.strftime('%Y%m%d%H%M%S'), os.urandom(8).hex())
+    archive_file = 'archive-{}-{}.tar'.format(time.strftime('%Y%m%d%H%M%S'), binascii.hexlify(os.urandom(8)))
     archive_mode = 'w'
     if has_gz_support:  # pragma: no cover
         archive_file += '.gz'
