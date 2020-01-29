@@ -48,12 +48,6 @@ finally:    # alias and aftermath
     mp = multiprocessing
     del multiprocessing
 
-# from configparser
-BOOLEAN_STATES = {'1': True, '0': False,
-                  'yes': True, 'no': False,
-                  'true': True, 'false': False,
-                  'on': True, 'off': False}
-
 LOCALE_ENCODING = locale.getpreferredencoding(False)
 
 LOOKUP_TABLE = '_lookup_table.json'
@@ -79,6 +73,118 @@ def get_parso_grammar_versions(minimum='0.0'):
     """
     minimum = tuple(map(int, minimum.split('.')))
     return ['{}.{}'.format(*v) for v in PARSO_GRAMMAR_VERSIONS if v >= minimum]
+
+
+def first_truthy(*args):
+    """Return the first truthy value from a list of values.
+
+    Args:
+        - if one positional argument is provided, it should be an iterable of the values
+        - if two or more positional arguments are provided, then the value list is the positional argument list
+
+    Returns:
+        - `Any` -- the first truthy value
+
+    """
+    if not args:
+        raise TypeError('no arguments provided')
+    if len(args) == 1:
+        args = args[0]
+    try:
+        return next(filter(bool, args))
+    except StopIteration:
+        raise ValueError('no truthy values found, or sequence is empty') from None
+
+
+def first_non_none(*args):
+    """Return the first non-None value from a list of values.
+
+    Args:
+        - if one positional argument is provided, it should be an iterable of the values
+        - if two or more positional arguments are provided, then the value list is the positional argument list
+
+    Returns:
+        - `Any` -- the first non-None value
+
+    """
+    if not args:
+        raise TypeError('no arguments provided')
+    if len(args) == 1:
+        args = args[0]
+    try:
+        return next(filter(lambda x: x is not None, args))
+    except StopIteration:
+        raise ValueError('all values are None, or sequence is empty') from None
+
+
+def parse_boolean_state(s):
+    """Parse a boolean state from a string representation.
+    These values are regarded as `True`: '1', 'yes', 'y', 'true', 'on'
+    These values are regarded as `False`: '0', 'no', 'n', 'false', 'off'
+    Value matching is case insensitive.
+
+    Args:
+        - `s` -- `str`, string representation of a boolean state
+
+    Returns:
+        - `bool` -- the parsed boolean result
+
+    """
+    s = s.lower()
+    if s in ('1', 'yes', 'y', 'true', 'on'):
+        return True
+    if s in ('0', 'no', 'n', 'false', 'off'):
+        return False
+    raise ValueError('invalid boolean state value {!r}'.format(s))
+
+
+def parse_linesep(s):
+    """Parse linesep from a string representation.
+    These values are regarded as '\n': '\n', 'lf'
+    These values are regarded as '\r\n': '\r\n', 'crlf'
+    These values are regarded as '\r': '\r', 'cr'
+    Value matching is case insensitive.
+
+    Args:
+        - `s` -- `str`, string representation of linesep
+
+    Returns:
+        - `str` -- the parsed linesep result
+
+    """
+    s = s.lower()
+    if s in ('\n', 'lf'):
+        return '\n'
+    if s in ('\r\n', 'crlf'):
+        return '\r\n'
+    if s in ('\r', 'cr'):
+        return '\r'
+    raise ValueError('invalid linesep value {!r}'.format(s))
+
+
+def parse_indentation(s):
+    """Parse indentation from a string representation.
+    If a string of positive integer `n` is specified, then indentation is `n` spaces.
+    If 't' or 'tab' is specified, then indentation is tab.
+    Value matching is case insensitive.
+
+    Args:
+        - `s` -- `str`, string representation of tabsize
+
+    Returns:
+        - `str` -- the parsed indentation result
+
+    """
+    s = s.lower()
+    if s in ('t', 'tab'):
+        return '\t'
+    try:
+        n = int(s)
+        if n <= 0:
+            raise ValueError
+        return ' ' * n
+    except ValueError:
+        raise ValueError('invalid tabsize value {!r}'.format(s)) from None
 
 
 class ConvertError(SyntaxError):
@@ -357,5 +463,7 @@ def parso_parse(code, file=None, version=None, encoding=None, errors='strict'):
     return module
 
 
-__all__ = ['mp', 'CPU_CNT', 'BOOLEAN_STATES', 'LOCALE_ENCODING', 'get_parso_grammar_versions', 'ConvertError', 'UUID4Generator',
-           'detect_files', 'archive_files', 'recover_files', 'detect_encoding', 'detect_linesep', 'detect_indentation', 'parso_parse']
+__all__ = ['mp', 'CPU_CNT', 'LOCALE_ENCODING', 'get_parso_grammar_versions', 'first_truthy', 'first_non_none',
+           'parse_boolean_state', 'parse_linesep', 'parse_indentation', 'ConvertError', 'UUID4Generator',
+           'detect_files', 'archive_files', 'recover_files', 'detect_encoding', 'detect_linesep',
+           'detect_indentation', 'parso_parse']

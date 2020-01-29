@@ -8,8 +8,10 @@ import unittest
 import parso
 from bpc_utils import (LOOKUP_TABLE, PARSO_GRAMMAR_VERSIONS, ConvertError, UUID4Generator,
                        archive_files, detect_encoding, detect_files, detect_indentation,
-                       detect_linesep, expand_glob, get_parso_grammar_versions, is_python_filename,
-                       is_windows, parso_parse, recover_files)
+                       detect_linesep, expand_glob, first_non_none, first_truthy,
+                       get_parso_grammar_versions, is_python_filename, is_windows,
+                       parse_boolean_state, parse_indentation, parse_linesep, parso_parse,
+                       recover_files)
 
 
 def read_text_file(filename, encoding='utf-8'):
@@ -25,7 +27,31 @@ def write_text_file(filename, content, encoding='utf-8'):
 
 
 def native_path(path):
+    """Convert a file system path to the native form."""
     return path.replace('/', '\\') if is_windows else path
+
+
+class SuccessCase:
+    """A test case that expects a returned result."""
+    def __init__(self, args=None, kwargs=None, result=None):
+        self.args = args or ()
+        self.kwargs = kwargs or {}
+        self.result = result
+
+    def __repr__(self):  # pragma: no cover
+        return 'SuccessCase(args={!r}, kwargs={!r}, result={!r})'.format(self.args, self.kwargs, self.result)
+
+
+class FailCase:
+    """A test case that expects an exception to be raised."""
+    def __init__(self, args=None, kwargs=None, exc=BaseException, msg=''):
+        self.args = args or ()
+        self.kwargs = kwargs or {}
+        self.exc = exc
+        self.msg = msg
+
+    def __repr__(self):  # pragma: no cover
+        return 'FailCase(args={!r}, kwargs={!r}, exc={!r}, msg={!r})'.format(self.args, self.kwargs, self.exc, self.msg)
 
 
 class TestBPCUtils(unittest.TestCase):
@@ -68,8 +94,24 @@ class TestBPCUtils(unittest.TestCase):
         shutil.rmtree(cls.tmpd, ignore_errors=True)
         os.chdir(cls.old_cwd)
 
+    def setUp(self):
+        self.success_cases = []
+        self.fail_cases = []
+        self.target_func = None
+        self.assert_func = self.assertEqual
+
     def tearDown(self):
         shutil.rmtree('archive', ignore_errors=True)
+
+    def generic_functional_test(self):
+        for test_case in self.success_cases:
+            with self.subTest(test_case=test_case):
+                self.assert_func(self.target_func(*test_case.args, **test_case.kwargs), test_case.result)
+
+        for test_case in self.fail_cases:
+            with self.subTest(test_case=test_case):
+                with self.assertRaisesRegex(test_case.exc, test_case.msg):
+                    self.target_func(*test_case.args, **test_case.kwargs)
 
     def test_parso_grammar_versions(self):
         self.assertIsInstance(PARSO_GRAMMAR_VERSIONS, list)
@@ -81,6 +123,102 @@ class TestBPCUtils(unittest.TestCase):
         versions2 = get_parso_grammar_versions(minimum=versions1[1])
         self.assertEqual(len(versions1) - len(versions2), 1)
 
+    def test_first_truthy(self):
+        self.success_cases = [
+            SuccessCase(args=(0, 1), result=1),
+            SuccessCase(args=(1, 0), result=1),
+            SuccessCase(args=([1],), result=1),
+            SuccessCase(args=([0, [0]],), result=[0]),
+            SuccessCase(args=([{0}, 0],), result={0}),
+        ]
+        self.fail_cases = [
+            FailCase(args=(), exc=TypeError, msg='no arguments provided'),
+            FailCase(args=(1,), exc=TypeError, msg='is not iterable'),
+            FailCase(args=([],), exc=ValueError, msg='sequence is empty'),
+            FailCase(args=([''],), exc=ValueError, msg='no truthy values found'),
+            FailCase(args=([0, ()],), exc=ValueError, msg='no truthy values found'),
+            FailCase(args=(0, ()), exc=ValueError, msg='no truthy values found'),
+        ]
+        self.target_func = first_truthy
+        self.generic_functional_test()
+
+    def test_first_non_none(self):
+        self.success_cases = [
+            SuccessCase(args=(0, 1), result=0),
+            SuccessCase(args=(1, 0), result=1),
+            SuccessCase(args=(None, 0), result=0),
+            SuccessCase(args=(0, None), result=0),
+            SuccessCase(args=([0],), result=0),
+            SuccessCase(args=([None, 0],), result=0),
+            SuccessCase(args=([0, None],), result=0),
+        ]
+        self.fail_cases = [
+            FailCase(args=(), exc=TypeError, msg='no arguments provided'),
+            FailCase(args=(1,), exc=TypeError, msg='is not iterable'),
+            FailCase(args=([],), exc=ValueError, msg='sequence is empty'),
+            FailCase(args=([None],), exc=ValueError, msg='all values are None'),
+            FailCase(args=([None, None],), exc=ValueError, msg='all values are None'),
+            FailCase(args=(None, None), exc=ValueError, msg='all values are None'),
+        ]
+        self.target_func = first_non_none
+        self.generic_functional_test()
+
+    def test_parse_boolean_state(self):
+        self.success_cases = [
+            SuccessCase(args=('1',), result=True),
+            SuccessCase(args=('yes',), result=True),
+            SuccessCase(args=('Y',), result=True),
+            SuccessCase(args=('True',), result=True),
+            SuccessCase(args=('ON',), result=True),
+            SuccessCase(args=('0',), result=False),
+            SuccessCase(args=('NO',), result=False),
+            SuccessCase(args=('n',), result=False),
+            SuccessCase(args=('FALSE',), result=False),
+            SuccessCase(args=('Off',), result=False),
+        ]
+        self.fail_cases = [
+            FailCase(args=('',), exc=ValueError, msg="invalid boolean state value ''"),
+            FailCase(args=('x',), exc=ValueError, msg="invalid boolean state value 'x'"),
+        ]
+        self.target_func = parse_boolean_state
+        self.generic_functional_test()
+
+    def test_parse_linesep(self):
+        self.success_cases = [
+            SuccessCase(args=('\n',), result='\n'),
+            SuccessCase(args=('\r\n',), result='\r\n'),
+            SuccessCase(args=('\r',), result='\r'),
+            SuccessCase(args=('LF',), result='\n'),
+            SuccessCase(args=('CRLF',), result='\r\n'),
+            SuccessCase(args=('cr',), result='\r'),
+        ]
+        self.fail_cases = [
+            FailCase(args=('',), exc=ValueError, msg="invalid linesep value ''"),
+            FailCase(args=('x',), exc=ValueError, msg="invalid linesep value 'x'"),
+        ]
+        self.target_func = parse_linesep
+        self.generic_functional_test()
+
+    def test_parse_indentation(self):
+        self.success_cases = [
+            SuccessCase(args=('t',), result='\t'),
+            SuccessCase(args=('T',), result='\t'),
+            SuccessCase(args=('tab',), result='\t'),
+            SuccessCase(args=('Tab',), result='\t'),
+            SuccessCase(args=('TAB',), result='\t'),
+            SuccessCase(args=('2',), result=' ' * 2),
+            SuccessCase(args=('4',), result=' ' * 4),
+            SuccessCase(args=('8',), result=' ' * 8),
+        ]
+        self.fail_cases = [
+            FailCase(args=('',), exc=ValueError, msg="invalid tabsize value ''"),
+            FailCase(args=('x',), exc=ValueError, msg="invalid tabsize value 'x'"),
+            FailCase(args=('0',), exc=ValueError, msg="invalid tabsize value '0'"),
+            FailCase(args=('-1',), exc=ValueError, msg="invalid tabsize value '-1'"),
+        ]
+        self.target_func = parse_indentation
+        self.generic_functional_test()
+
     def test_uuid_gen(self):
         for dash in (True, False):
             with self.subTest(dash=dash):
@@ -90,19 +228,16 @@ class TestBPCUtils(unittest.TestCase):
                 self.assertEqual(len(uuids), len(set(uuids)))
 
     def test_is_python_filename(self):
-        test_cases = [
-            ('a.py', True),
-            ('b.PY', is_windows),
-            ('c.pyw', True),
-            ('README.md', False),
-            ('myscript', False),
-            ('.hidden.py', True),
+        self.success_cases = [
+            SuccessCase(args=('a.py',), result=True),
+            SuccessCase(args=('b.PY',), result=is_windows),
+            SuccessCase(args=('c.pyw',), result=True),
+            SuccessCase(args=('README.md',), result=False),
+            SuccessCase(args=('myscript',), result=False),
+            SuccessCase(args=('.hidden.py',), result=True),
         ]
-
-        for test_case in test_cases:
-            filename, expected_result = test_case
-            with self.subTest(test_case=test_case):
-                self.assertEqual(is_python_filename(filename), expected_result)
+        self.target_func = is_python_filename
+        self.generic_functional_test()
 
     def test_expand_glob(self):
         test_cases = [
@@ -125,10 +260,10 @@ class TestBPCUtils(unittest.TestCase):
         if sys.version_info[:2] >= (3, 5):  # pragma: no cover
             test_cases.append(('./**/*.pyw', ['./c.pyw', './dir/e.pyw']))
 
-        for test_case in test_cases:
-            pattern, expected_result = test_case
-            with self.subTest(test_case=test_case):
-                self.assertCountEqual(expand_glob(pattern), [native_path(p) for p in expected_result])
+        self.success_cases = [SuccessCase(args=(tc[0],), result=[native_path(p) for p in tc[1]]) for tc in test_cases]
+        self.target_func = expand_glob
+        self.assert_func = self.assertCountEqual
+        self.generic_functional_test()
 
     def test_detect_files(self):
         test_cases = [
@@ -144,10 +279,10 @@ class TestBPCUtils(unittest.TestCase):
             test_cases[2][1].append('dir/apy')
             test_cases.append((['*.py'], []))  # glob expansion should not be performed on Unix-like platforms
 
-        for test_case in test_cases:
-            infiles, outfiles = test_case
-            with self.subTest(test_case=test_case):
-                self.assertCountEqual(detect_files(infiles), [os.path.abspath(f) for f in outfiles])
+        self.success_cases = [SuccessCase(args=(tc[0],), result=[os.path.abspath(f) for f in tc[1]]) for tc in test_cases]
+        self.target_func = detect_files
+        self.assert_func = self.assertCountEqual
+        self.generic_functional_test()
 
     def test_archive_and_restore(self):
         file_list = ['a.py', 'myscript', os.path.join('dir', 'e.pyw')]
@@ -166,16 +301,13 @@ class TestBPCUtils(unittest.TestCase):
         self.assertEqual(read_text_file(os.path.join('dir', 'e.pyw')), 'eee')
 
     def test_detect_encoding(self):
-        test_cases = [
-            (b'# coding: gbk\n\xd6\xd0\xce\xc4', 'gbk'),
-            (b'\xef\xbb\xbfhello', 'utf-8-sig'),
-            (b'hello', 'utf-8'),
+        self.success_cases = [
+            SuccessCase(args=(b'# coding: gbk\n\xd6\xd0\xce\xc4',), result='gbk'),
+            SuccessCase(args=(b'\xef\xbb\xbfhello',), result='utf-8-sig'),
+            SuccessCase(args=(b'hello',), result='utf-8'),
         ]
-
-        for test_case in test_cases:
-            code, encoding = test_case
-            with self.subTest(test_case=test_case):
-                self.assertEqual(detect_encoding(code), encoding)
+        self.target_func = detect_encoding
+        self.generic_functional_test()
 
     def test_detect_linesep(self):
         test_cases = [
@@ -187,13 +319,11 @@ class TestBPCUtils(unittest.TestCase):
             ('1\n2\r\n3\r\n4\r5\r', '\r\n'),
             ('1\n2\n3\r4\v\r5\r\n6\r\n', '\n'),
         ]
-
-        test_cases += [(tc[0].encode(), tc[1]) for tc in test_cases] + [(parso.parse(tc[0]), tc[1]) for tc in test_cases]
-
-        for test_case in test_cases:
-            code, linesep = test_case
-            with self.subTest(test_case=test_case):
-                self.assertEqual(detect_linesep(code), linesep)
+        self.success_cases = [SuccessCase(args=(tc[0],), result=tc[1]) for tc in test_cases]
+        self.success_cases += [SuccessCase(args=(tc[0].encode(),), result=tc[1]) for tc in test_cases]
+        self.success_cases += [SuccessCase(args=(parso.parse(tc[0]),), result=tc[1]) for tc in test_cases]
+        self.target_func = detect_linesep
+        self.generic_functional_test()
 
     def test_detect_indentation(self):
         test_cases = [
@@ -205,13 +335,11 @@ class TestBPCUtils(unittest.TestCase):
             ('for x in [1]:\n\tpass\nfor x in [1]:\n    pass', '    '),
             ('for x in [1]:\n    pass\nfor x in [1]:\n  pass', '  '),
         ]
-
-        test_cases += [(tc[0].encode(), tc[1]) for tc in test_cases] + [(parso.parse(tc[0]), tc[1]) for tc in test_cases]
-
-        for test_case in test_cases:
-            code, indentation = test_case
-            with self.subTest(test_case=test_case):
-                self.assertEqual(detect_indentation(code), indentation)
+        self.success_cases = [SuccessCase(args=(tc[0],), result=tc[1]) for tc in test_cases]
+        self.success_cases += [SuccessCase(args=(tc[0].encode(),), result=tc[1]) for tc in test_cases]
+        self.success_cases += [SuccessCase(args=(parso.parse(tc[0]),), result=tc[1]) for tc in test_cases]
+        self.target_func = detect_indentation
+        self.generic_functional_test()
 
     def test_parso_parse(self):
         parso_parse('1+1')
