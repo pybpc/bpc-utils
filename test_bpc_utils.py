@@ -401,5 +401,6 @@ class TestBPCUtils(unittest.TestCase):
         self.target_func = parso_parse
         self.generic_functional_test()
 
+
 if __name__ == '__main__':
     unittest.main()
