@@ -1,10 +1,11 @@
 import binascii
 import collections
+import contextlib
+import functools
 import glob
 import io
 import itertools
 import json
-import locale
 import os
 import platform
 import shutil
@@ -39,16 +40,12 @@ else:       # CPU number if multiprocessing supported
     if os.name == 'posix' and 'SC_NPROCESSORS_CONF' in os.sysconf_names:  # pragma: no cover
         CPU_CNT = os.sysconf('SC_NPROCESSORS_CONF')
     elif 'sched_getaffinity' in os.__all__:  # pragma: no cover
-        CPU_CNT = len(os.sched_getaffinity(0))  # novermin
-    elif 'cpu_count' in os.__all__:  # pragma: no cover
-        CPU_CNT = os.cpu_count() or 1  # novermin
+        CPU_CNT = len(os.sched_getaffinity(0))
     else:  # pragma: no cover
-        CPU_CNT = 1
+        CPU_CNT = os.cpu_count() or 1
 finally:    # alias and aftermath
     mp = multiprocessing
     del multiprocessing
-
-LOCALE_ENCODING = locale.getpreferredencoding(False)
 
 LOOKUP_TABLE = '_lookup_table.json'
 
@@ -61,7 +58,7 @@ PARSO_GRAMMAR_VERSIONS = sorted(PARSO_GRAMMAR_VERSIONS)
 del file, version
 
 
-def get_parso_grammar_versions(minimum='0.0'):
+def get_parso_grammar_versions(minimum=None):
     """Get Python versions that parso supports to parse grammar.
 
     Args:
@@ -71,8 +68,14 @@ def get_parso_grammar_versions(minimum='0.0'):
         - `List[str]` -- a list of Python versions that parso supports to parse grammar
 
     """
-    minimum = tuple(map(int, minimum.split('.')))
-    return ['{}.{}'.format(*v) for v in PARSO_GRAMMAR_VERSIONS if v >= minimum]
+    if minimum is None:
+        return ['{}.{}'.format(*v) for v in PARSO_GRAMMAR_VERSIONS]
+    try:
+        minimum = tuple(map(int, minimum.split('.')))
+    except Exception:
+        raise ValueError('invalid minimum version') from None
+    else:
+        return ['{}.{}'.format(*v) for v in PARSO_GRAMMAR_VERSIONS if v >= minimum]
 
 
 def first_truthy(*args):
@@ -83,17 +86,14 @@ def first_truthy(*args):
         - if two or more positional arguments are provided, then the value list is the positional argument list
 
     Returns:
-        - `Any` -- the first truthy value
+        - `Any` -- the first truthy value, if no truthy values found or sequence is empty, return None
 
     """
     if not args:
         raise TypeError('no arguments provided')
     if len(args) == 1:
         args = args[0]
-    try:
-        return next(filter(bool, args))
-    except StopIteration:
-        raise ValueError('no truthy values found, or sequence is empty') from None
+    return next(filter(bool, args), None)
 
 
 def first_non_none(*args):
@@ -104,17 +104,28 @@ def first_non_none(*args):
         - if two or more positional arguments are provided, then the value list is the positional argument list
 
     Returns:
-        - `Any` -- the first non-None value
+        - `Any` -- the first non-None value, if all values are None or sequence is empty, return None
 
     """
     if not args:
         raise TypeError('no arguments provided')
     if len(args) == 1:
         args = args[0]
-    try:
-        return next(filter(lambda x: x is not None, args))
-    except StopIteration:
-        raise ValueError('all values are None, or sequence is empty') from None
+    return next(filter(lambda x: x is not None, args), None)
+
+
+_boolean_state_lookup = {
+    '1': True,
+    'yes': True,
+    'y': True,
+    'true': True,
+    'on': True,
+    '0': False,
+    'no': False,
+    'n': False,
+    'false': False,
+    'off': False,
+}
 
 
 def parse_boolean_state(s):
@@ -124,18 +135,28 @@ def parse_boolean_state(s):
     Value matching is case insensitive.
 
     Args:
-        - `s` -- `str`, string representation of a boolean state
+        - `s` -- `Optional[str]`, string representation of a boolean state
 
     Returns:
-        - `bool` -- the parsed boolean result
+        - `Optional[bool]` -- the parsed boolean result, return None if input is None
 
     """
-    s = s.lower()
-    if s in ('1', 'yes', 'y', 'true', 'on'):
-        return True
-    if s in ('0', 'no', 'n', 'false', 'off'):
-        return False
-    raise ValueError('invalid boolean state value {!r}'.format(s))
+    if s is None:
+        return None
+    try:
+        return _boolean_state_lookup[s.lower()]
+    except KeyError:
+        raise ValueError('invalid boolean state value {!r}'.format(s)) from None
+
+
+_linesep_lookup = {
+    '\n': '\n',
+    'lf': '\n',
+    '\r\n': '\r\n',
+    'crlf': '\r\n',
+    '\r': '\r',
+    'cr': '\r',
+}
 
 
 def parse_linesep(s):
@@ -146,20 +167,18 @@ def parse_linesep(s):
     Value matching is case insensitive.
 
     Args:
-        - `s` -- `str`, string representation of linesep
+        - `s` -- `Optional[str]`, string representation of linesep
 
     Returns:
-        - `str` -- the parsed linesep result
+        - `Optional[Literal['\n', '\r\n', '\r']]` -- the parsed linesep result, return None if input is None or empty string
 
     """
-    s = s.lower()
-    if s in ('\n', 'lf'):
-        return '\n'
-    if s in ('\r\n', 'crlf'):
-        return '\r\n'
-    if s in ('\r', 'cr'):
-        return '\r'
-    raise ValueError('invalid linesep value {!r}'.format(s))
+    if not s:
+        return None
+    try:
+        return _linesep_lookup[s.lower()]
+    except KeyError:
+        raise ValueError('invalid linesep value {!r}'.format(s)) from None
 
 
 def parse_indentation(s):
@@ -169,14 +188,15 @@ def parse_indentation(s):
     Value matching is case insensitive.
 
     Args:
-        - `s` -- `str`, string representation of tabsize
+        - `s` -- `Optional[str]`, string representation of indentation
 
     Returns:
-        - `str` -- the parsed indentation result
+        - `Optional[str]` -- the parsed indentation result, return None if input is None or empty string
 
     """
-    s = s.lower()
-    if s in ('t', 'tab'):
+    if not s:
+        return None
+    if s.lower() in {'t', 'tab'}:
         return '\t'
     try:
         n = int(s)
@@ -184,11 +204,11 @@ def parse_indentation(s):
             raise ValueError
         return ' ' * n
     except ValueError:
-        raise ValueError('invalid tabsize value {!r}'.format(s)) from None
+        raise ValueError('invalid indentation value {!r}'.format(s)) from None
 
 
-class ConvertError(SyntaxError):
-    """Convertion error due to syntax error."""
+class BPCSyntaxError(SyntaxError):
+    """Syntax error detected when parsing code."""
 
 
 class UUID4Generator:
@@ -232,22 +252,11 @@ def is_python_filename(filename):
     """
     if is_windows:  # pragma: no cover
         filename = filename.lower()
-    return os.path.splitext(filename)[1] in ('.py', '.pyw')
+    return os.path.splitext(filename)[1] in {'.py', '.pyw'}
 
 
-def expand_glob(pathname):
-    """Wrapper function to perform glob expansion.
-
-    Args:
-        - `pathname` -- `str`, the glob pattern
-
-    Returns:
-        - `List[str]` -- result of glob expansion
-
-    """
-    if sys.version_info[:2] < (3, 5):  # pragma: no cover
-        return glob.glob(pathname)
-    return glob.glob(pathname, recursive=True)  # novermin
+# Wrapper function to perform glob expansion.
+expand_glob_iter = glob.iglob if sys.version_info[:2] < (3, 5) else functools.partial(glob.iglob, recursive=True)
 
 
 def detect_files(files):
@@ -267,7 +276,7 @@ def detect_files(files):
 
     # perform glob expansion on windows
     if is_windows:  # pragma: no cover
-        files = itertools.chain(*map(expand_glob, files))
+        files = itertools.chain.from_iterable(map(expand_glob_iter, files))
 
     # find top-level files and directories
     for file in files:
@@ -306,6 +315,9 @@ def archive_files(files, archive_dir):
         - `files` -- `List[str]`, a list of files to be archived (should be absolute path)
         - `archive_dir` -- `os.PathLike`, the directory to save the archive
 
+    Returns:
+        - `str` -- path to the generated tar archive
+
     """
     uuid_gen = UUID4Generator()
     lookup_table = {uuid_gen.gen() + '.py': file for file in files}
@@ -314,24 +326,24 @@ def archive_files(files, archive_dir):
     if has_gz_support:  # pragma: no cover
         archive_file += '.gz'
         archive_mode += ':gz'
+    archive_file = os.path.join(archive_dir, archive_file)
     os.makedirs(archive_dir, exist_ok=True)
-    with tarfile.open(os.path.join(archive_dir, archive_file), archive_mode) as tarf:
+    with tarfile.open(archive_file, archive_mode) as tarf:
         for arcname, realname in lookup_table.items():
             tarf.add(realname, arcname)
         with tempfile.NamedTemporaryFile('w', encoding='utf-8', prefix='bpc-archive-lookup-', suffix='.json', delete=False) as tmpf:
             json.dump(lookup_table, tmpf, indent=4)
         tarf.add(tmpf.name, LOOKUP_TABLE)
-        try:
+        with contextlib.suppress(OSError):
             os.remove(tmpf.name)
-        except OSError:  # pragma: no cover
-            pass
+    return archive_file
 
 
 def recover_files(archive_file):
     """Recover files from a tar archive.
 
     Args:
-        - `archive_file` -- `os.PathLike`, the name of the tar archive file
+        - `archive_file` -- `os.PathLike`, path to the tar archive file
 
     """
     with tarfile.open(archive_file, 'r') as tarf:
@@ -348,47 +360,84 @@ def detect_encoding(code):
     """Detect encoding of Python source code as specified in PEP 263.
 
     Args:
-     - `code` -- `bytes`, the code to detect encoding
+        - `code` -- `bytes`, the code to detect encoding
 
     Returns:
-     - `str` -- the detected encoding, or the default encoding ('utf-8')
+        - `str` -- the detected encoding, or the default encoding ('utf-8')
 
     """
+    if not isinstance(code, bytes):
+        raise TypeError("'code' should be bytes")
     with io.BytesIO(code) as file:
         return tokenize.detect_encoding(file.readline)[0]
+
+
+class MakeTextIO:
+    """Context wrapper class to handle `str` and file objects together."""
+
+    def __init__(self, obj):
+        """Initialize context.
+
+        Args:
+            - `obj` -- `Union[str, TextIO]`, the object to manage in the context
+
+        """
+        self.obj = obj
+
+    def __enter__(self):
+        """Enter context.
+        If self.obj is `str`, a `StringIO` will be created and returned.
+        If self.obj is a file object, it will be seeked to the beginning and returned.
+        """
+        if isinstance(self.obj, str):
+            self.sio = io.StringIO(self.obj, newline='')  # turn off newline translation
+            return self.sio
+        self.pos = self.obj.tell()
+        self.obj.seek(0)
+        return self.obj
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        """Exit context.
+        If self.obj is `str`, the `StringIO` will be closed.
+        If self.obj is a file object, its stream position will be recovered.
+        """
+        if isinstance(self.obj, str):
+            self.sio.close()
+        else:
+            self.obj.seek(self.pos)
 
 
 def detect_linesep(code):
     """Detect linesep of Python source code.
 
     Args:
-     - `code` -- `Union[str, bytes, parso.tree.NodeOrLeaf]`, the code to detect linesep
+        - `code` -- `Union[str, bytes, TextIO, parso.tree.NodeOrLeaf]`, the code to detect linesep
 
     Returns:
-     - `str` -- the detected linesep (one of '\n', '\r\n' and '\r')
+        - `Literal['\n', '\r\n', '\r']` -- the detected linesep (one of '\n', '\r\n' and '\r')
 
     """
     if isinstance(code, parso.tree.NodeOrLeaf):
         code = code.get_code()
-    is_bytes = isinstance(code, bytes)
+    if isinstance(code, bytes):
+        code = code.decode(detect_encoding(code))
 
     pool = {
         'CR': 0,
         'CRLF': 0,
         'LF': 0,
     }
-    CR = b'\r' if is_bytes else '\r'
-    CRLF = b'\r\n' if is_bytes else '\r\n'
-    LF = b'\n' if is_bytes else '\n'
 
-    for line in code.splitlines(keepends=True):
-        if line.endswith(CR):
-            pool['CR'] += 1
-        elif line.endswith(CRLF):
-            pool['CRLF'] += 1
-        elif line.endswith(LF):
-            pool['LF'] += 1
+    with MakeTextIO(code) as file:
+        for line in file:
+            if line.endswith('\r'):
+                pool['CR'] += 1
+            elif line.endswith('\r\n'):
+                pool['CRLF'] += 1
+            elif line.endswith('\n'):
+                pool['LF'] += 1
 
+    # when there is a tie, prefer LF to CRLF, prefer CRLF to CR
     return max((pool['LF'], 3, '\n'), (pool['CRLF'], 2, '\r\n'), (pool['CR'], 1, '\r'))[2]
 
 
@@ -396,7 +445,7 @@ def detect_indentation(code):
     """Detect indentation of Python source code.
 
     Args:
-        - `code` -- `Union[str, bytes, parso.tree.NodeOrLeaf]`, the code to detect indentation
+        - `code` -- `Union[str, bytes, TextIO, parso.tree.NodeOrLeaf]`, the code to detect indentation
 
     Returns:
         - `str` -- the detected indentation sequence
@@ -404,8 +453,8 @@ def detect_indentation(code):
     """
     if isinstance(code, parso.tree.NodeOrLeaf):
         code = code.get_code()
-    if isinstance(code, str):
-        code = code.encode()
+    if isinstance(code, bytes):
+        code = code.decode(detect_encoding(code))
 
     pool = {
         'space': 0,
@@ -413,8 +462,8 @@ def detect_indentation(code):
     }
     min_spaces = None
 
-    with io.BytesIO(code) as file:
-        for token_info in tokenize.tokenize(file.readline):
+    with MakeTextIO(code) as file:
+        for token_info in tokenize.generate_tokens(file.readline):
             if token_info.type == token.INDENT:
                 if '\t' in token_info.string and ' ' in token_info.string:
                     continue  # skip indentation with mixed spaces and tabs
@@ -434,36 +483,33 @@ def detect_indentation(code):
     return ' ' * 4  # same number of spaces and tabs, prefer 4 spaces for PEP 8
 
 
-def parso_parse(code, file=None, version=None, encoding=None, errors='strict'):
+def parso_parse(code, filename=None, *, version=None):
     """Parse Python source code with parso.
 
     Args:
-     - `code` -- `Union[str, bytes]`, the code to be parsed
-     - `file` -- `str`, an optional source file name to provide a context in case of error
-     - `version` -- `str`, parse the code as this version (uses the latest version by default)
-     - `encoding` -- `str`, the encoding to decode `code` if it is `bytes`, if not specified
-        the encoding will be detected as specified in PEP 263
-     - `errors` -- `str`, decoding error handling scheme
+        - `code` -- `Union[str, bytes]`, the code to be parsed
+        - `filename` -- `str`, an optional source file name to provide a context in case of error
+        - `version` -- `str`, parse the code as this version (uses the latest version by default)
 
     Returns:
-     - `parso.python.tree.Module` -- parso AST
+        - `parso.python.tree.Module` -- parso AST
 
     Raises:
-     - `ConvertError` -- when source code contains syntax errors
+        - `BPCSyntaxError` -- when source code contains syntax errors
 
     """
-    grammar = parso.load_grammar(version=version or get_parso_grammar_versions()[-1])
+    grammar = parso.load_grammar(version=version if version is not None else get_parso_grammar_versions()[-1])
     if isinstance(code, bytes):
-        code = code.decode(encoding or detect_encoding(code), errors)
+        code = code.decode(detect_encoding(code))
     module = grammar.parse(code, error_recovery=True)
     errors = grammar.iter_errors(module)
     if errors:
         error_messages = '\n'.join('[L%dC%d] %s' % (error.start_pos[0], error.start_pos[1], error.message) for error in errors)
-        raise ConvertError('source file %r contains the following syntax errors:\n' % (file or '<unknown>') + error_messages)
+        raise BPCSyntaxError('source file %r contains the following syntax errors:\n' % first_non_none(filename, '<unknown>') + error_messages)
     return module
 
 
-__all__ = ['mp', 'CPU_CNT', 'LOCALE_ENCODING', 'get_parso_grammar_versions', 'first_truthy', 'first_non_none',
-           'parse_boolean_state', 'parse_linesep', 'parse_indentation', 'ConvertError', 'UUID4Generator',
+__all__ = ['mp', 'CPU_CNT', 'get_parso_grammar_versions', 'first_truthy', 'first_non_none',
+           'parse_boolean_state', 'parse_linesep', 'parse_indentation', 'BPCSyntaxError', 'UUID4Generator',
            'detect_files', 'archive_files', 'recover_files', 'detect_encoding', 'detect_linesep',
            'detect_indentation', 'parso_parse']
