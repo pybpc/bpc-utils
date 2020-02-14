@@ -40,7 +40,7 @@ else:       # CPU number if multiprocessing supported
     if os.name == 'posix' and 'SC_NPROCESSORS_CONF' in os.sysconf_names:  # pragma: no cover
         CPU_CNT = os.sysconf('SC_NPROCESSORS_CONF')
     elif 'sched_getaffinity' in os.__all__:  # pragma: no cover
-        CPU_CNT = len(os.sched_getaffinity(0))
+        CPU_CNT = len(os.sched_getaffinity(0))  # pylint: disable=no-member
     else:  # pragma: no cover
         CPU_CNT = os.cpu_count() or 1
 finally:    # alias and aftermath
@@ -62,10 +62,13 @@ def get_parso_grammar_versions(minimum=None):
     """Get Python versions that parso supports to parse grammar.
 
     Args:
-        - `minimum` -- `str`, filter result by this minimum version
+        ``minimum`` (str): filter result by this minimum version
 
     Returns:
-        - `List[str]` -- a list of Python versions that parso supports to parse grammar
+        :obj:`List[str]`: a list of Python versions that parso supports to parse grammar
+
+    Raises:
+        ValueError: if ``minimum`` is invalid
 
     """
     if minimum is None:
@@ -79,14 +82,19 @@ def get_parso_grammar_versions(minimum=None):
 
 
 def first_truthy(*args):
-    """Return the first truthy value from a list of values.
+    """Return the first *truthy* value from a list of values.
 
     Args:
-        - if one positional argument is provided, it should be an iterable of the values
-        - if two or more positional arguments are provided, then the value list is the positional argument list
+        *args: variable length argument list
+
+            * If one positional argument is provided, it should be an iterable of the values.
+            * If two or more positional arguments are provided, then the value list is the positional argument list.
 
     Returns:
-        - `Any` -- the first truthy value, if no truthy values found or sequence is empty, return None
+        :obj:`Any`: the first *truthy* value, if no *truthy* values found or sequence is empty, return ``None``
+
+    Raises:
+        TypeError: if no arguments provided
 
     """
     if not args:
@@ -97,14 +105,19 @@ def first_truthy(*args):
 
 
 def first_non_none(*args):
-    """Return the first non-None value from a list of values.
+    """Return the first non-``None`` value from a list of values.
 
     Args:
-        - if one positional argument is provided, it should be an iterable of the values
-        - if two or more positional arguments are provided, then the value list is the positional argument list
+        *args: variable length argument list
+
+            * If one positional argument is provided, it should be an iterable of the values.
+            * If two or more positional arguments are provided, then the value list is the positional argument list.
 
     Returns:
-        - `Any` -- the first non-None value, if all values are None or sequence is empty, return None
+        :obj:`Any`: the first non-``None`` value, if all values are ``None`` or sequence is empty, return ``None``
+
+    Raises:
+        TypeError: if no arguments provided
 
     """
     if not args:
@@ -114,6 +127,8 @@ def first_non_none(*args):
     return next(filter(lambda x: x is not None, args), None)
 
 
+#: :obj:`Dict[str, bool]`: A mapping of string representation to boolean states.
+#: The values are used for :func:`parse_boolean_state`.
 _boolean_state_lookup = {
     '1': True,
     'yes': True,
@@ -130,15 +145,23 @@ _boolean_state_lookup = {
 
 def parse_boolean_state(s):
     """Parse a boolean state from a string representation.
-    These values are regarded as `True`: '1', 'yes', 'y', 'true', 'on'
-    These values are regarded as `False`: '0', 'no', 'n', 'false', 'off'
-    Value matching is case insensitive.
+
+    * These values are regarded as ``True``: ``'1'``, ``'yes'``, ``'y'``, ``'true'``, ``'on'``
+    * These values are regarded as ``False``: ``'0'``, ``'no'``, ``'n'``, ``'false'``, ``'off'``
+
+    Value matching is case **insensitive**.
 
     Args:
-        - `s` -- `Optional[str]`, string representation of a boolean state
+        s (:obj:`Optional[str]`): string representation of a boolean state
 
     Returns:
-        - `Optional[bool]` -- the parsed boolean result, return None if input is None
+        :obj:`Optional[bool]`: the parsed boolean result, return ``None`` if input is ``None``
+
+    Raises:
+        KeyError: if ``s`` is an invalid boolean state value
+
+    See Also:
+        See :data:`_boolean_state_lookup` for default lookup mapping values.
 
     """
     if s is None:
@@ -149,6 +172,8 @@ def parse_boolean_state(s):
         raise ValueError('invalid boolean state value {!r}'.format(s)) from None
 
 
+#: :obj:`Dict[str, str]`: A mapping of string representation to linesep.
+#: The values are used for :func:`parse_linesep`.
 _linesep_lookup = {
     '\n': '\n',
     'lf': '\n',
@@ -161,16 +186,25 @@ _linesep_lookup = {
 
 def parse_linesep(s):
     """Parse linesep from a string representation.
-    These values are regarded as '\n': '\n', 'lf'
-    These values are regarded as '\r\n': '\r\n', 'crlf'
-    These values are regarded as '\r': '\r', 'cr'
-    Value matching is case insensitive.
+
+    * These values are regarded as ``'\\n'``: ``'\\n'``, ``'lf'``
+    * These values are regarded as ``'\\r\\n'``: ``'\\r\\n'``, ``'crlf'``
+    * These values are regarded as ``'\\r'``: ``'\\r'``, ``'cr'``
+
+    Value matching is **case insensitive**.
 
     Args:
-        - `s` -- `Optional[str]`, string representation of linesep
+        s (:obj:`Optional[str]`): string representation of linesep
 
     Returns:
-        - `Optional[Literal['\n', '\r\n', '\r']]` -- the parsed linesep result, return None if input is None or empty string
+        :obj:`Optional[Literal['\\\\n', '\\\\r\\\\n', '\\\\r']]`: the parsed linesep result,
+            return ``None`` if input is ``None`` or empty string
+
+    Raises:
+        ValueError: if ``s`` is an invalid linesep value
+
+    See Also:
+        See :data:`_linesep_lookup` for default lookup mapping values.
 
     """
     if not s:
@@ -183,15 +217,20 @@ def parse_linesep(s):
 
 def parse_indentation(s):
     """Parse indentation from a string representation.
-    If a string of positive integer `n` is specified, then indentation is `n` spaces.
-    If 't' or 'tab' is specified, then indentation is tab.
-    Value matching is case insensitive.
+
+    * If a string of positive integer ``n`` is specified, then indentation is ``n`` spaces.
+    * If ``'t'`` or ``'tab'`` is specified, then indentation is tab.
+
+    Value matching is **case insensitive**.
 
     Args:
-        - `s` -- `Optional[str]`, string representation of indentation
+        s (:obj:`Optional[str]`):  string representation of indentation
 
     Returns:
-        - `Optional[str]` -- the parsed indentation result, return None if input is None or empty string
+        :obj:`Optional[str]`: the parsed indentation result, return ``None`` if input is ``None`` or empty string
+
+    Raises:
+        ValueError: if ``s`` is an invalid indentation value
 
     """
     if not s:
@@ -218,7 +257,7 @@ class UUID4Generator:
         """Constructor of UUID 4 generator wrapper.
 
         Args:
-            - `dash` -- `bool`, whether the generated UUID string has dashes or not
+            dash (bool): whether the generated UUID string has dashes or not
 
         """
         self.used_uuids = set()
@@ -228,7 +267,7 @@ class UUID4Generator:
         """Generate a new UUID 4 string that is guaranteed not to collide with used UUIDs.
 
         Returns:
-            - `str` -- a new UUID 4 string
+            str: a new UUID 4 string
 
         """
         while True:
@@ -244,10 +283,10 @@ def is_python_filename(filename):
     """Determine whether a file is a Python source file by its extension.
 
     Args:
-        - `filename` -- `str`, the name of the file
+        filename (str): the name of the file
 
     Returns:
-        - `bool` -- whether the file is a Python source file
+        bool: whether the file is a Python source file
 
     """
     if is_windows:  # pragma: no cover
@@ -255,19 +294,25 @@ def is_python_filename(filename):
     return os.path.splitext(filename)[1] in {'.py', '.pyw'}
 
 
-# Wrapper function to perform glob expansion.
+#: Wrapper function to perform glob expansion.
 expand_glob_iter = glob.iglob if sys.version_info[:2] < (3, 5) else functools.partial(glob.iglob, recursive=True)
 
 
 def detect_files(files):
     """Get a list of Python files to be processed according to user input.
-       This will perform glob expansion on Windows, make all paths absolute, resolve symbolic links and remove duplicates.
+
+    This will perform *glob* expansion on Windows, make all paths absolute,
+    resolve symbolic links and remove duplicates.
 
     Args:
-        - `files` -- `List[str]`, a list of files and directories to process (usually provided by users on command-line)
+        files (:obj:`List[str]`): a list of files and directories to process
+            (usually provided by users on command-line)
 
     Returns:
-        - `List[str]` -- a list of Python files to be processed
+        :obj:`List[str]`: a list of Python files to be processed
+
+    See Also:
+        See :func:`expand_glob_iter` for more information.
 
     """
     file_list = []
@@ -309,14 +354,14 @@ def detect_files(files):
 
 
 def archive_files(files, archive_dir):
-    """Archive the list of files into a tar file.
+    """Archive the list of files into a *tar* file.
 
     Args:
-        - `files` -- `List[str]`, a list of files to be archived (should be absolute path)
-        - `archive_dir` -- `os.PathLike`, the directory to save the archive
+        files (:obj:`List[str]`): a list of files to be archived (should be *absolute path*)
+        archive_dir (:obj:`os.PathLike`): the directory to save the archive
 
     Returns:
-        - `str` -- path to the generated tar archive
+        str: path to the generated *tar* archive
 
     """
     uuid_gen = UUID4Generator()
@@ -340,10 +385,10 @@ def archive_files(files, archive_dir):
 
 
 def recover_files(archive_file):
-    """Recover files from a tar archive.
+    """Recover files from a *tar* archive.
 
     Args:
-        - `archive_file` -- `os.PathLike`, path to the tar archive file
+        archive_file (:obj:`os.PathLike`): path to the *tar* archive file
 
     """
     with tarfile.open(archive_file, 'r') as tarf:
@@ -357,13 +402,19 @@ def recover_files(archive_file):
 
 
 def detect_encoding(code):
-    """Detect encoding of Python source code as specified in PEP 263.
+    """Detect encoding of Python source code as specified in `PEP 263`_.
 
     Args:
-        - `code` -- `bytes`, the code to detect encoding
+        code (bytes): the code to detect encoding
 
     Returns:
-        - `str` -- the detected encoding, or the default encoding ('utf-8')
+        str: the detected encoding, or the default encoding (``utf-8``)
+
+    Raises:
+        TypeError: if ``code`` is not a :obj:`bytes` string
+
+    .. _PEP 263:
+        https://www.python.org/dev/peps/pep-0263/
 
     """
     if not isinstance(code, bytes):
@@ -373,33 +424,57 @@ def detect_encoding(code):
 
 
 class MakeTextIO:
-    """Context wrapper class to handle `str` and file objects together."""
+    """Context wrapper class to handle ``str`` and *file* objects together.
+
+    Attributes:
+        obj (:obj:`Union[str, TextIO]`): the object to manage in the context
+        sio (:obj:`Optional[StringIO]`): the I/O object to manage in the context
+            if only :attr:`self.obj <MakeTextIO.obj>` is :obj:`str`
+        pos (:obj:`Optional[int]`): the original offset of :attr:`self.obj <MakeTextIO.obj>`,
+            if only :attr:`self.obj <MakeTextIO.obj>` is a *file* object
+
+    """
 
     def __init__(self, obj):
         """Initialize context.
 
         Args:
-            - `obj` -- `Union[str, TextIO]`, the object to manage in the context
+            obj (:obj:`Union[str, TextIO]`): the object to manage in the context
 
         """
         self.obj = obj
 
     def __enter__(self):
         """Enter context.
-        If self.obj is `str`, a `StringIO` will be created and returned.
-        If self.obj is a file object, it will be seeked to the beginning and returned.
+
+        * If :attr:`self.obj <MakeTextIO.obj>` is :obj:`str`, a
+          :obj:`StringIO` will be created and returned.
+
+        * If :attr:`self.obj <MakeTextIO.obj>` is a *file* object,
+          it will be seeked to the beginning and returned.
+
         """
         if isinstance(self.obj, str):
+            #: :obj:`StringIO`: the I/O object to manage in the context
+            #:     if only :attr:`self.obj <MakeTextIO.obj>` is :obj:`str`
             self.sio = io.StringIO(self.obj, newline='')  # turn off newline translation
             return self.sio
+        #: int: the original offset of :attr:`self.obj <MakeTextIO.obj>`,
+        #:     if only :attr:`self.obj <MakeTextIO.obj>` is :obj:`TextIO`
         self.pos = self.obj.tell()
+        #: :obj:`Union[str, TextIO]`: the object to manage in the context
         self.obj.seek(0)
         return self.obj
 
     def __exit__(self, exc_type, exc_value, traceback):
         """Exit context.
-        If self.obj is `str`, the `StringIO` will be closed.
-        If self.obj is a file object, its stream position will be recovered.
+
+        * If :attr:`self.obj <MakeTextIO.obj>` is :obj:`str`, the
+          :obj:`StringIO` (:attr:`self.sio <MakeTextIO.sio>`) will be closed.
+
+        * If :attr:`self.obj <MakeTextIO.obj>` is a *file* object,
+          its stream position (:attr:`self.pos <MakeTextIO.pos>`) will be recovered.
+
         """
         if isinstance(self.obj, str):
             self.sio.close()
@@ -411,10 +486,15 @@ def detect_linesep(code):
     """Detect linesep of Python source code.
 
     Args:
-        - `code` -- `Union[str, bytes, TextIO, parso.tree.NodeOrLeaf]`, the code to detect linesep
+        code (:obj:`Union[str, bytes, TextIO, parso.tree.NodeOrLeaf]`): the code to detect linesep
 
     Returns:
-        - `Literal['\n', '\r\n', '\r']` -- the detected linesep (one of '\n', '\r\n' and '\r')
+        :obj:`Literal['\\\\n', '\\\\r\\n', '\\\\r']`: the detected linesep (one of ``'\\n'``, ``'\\r\\n'`` and ``'\\r'``)
+
+    Notes:
+        In case of mix linesep, try voting by the occurrance of each linesep value.
+
+        When there is a tie, prefer ``LF`` to ``CRLF``, prefer ``CRLF`` to ``CR``.
 
     """
     if isinstance(code, parso.tree.NodeOrLeaf):
@@ -445,10 +525,18 @@ def detect_indentation(code):
     """Detect indentation of Python source code.
 
     Args:
-        - `code` -- `Union[str, bytes, TextIO, parso.tree.NodeOrLeaf]`, the code to detect indentation
+        code (:obj:`Union[str, bytes, TextIO, parso.tree.NodeOrLeaf]`): the code to detect indentation
 
     Returns:
-        - `str` -- the detected indentation sequence
+        str: the detected indentation sequence
+
+    Notes:
+        In case of mix indentation, try voting by the occurrance of each indentation value (*spaces* and *tabs*).
+
+        When there is a tie between *spaces* and *tabs*, prefer **4 spaces** for `PEP 8`_.
+
+    .. _PEP 8:
+        https://www.python.org/dev/peps/pep-0008/
 
     """
     if isinstance(code, parso.tree.NodeOrLeaf):
@@ -487,15 +575,15 @@ def parso_parse(code, filename=None, *, version=None):
     """Parse Python source code with parso.
 
     Args:
-        - `code` -- `Union[str, bytes]`, the code to be parsed
-        - `filename` -- `str`, an optional source file name to provide a context in case of error
-        - `version` -- `str`, parse the code as this version (uses the latest version by default)
+        code (:obj:`Union[str, bytes]`): the code to be parsed
+        filename (str): an optional source file name to provide a context in case of error
+        version (str): parse the code as this version (uses the latest version by default)
 
     Returns:
-        - `parso.python.tree.Module` -- parso AST
+        :obj:`parso.python.tree.Module`: parso AST
 
     Raises:
-        - `BPCSyntaxError` -- when source code contains syntax errors
+        :exc:`BPCSyntaxError`: when source code contains syntax errors
 
     """
     grammar = parso.load_grammar(version=version if version is not None else get_parso_grammar_versions()[-1])

@@ -8,3 +8,7 @@ __pycache__
 .coverage
 /htmlcov
 /archive
+
+/.venv
+/Pipfile.lock
+/docs/build

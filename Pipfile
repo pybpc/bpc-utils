@@ -1,0 +1,32 @@
+[[source]]
+name = "tuna"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+verify_ssl = true
+
+[[source]]
+name = "sjtu"
+url = "https://mirrors.sjtug.sjtu.edu.cn/pypi/web/simple"
+verify_ssl = true
+
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+bpc-utils = {editable = true,path = "."}
+autopep8 = "*"
+ipython = "*"
+pylint = "*"
+coverage = "*"
+codecov = "*"
+tox = "*"
+sphinx = "*"
+sphinxcontrib-napoleon = "*"
+doc8 = "*"
+
+[packages]
+parso = ">=0.6.0"
+
+[requires]
+python_version = "*"
