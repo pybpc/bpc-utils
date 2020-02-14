@@ -11,7 +11,6 @@ Welcome to bpc-utils's documentation!
     :caption: Contents:
 
     bpc_utils
-    test_bpc_utils
 
 Utility library for the Python `bpc <https://github.com/pybpc/bpc>`_ backport compiler.
 
