@@ -158,7 +158,7 @@ def parse_boolean_state(s):
         :obj:`Optional[bool]`: the parsed boolean result, return ``None`` if input is ``None``
 
     Raises:
-        KeyError: if ``s`` is an invalid boolean state value
+        ValueError: if ``s`` is an invalid boolean state value
 
     See Also:
         See :data:`_boolean_state_lookup` for default lookup mapping values.
@@ -429,9 +429,9 @@ class MakeTextIO:
     Attributes:
         obj (:obj:`Union[str, TextIO]`): the object to manage in the context
         sio (:obj:`Optional[StringIO]`): the I/O object to manage in the context
-            if only :attr:`self.obj <MakeTextIO.obj>` is :obj:`str`
+            only if :attr:`self.obj <MakeTextIO.obj>` is :obj:`str`
         pos (:obj:`Optional[int]`): the original offset of :attr:`self.obj <MakeTextIO.obj>`,
-            if only :attr:`self.obj <MakeTextIO.obj>` is a *file* object
+            only if :attr:`self.obj <MakeTextIO.obj>` is a *file* object
 
     """
 
@@ -456,11 +456,11 @@ class MakeTextIO:
         """
         if isinstance(self.obj, str):
             #: :obj:`StringIO`: the I/O object to manage in the context
-            #:     if only :attr:`self.obj <MakeTextIO.obj>` is :obj:`str`
+            #:     only if :attr:`self.obj <MakeTextIO.obj>` is :obj:`str`
             self.sio = io.StringIO(self.obj, newline='')  # turn off newline translation
             return self.sio
         #: int: the original offset of :attr:`self.obj <MakeTextIO.obj>`,
-        #:     if only :attr:`self.obj <MakeTextIO.obj>` is :obj:`TextIO`
+        #:     only if :attr:`self.obj <MakeTextIO.obj>` is :obj:`TextIO`
         self.pos = self.obj.tell()
         #: :obj:`Union[str, TextIO]`: the object to manage in the context
         self.obj.seek(0)
@@ -489,10 +489,10 @@ def detect_linesep(code):
         code (:obj:`Union[str, bytes, TextIO, parso.tree.NodeOrLeaf]`): the code to detect linesep
 
     Returns:
-        :obj:`Literal['\\\\n', '\\\\r\\n', '\\\\r']`: the detected linesep (one of ``'\\n'``, ``'\\r\\n'`` and ``'\\r'``)
+        :obj:`Literal['\\\\n', '\\\\r\\\\n', '\\\\r']`: the detected linesep (one of ``'\\n'``, ``'\\r\\n'`` and ``'\\r'``)
 
     Notes:
-        In case of mix linesep, try voting by the occurrance of each linesep value.
+        In case of mixed linesep, try voting by the number of occurrences of each linesep value.
 
         When there is a tie, prefer ``LF`` to ``CRLF``, prefer ``CRLF`` to ``CR``.
 
@@ -531,7 +531,7 @@ def detect_indentation(code):
         str: the detected indentation sequence
 
     Notes:
-        In case of mix indentation, try voting by the occurrance of each indentation value (*spaces* and *tabs*).
+        In case of mixed indentation, try voting by the number of occurrences of each indentation value (*spaces* and *tabs*).
 
         When there is a tie between *spaces* and *tabs*, prefer **4 spaces** for `PEP 8`_.
 
