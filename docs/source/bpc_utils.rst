@@ -9,17 +9,6 @@ Module contents
    :undoc-members:
    :show-inheritance:
 
-.. data:: mp
-   :type: Optional[module]
-   :value: <module 'multiprocessing'>
-
-   An alias of the Python builtin ``multiprocessing`` module if available.
-
-.. data:: CPU_CNT
-   :type: int
-
-   Number of CPUs for multiprocessing support.
-
 Internal utilities
 ------------------
 
@@ -43,7 +32,7 @@ Internal utilities
       :type: int
 
       The original offset of :attr:`self.obj <MakeTextIO.obj>`,
-      if only :attr:`self.obj <MakeTextIO.obj>` is :obj:`TextIO`.
+      if only :attr:`self.obj <MakeTextIO.obj>` is a seekable :obj:`TextIO`.
 
 .. autofunction:: bpc_utils.expand_glob_iter
 

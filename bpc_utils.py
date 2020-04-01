@@ -23,7 +23,7 @@ is_windows = platform.system() == 'Windows'
 
 # gzip support detection
 try:
-    import zlib  # pylint: disable=unused-import
+    import zlib  # pylint: disable=unused-import # noqa: F401
     import gzip
     gzip.GzipFile  # pylint: disable=pointless-statement
 except (ImportError, AttributeError):  # pragma: no cover
@@ -37,8 +37,8 @@ try:        # try first
 except ImportError:  # pragma: no cover
     multiprocessing = None
 else:       # CPU number if multiprocessing supported
-    if os.name == 'posix' and 'SC_NPROCESSORS_CONF' in os.sysconf_names:  # pragma: no cover
-        CPU_CNT = os.sysconf('SC_NPROCESSORS_CONF')
+    if os.name == 'posix' and 'SC_NPROCESSORS_CONF' in os.sysconf_names:  # pylint: disable=no-member # pragma: no cover
+        CPU_CNT = os.sysconf('SC_NPROCESSORS_CONF')  # pylint: disable=no-member
     elif 'sched_getaffinity' in os.__all__:  # pragma: no cover
         CPU_CNT = len(os.sched_getaffinity(0))  # pylint: disable=no-member
     else:  # pragma: no cover
@@ -55,7 +55,7 @@ for file in glob.iglob(os.path.join(parso.__path__[0], 'python', 'grammar*.txt')
     PARSO_GRAMMAR_VERSIONS.append((int(version[0]), int(version[1:])))
 PARSO_GRAMMAR_VERSIONS = sorted(PARSO_GRAMMAR_VERSIONS)
 
-del file, version
+del file, version  # pylint: disable=undefined-loop-variable
 
 
 def get_parso_grammar_versions(minimum=None):
@@ -101,7 +101,7 @@ def first_truthy(*args):
         raise TypeError('no arguments provided')
     if len(args) == 1:
         args = args[0]
-    return next(filter(bool, args), None)
+    return next(filter(bool, args), None)  # pylint: disable=filter-builtin-not-iterating
 
 
 def first_non_none(*args):
@@ -124,7 +124,7 @@ def first_non_none(*args):
         raise TypeError('no arguments provided')
     if len(args) == 1:
         args = args[0]
-    return next(filter(lambda x: x is not None, args), None)
+    return next(filter(lambda x: x is not None, args), None)  # pylint: disable=filter-builtin-not-iterating
 
 
 #: :obj:`Dict[str, bool]`: A mapping of string representation to boolean states.
@@ -324,7 +324,7 @@ def detect_files(files):
         files = itertools.chain.from_iterable(map(expand_glob_iter, files))
 
     # find top-level files and directories
-    for file in files:
+    for file in files:  # pylint: disable=redefined-outer-name
         file = os.path.realpath(file)
         if os.path.isfile(file):  # user specified files should be added even without .py extension
             file_list.append(file)
@@ -419,7 +419,7 @@ def detect_encoding(code):
     """
     if not isinstance(code, bytes):
         raise TypeError("'code' should be bytes")
-    with io.BytesIO(code) as file:
+    with io.BytesIO(code) as file:  # pylint: disable=redefined-outer-name
         return tokenize.detect_encoding(file.readline)[0]
 
 
@@ -450,20 +450,24 @@ class MakeTextIO:
         * If :attr:`self.obj <MakeTextIO.obj>` is :obj:`str`, a
           :obj:`StringIO` will be created and returned.
 
-        * If :attr:`self.obj <MakeTextIO.obj>` is a *file* object,
+        * If :attr:`self.obj <MakeTextIO.obj>` is a seekable *file* object,
           it will be seeked to the beginning and returned.
+
+        * If :attr:`self.obj <MakeTextIO.obj>` is an unseekable *file* object,
+          it will be returned directly.
 
         """
         if isinstance(self.obj, str):
             #: :obj:`StringIO`: the I/O object to manage in the context
             #:     only if :attr:`self.obj <MakeTextIO.obj>` is :obj:`str`
-            self.sio = io.StringIO(self.obj, newline='')  # turn off newline translation
+            self.sio = io.StringIO(self.obj, newline='')  # turn off newline translation # pylint: disable=attribute-defined-outside-init
             return self.sio
-        #: int: the original offset of :attr:`self.obj <MakeTextIO.obj>`,
-        #:     only if :attr:`self.obj <MakeTextIO.obj>` is :obj:`TextIO`
-        self.pos = self.obj.tell()
-        #: :obj:`Union[str, TextIO]`: the object to manage in the context
-        self.obj.seek(0)
+        if self.obj.seekable():
+            #: int: the original offset of :attr:`self.obj <MakeTextIO.obj>`,
+            #:     only if :attr:`self.obj <MakeTextIO.obj>` is a seekable :obj:`TextIO`
+            self.pos = self.obj.tell()  # pylint: disable=attribute-defined-outside-init
+            #: :obj:`Union[str, TextIO]`: the object to manage in the context
+            self.obj.seek(0)
         return self.obj
 
     def __exit__(self, exc_type, exc_value, traceback):
@@ -472,13 +476,13 @@ class MakeTextIO:
         * If :attr:`self.obj <MakeTextIO.obj>` is :obj:`str`, the
           :obj:`StringIO` (:attr:`self.sio <MakeTextIO.sio>`) will be closed.
 
-        * If :attr:`self.obj <MakeTextIO.obj>` is a *file* object,
+        * If :attr:`self.obj <MakeTextIO.obj>` is a seekable *file* object,
           its stream position (:attr:`self.pos <MakeTextIO.pos>`) will be recovered.
 
         """
         if isinstance(self.obj, str):
             self.sio.close()
-        else:
+        elif self.obj.seekable():
             self.obj.seek(self.pos)
 
 
@@ -508,7 +512,7 @@ def detect_linesep(code):
         'LF': 0,
     }
 
-    with MakeTextIO(code) as file:
+    with MakeTextIO(code) as file:  # pylint: disable=redefined-outer-name
         for line in file:
             if line.endswith('\r'):
                 pool['CR'] += 1
@@ -550,7 +554,7 @@ def detect_indentation(code):
     }
     min_spaces = None
 
-    with MakeTextIO(code) as file:
+    with MakeTextIO(code) as file:  # pylint: disable=redefined-outer-name
         for token_info in tokenize.generate_tokens(file.readline):
             if token_info.type == token.INDENT:
                 if '\t' in token_info.string and ' ' in token_info.string:
@@ -571,7 +575,7 @@ def detect_indentation(code):
     return ' ' * 4  # same number of spaces and tabs, prefer 4 spaces for PEP 8
 
 
-def parso_parse(code, filename=None, *, version=None):
+def parso_parse(code, filename=None, *, version=None):  # pylint: disable=redefined-outer-name
     """Parse Python source code with parso.
 
     Args:
@@ -597,7 +601,27 @@ def parso_parse(code, filename=None, *, version=None):
     return module
 
 
-__all__ = ['mp', 'CPU_CNT', 'get_parso_grammar_versions', 'first_truthy', 'first_non_none',
+def map_tasks(func, iterable, chunksize=None):
+    # TODO: update this docstring?
+    """Execute tasks in parallel if `multiprocessing` is available, otherwise execute them sequentially.
+
+    Args:
+        func (Callable[[Any], Any]): the task function to execute
+        iterable (Iterable): the items to process
+        chunksize (Optional[int]): chunk size for multiprocessing
+
+    Returns:
+        Iterable: the return values of the task function applied on the input items
+
+    """
+    if mp is None or CPU_CNT <= 1:
+        return [func(item) for item in iterable]
+
+    with mp.Pool(processes=CPU_CNT) as pool:
+        return pool.map(func, iterable, chunksize)
+
+
+__all__ = ['get_parso_grammar_versions', 'first_truthy', 'first_non_none',
            'parse_boolean_state', 'parse_linesep', 'parse_indentation', 'BPCSyntaxError', 'UUID4Generator',
            'detect_files', 'archive_files', 'recover_files', 'detect_encoding', 'detect_linesep',
-           'detect_indentation', 'parso_parse']
+           'detect_indentation', 'parso_parse', 'map_tasks']

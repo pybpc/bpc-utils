@@ -2,19 +2,19 @@ import inspect
 import io
 import os
 import shutil
+import socket
 import sys
 import tarfile
 import tempfile
-import types
 import unittest
 
 import parso
-from bpc_utils import (
-    CPU_CNT, LOOKUP_TABLE, PARSO_GRAMMAR_VERSIONS, BPCSyntaxError, MakeTextIO, UUID4Generator,
-    archive_files, detect_encoding, detect_files, detect_indentation, detect_linesep,
-    expand_glob_iter, first_non_none, first_truthy, get_parso_grammar_versions, is_python_filename,
-    is_windows, mp, parse_boolean_state, parse_indentation, parse_linesep, parso_parse,
-    recover_files)
+from bpc_utils import (LOOKUP_TABLE, PARSO_GRAMMAR_VERSIONS, BPCSyntaxError, MakeTextIO,
+                       UUID4Generator, archive_files, detect_encoding, detect_files,
+                       detect_indentation, detect_linesep, expand_glob_iter, first_non_none,
+                       first_truthy, get_parso_grammar_versions, is_python_filename, is_windows,
+                       map_tasks, parse_boolean_state, parse_indentation, parse_linesep,
+                       parso_parse, recover_files)
 
 
 def read_text_file(filename, encoding='utf-8'):
@@ -32,6 +32,10 @@ def write_text_file(filename, content, encoding='utf-8'):
 def native_path(path):
     """Convert a file system path to the native form."""
     return path.replace('/', '\\') if is_windows else path
+
+
+def square(x):
+    return x ** 2
 
 
 class SuccessCase:
@@ -117,8 +121,6 @@ class TestBPCUtils(unittest.TestCase):
                     self.target_func(*test_case.args, **test_case.kwargs)
 
     def test_exports(self):
-        self.assertIsInstance(mp, (types.ModuleType, type(None)))
-        self.assertIsInstance(CPU_CNT, int)
         self.assertTrue(issubclass(BPCSyntaxError, SyntaxError))
 
     def test_parso_grammar_versions(self):
@@ -329,17 +331,31 @@ class TestBPCUtils(unittest.TestCase):
         self.generic_functional_test()
 
     def test_MakeTextIO(self):
+        # str
         with MakeTextIO('hello') as file:
             self.assertIsInstance(file, io.StringIO)
             self.assertEqual(file.read(), 'hello')
         self.assertTrue(file.closed)
+
+        # seekable file
         with io.StringIO('deadbeef') as sio:
+            self.assertTrue(sio.seekable())
             sio.seek(2)
             self.assertEqual(sio.read(2), 'ad')
             with MakeTextIO(sio) as file:
                 self.assertEqual(file.read(), 'deadbeef')
             self.assertFalse(sio.closed)
             self.assertEqual(sio.tell(), 4)
+
+        # unseekable file
+        with socket.socket() as s:
+            s.connect(('httpbin.org', 80))
+            s.send(b'GET /anything HTTP/1.1\r\nHost: httpbin.org\r\nConnection: close\r\n\r\n')
+            with s.makefile() as file1:
+                self.assertFalse(file1.seekable())
+                with MakeTextIO(file1) as file2:
+                    data = file2.read()
+                    self.assertTrue(data.startswith('HTTP/1.1 200 OK'))
 
     def test_detect_linesep(self):
         test_cases = [
@@ -359,6 +375,12 @@ class TestBPCUtils(unittest.TestCase):
 
         with io.StringIO(test_cases[-1][0], newline='') as file:
             self.assertEqual(detect_linesep(file), test_cases[-1][1])
+
+        with socket.socket() as s:
+            s.connect(('httpbin.org', 80))
+            s.send(b'HEAD / HTTP/1.1\r\nHost: httpbin.org\r\nConnection: close\r\n\r\n')
+            with s.makefile(newline='') as file:
+                self.assertEqual(detect_linesep(file), '\r\n')
 
     def test_detect_indentation(self):
         test_cases = [
@@ -400,6 +422,30 @@ class TestBPCUtils(unittest.TestCase):
         ]
         self.target_func = parso_parse
         self.generic_functional_test()
+
+    def test_map_tasks(self):
+        self.success_cases = [
+            SuccessCase(args=(square, [1, 2, 3]), result=[1, 4, 9]),
+            SuccessCase(args=(square, range(1, 4)), result=[1, 4, 9]),  # pylint: disable=range-builtin-not-iterating
+            SuccessCase(args=(square, [1, 2, 3]), kwargs={'chunksize': 2}, result=[1, 4, 9]),
+            SuccessCase(args=(square, range(1, 4)), kwargs={'chunksize': 2}, result=[1, 4, 9]),  # pylint: disable=range-builtin-not-iterating
+        ]
+        self.target_func = map_tasks
+
+        # test under normal condition
+        self.generic_functional_test()
+
+        # test when multiprocessing is not available
+        mp = sys.modules['bpc_utils'].mp
+        sys.modules['bpc_utils'].mp = None
+        self.generic_functional_test()
+        sys.modules['bpc_utils'].mp = mp
+
+        # test when there is only one CPU
+        CPU_CNT = sys.modules['bpc_utils'].CPU_CNT
+        sys.modules['bpc_utils'].CPU_CNT = 1
+        self.generic_functional_test()
+        sys.modules['bpc_utils'].CPU_CNT = CPU_CNT
 
 
 if __name__ == '__main__':
