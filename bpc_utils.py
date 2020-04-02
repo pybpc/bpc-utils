@@ -197,7 +197,7 @@ def parse_linesep(s):
         s (Optional[str]): string representation of linesep
 
     Returns:
-        Optional[Literal['\n', '\r\n', '\r']]: the parsed linesep result,
+        Optional[Literal['\\n', '\\r\\n', '\\r']]: the parsed linesep result,
         return ``None`` if input is ``None`` or empty string
 
     Raises:
@@ -494,7 +494,7 @@ def detect_linesep(code):
         code (Union[str, bytes, TextIO, parso.tree.NodeOrLeaf]): the code to detect linesep
 
     Returns:
-        Literal['\n', '\r\n', '\r']: the detected linesep (one of ``'\n'``, ``'\r\n'`` and ``'\r'``)
+        Literal['\\n', '\\r\\n', '\\r']: the detected linesep (one of ``'\n'``, ``'\r\n'`` and ``'\r'``)
 
     Notes:
         In case of mixed linesep, try voting by the number of occurrences of each linesep value.
@@ -537,7 +537,7 @@ def detect_indentation(code):
 
     Notes:
         In case of mixed indentation, try voting by the number of occurrences of
-            each indentation value (*spaces* and *tabs*).
+        each indentation value (*spaces* and *tabs*).
 
         When there is a tie between *spaces* and *tabs*, prefer **4 spaces** for `PEP 8`_.
 
