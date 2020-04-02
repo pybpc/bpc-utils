@@ -62,10 +62,10 @@ def get_parso_grammar_versions(minimum=None):
     """Get Python versions that parso supports to parse grammar.
 
     Args:
-        ``minimum`` (str): filter result by this minimum version
+        minimum (str): filter result by this minimum version
 
     Returns:
-        :obj:`List[str]`: a list of Python versions that parso supports to parse grammar
+        List[str]: a list of Python versions that parso supports to parse grammar
 
     Raises:
         ValueError: if ``minimum`` is invalid
@@ -91,7 +91,7 @@ def first_truthy(*args):
             * If two or more positional arguments are provided, then the value list is the positional argument list.
 
     Returns:
-        :obj:`Any`: the first *truthy* value, if no *truthy* values found or sequence is empty, return ``None``
+        Any: the first *truthy* value, if no *truthy* values found or sequence is empty, return ``None``
 
     Raises:
         TypeError: if no arguments provided
@@ -114,7 +114,7 @@ def first_non_none(*args):
             * If two or more positional arguments are provided, then the value list is the positional argument list.
 
     Returns:
-        :obj:`Any`: the first non-``None`` value, if all values are ``None`` or sequence is empty, return ``None``
+        Any: the first non-``None`` value, if all values are ``None`` or sequence is empty, return ``None``
 
     Raises:
         TypeError: if no arguments provided
@@ -127,7 +127,7 @@ def first_non_none(*args):
     return next(filter(lambda x: x is not None, args), None)  # pylint: disable=filter-builtin-not-iterating
 
 
-#: :obj:`Dict[str, bool]`: A mapping of string representation to boolean states.
+#: Dict[str, bool]: A mapping from string representation to boolean states.
 #: The values are used for :func:`parse_boolean_state`.
 _boolean_state_lookup = {
     '1': True,
@@ -152,10 +152,10 @@ def parse_boolean_state(s):
     Value matching is case **insensitive**.
 
     Args:
-        s (:obj:`Optional[str]`): string representation of a boolean state
+        s (Optional[str]): string representation of a boolean state
 
     Returns:
-        :obj:`Optional[bool]`: the parsed boolean result, return ``None`` if input is ``None``
+        Optional[bool]: the parsed boolean result, return ``None`` if input is ``None``
 
     Raises:
         ValueError: if ``s`` is an invalid boolean state value
@@ -172,7 +172,7 @@ def parse_boolean_state(s):
         raise ValueError('invalid boolean state value {!r}'.format(s)) from None
 
 
-#: :obj:`Dict[str, str]`: A mapping of string representation to linesep.
+#: Dict[str, str]: A mapping from string representation to linesep.
 #: The values are used for :func:`parse_linesep`.
 _linesep_lookup = {
     '\n': '\n',
@@ -185,20 +185,20 @@ _linesep_lookup = {
 
 
 def parse_linesep(s):
-    """Parse linesep from a string representation.
+    r"""Parse linesep from a string representation.
 
-    * These values are regarded as ``'\\n'``: ``'\\n'``, ``'lf'``
-    * These values are regarded as ``'\\r\\n'``: ``'\\r\\n'``, ``'crlf'``
-    * These values are regarded as ``'\\r'``: ``'\\r'``, ``'cr'``
+    * These values are regarded as ``'\n'``: ``'\n'``, ``'lf'``
+    * These values are regarded as ``'\r\n'``: ``'\r\n'``, ``'crlf'``
+    * These values are regarded as ``'\r'``: ``'\r'``, ``'cr'``
 
     Value matching is **case insensitive**.
 
     Args:
-        s (:obj:`Optional[str]`): string representation of linesep
+        s (Optional[str]): string representation of linesep
 
     Returns:
-        :obj:`Optional[Literal['\\\\n', '\\\\r\\\\n', '\\\\r']]`: the parsed linesep result,
-            return ``None`` if input is ``None`` or empty string
+        Optional[Literal['\n', '\r\n', '\r']]: the parsed linesep result,
+        return ``None`` if input is ``None`` or empty string
 
     Raises:
         ValueError: if ``s`` is an invalid linesep value
@@ -224,10 +224,10 @@ def parse_indentation(s):
     Value matching is **case insensitive**.
 
     Args:
-        s (:obj:`Optional[str]`):  string representation of indentation
+        s (Optional[str]): string representation of indentation
 
     Returns:
-        :obj:`Optional[str]`: the parsed indentation result, return ``None`` if input is ``None`` or empty string
+        Optional[str]: the parsed indentation result, return ``None`` if input is ``None`` or empty string
 
     Raises:
         ValueError: if ``s`` is an invalid indentation value
@@ -305,11 +305,11 @@ def detect_files(files):
     resolve symbolic links and remove duplicates.
 
     Args:
-        files (:obj:`List[str]`): a list of files and directories to process
+        files (List[str]): a list of files and directories to process
             (usually provided by users on command-line)
 
     Returns:
-        :obj:`List[str]`: a list of Python files to be processed
+        List[str]: a list of Python files to be processed
 
     See Also:
         See :func:`expand_glob_iter` for more information.
@@ -357,8 +357,8 @@ def archive_files(files, archive_dir):
     """Archive the list of files into a *tar* file.
 
     Args:
-        files (:obj:`List[str]`): a list of files to be archived (should be *absolute path*)
-        archive_dir (:obj:`os.PathLike`): the directory to save the archive
+        files (List[str]): a list of files to be archived (should be *absolute path*)
+        archive_dir (os.PathLike): the directory to save the archive
 
     Returns:
         str: path to the generated *tar* archive
@@ -376,7 +376,8 @@ def archive_files(files, archive_dir):
     with tarfile.open(archive_file, archive_mode) as tarf:
         for arcname, realname in lookup_table.items():
             tarf.add(realname, arcname)
-        with tempfile.NamedTemporaryFile('w', encoding='utf-8', prefix='bpc-archive-lookup-', suffix='.json', delete=False) as tmpf:
+        with tempfile.NamedTemporaryFile('w', encoding='utf-8', prefix='bpc-archive-lookup-',
+                                         suffix='.json', delete=False) as tmpf:
             json.dump(lookup_table, tmpf, indent=4)
         tarf.add(tmpf.name, LOOKUP_TABLE)
         with contextlib.suppress(OSError):
@@ -388,7 +389,7 @@ def recover_files(archive_file):
     """Recover files from a *tar* archive.
 
     Args:
-        archive_file (:obj:`os.PathLike`): path to the *tar* archive file
+        archive_file (os.PathLike): path to the *tar* archive file
 
     """
     with tarfile.open(archive_file, 'r') as tarf:
@@ -411,7 +412,7 @@ def detect_encoding(code):
         str: the detected encoding, or the default encoding (``utf-8``)
 
     Raises:
-        TypeError: if ``code`` is not a :obj:`bytes` string
+        TypeError: if ``code`` is not a ``bytes`` string
 
     .. _PEP 263:
         https://www.python.org/dev/peps/pep-0263/
@@ -427,10 +428,10 @@ class MakeTextIO:
     """Context wrapper class to handle ``str`` and *file* objects together.
 
     Attributes:
-        obj (:obj:`Union[str, TextIO]`): the object to manage in the context
-        sio (:obj:`Optional[StringIO]`): the I/O object to manage in the context
-            only if :attr:`self.obj <MakeTextIO.obj>` is :obj:`str`
-        pos (:obj:`Optional[int]`): the original offset of :attr:`self.obj <MakeTextIO.obj>`,
+        obj (Union[str, TextIO]): the object to manage in the context
+        sio (Optional[StringIO]): the I/O object to manage in the context
+            only if :attr:`self.obj <MakeTextIO.obj>` is ``str``
+        pos (Optional[int]): the original offset of :attr:`self.obj <MakeTextIO.obj>`,
             only if :attr:`self.obj <MakeTextIO.obj>` is a *file* object
 
     """
@@ -439,7 +440,7 @@ class MakeTextIO:
         """Initialize context.
 
         Args:
-            obj (:obj:`Union[str, TextIO]`): the object to manage in the context
+            obj (Union[str, TextIO]): the object to manage in the context
 
         """
         self.obj = obj
@@ -447,8 +448,8 @@ class MakeTextIO:
     def __enter__(self):
         """Enter context.
 
-        * If :attr:`self.obj <MakeTextIO.obj>` is :obj:`str`, a
-          :obj:`StringIO` will be created and returned.
+        * If :attr:`self.obj <MakeTextIO.obj>` is ``str``, a
+          ``StringIO`` will be created and returned.
 
         * If :attr:`self.obj <MakeTextIO.obj>` is a seekable *file* object,
           it will be seeked to the beginning and returned.
@@ -458,23 +459,23 @@ class MakeTextIO:
 
         """
         if isinstance(self.obj, str):
-            #: :obj:`StringIO`: the I/O object to manage in the context
-            #:     only if :attr:`self.obj <MakeTextIO.obj>` is :obj:`str`
-            self.sio = io.StringIO(self.obj, newline='')  # turn off newline translation # pylint: disable=attribute-defined-outside-init
+            #: StringIO: the I/O object to manage in the context
+            #:     only if :attr:`self.obj <MakeTextIO.obj>` is ``str``
+            self.sio = io.StringIO(self.obj, newline='')  # turn off newline translation # pylint: disable=W0201
             return self.sio
         if self.obj.seekable():
             #: int: the original offset of :attr:`self.obj <MakeTextIO.obj>`,
-            #:     only if :attr:`self.obj <MakeTextIO.obj>` is a seekable :obj:`TextIO`
-            self.pos = self.obj.tell()  # pylint: disable=attribute-defined-outside-init
-            #: :obj:`Union[str, TextIO]`: the object to manage in the context
+            #:     only if :attr:`self.obj <MakeTextIO.obj>` is a seekable ``TextIO``
+            self.pos = self.obj.tell()  # pylint: disable=W0201
+            #: Union[str, TextIO]: the object to manage in the context
             self.obj.seek(0)
         return self.obj
 
     def __exit__(self, exc_type, exc_value, traceback):
         """Exit context.
 
-        * If :attr:`self.obj <MakeTextIO.obj>` is :obj:`str`, the
-          :obj:`StringIO` (:attr:`self.sio <MakeTextIO.sio>`) will be closed.
+        * If :attr:`self.obj <MakeTextIO.obj>` is ``str``, the
+          ``StringIO`` (:attr:`self.sio <MakeTextIO.sio>`) will be closed.
 
         * If :attr:`self.obj <MakeTextIO.obj>` is a seekable *file* object,
           its stream position (:attr:`self.pos <MakeTextIO.pos>`) will be recovered.
@@ -487,13 +488,13 @@ class MakeTextIO:
 
 
 def detect_linesep(code):
-    """Detect linesep of Python source code.
+    r"""Detect linesep of Python source code.
 
     Args:
-        code (:obj:`Union[str, bytes, TextIO, parso.tree.NodeOrLeaf]`): the code to detect linesep
+        code (Union[str, bytes, TextIO, parso.tree.NodeOrLeaf]): the code to detect linesep
 
     Returns:
-        :obj:`Literal['\\\\n', '\\\\r\\\\n', '\\\\r']`: the detected linesep (one of ``'\\n'``, ``'\\r\\n'`` and ``'\\r'``)
+        Literal['\n', '\r\n', '\r']: the detected linesep (one of ``'\n'``, ``'\r\n'`` and ``'\r'``)
 
     Notes:
         In case of mixed linesep, try voting by the number of occurrences of each linesep value.
@@ -529,13 +530,14 @@ def detect_indentation(code):
     """Detect indentation of Python source code.
 
     Args:
-        code (:obj:`Union[str, bytes, TextIO, parso.tree.NodeOrLeaf]`): the code to detect indentation
+        code (Union[str, bytes, TextIO, parso.tree.NodeOrLeaf]): the code to detect indentation
 
     Returns:
         str: the detected indentation sequence
 
     Notes:
-        In case of mixed indentation, try voting by the number of occurrences of each indentation value (*spaces* and *tabs*).
+        In case of mixed indentation, try voting by the number of occurrences of
+            each indentation value (*spaces* and *tabs*).
 
         When there is a tie between *spaces* and *tabs*, prefer **4 spaces** for `PEP 8`_.
 
@@ -579,12 +581,12 @@ def parso_parse(code, filename=None, *, version=None):  # pylint: disable=redefi
     """Parse Python source code with parso.
 
     Args:
-        code (:obj:`Union[str, bytes]`): the code to be parsed
+        code (Union[str, bytes]): the code to be parsed
         filename (str): an optional source file name to provide a context in case of error
         version (str): parse the code as this version (uses the latest version by default)
 
     Returns:
-        :obj:`parso.python.tree.Module`: parso AST
+        parso.python.tree.Module: parso AST
 
     Raises:
         :exc:`BPCSyntaxError`: when source code contains syntax errors
@@ -596,14 +598,14 @@ def parso_parse(code, filename=None, *, version=None):  # pylint: disable=redefi
     module = grammar.parse(code, error_recovery=True)
     errors = grammar.iter_errors(module)
     if errors:
-        error_messages = '\n'.join('[L%dC%d] %s' % (error.start_pos[0], error.start_pos[1], error.message) for error in errors)
-        raise BPCSyntaxError('source file %r contains the following syntax errors:\n' % first_non_none(filename, '<unknown>') + error_messages)
+        error_messages = '\n'.join('[L%dC%d] %s' % (error.start_pos + (error.message,)) for error in errors)
+        raise BPCSyntaxError('source file %r contains the following syntax errors:\n' %
+                             first_non_none(filename, '<unknown>') + error_messages)
     return module
 
 
 def map_tasks(func, iterable, chunksize=None):
-    # TODO: update this docstring?
-    """Execute tasks in parallel if `multiprocessing` is available, otherwise execute them sequentially.
+    """Execute tasks in parallel if ``multiprocessing`` is available, otherwise execute them sequentially.
 
     Args:
         func (Callable[[Any], Any]): the task function to execute
