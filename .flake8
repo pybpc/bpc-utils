@@ -1,0 +1,4 @@
+[flake8]
+
+per-file-ignores =
+    test_bpc_utils.py:E501

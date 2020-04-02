@@ -18,11 +18,11 @@
 # -- Project information -----------------------------------------------------
 
 project = 'bpc-utils'
-copyright = '2020, Saiyang Gou, Jarry Shaw'
+copyright = '2020, Saiyang Gou, Jarry Shaw'  # pylint: disable=redefined-builtin
 author = 'Saiyang Gou, Jarry Shaw'
 
 # The full version, including alpha/beta/rc tags
-release = '0.4.0'
+release = '0.4.1'
 
 
 # -- General configuration ---------------------------------------------------

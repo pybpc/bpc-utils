@@ -1,3 +1,5 @@
+# pylint: disable=line-too-long
+
 import inspect
 import io
 import os
