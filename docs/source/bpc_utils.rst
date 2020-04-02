@@ -12,6 +12,17 @@ Module contents
 Internal utilities
 ------------------
 
+.. data:: mp
+   :type: Optional[module]
+   :value: <module 'multiprocessing'>
+
+   An alias of the Python builtin ``multiprocessing`` module if available.
+
+.. data:: CPU_CNT
+   :type: int
+
+   Number of CPUs for multiprocessing support.
+
 .. autoclass:: bpc_utils.MakeTextIO
    :members:
    :undoc-members:
