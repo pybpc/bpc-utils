@@ -10,7 +10,7 @@ Module contents
    :show-inheritance:
    :exclude-members: TaskLock
 
-.. autofunction:: bpc_utils.TaskLock
+.. function:: bpc_utils.TaskLock
 
 Internal utilities
 ------------------
