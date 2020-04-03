@@ -11,12 +11,12 @@ import tempfile
 import unittest
 
 import parso
-from bpc_utils import (LOOKUP_TABLE, PARSO_GRAMMAR_VERSIONS, BPCSyntaxError, MakeTextIO,
-                       UUID4Generator, archive_files, detect_encoding, detect_files,
-                       detect_indentation, detect_linesep, expand_glob_iter, first_non_none,
-                       first_truthy, get_parso_grammar_versions, is_python_filename, is_windows,
-                       map_tasks, parse_boolean_state, parse_indentation, parse_linesep,
-                       parso_parse, recover_files)
+from bpc_utils import (
+    LOOKUP_TABLE, PARSO_GRAMMAR_VERSIONS, BPCSyntaxError, MakeTextIO, TaskLock, UUID4Generator,
+    _mp_map_wrapper, archive_files, detect_encoding, detect_files, detect_indentation,
+    detect_linesep, expand_glob_iter, first_non_none, first_truthy, get_parso_grammar_versions,
+    is_python_filename, is_windows, map_tasks, parse_boolean_state, parse_indentation,
+    parse_linesep, parso_parse, recover_files)
 
 
 def read_text_file(filename, encoding='utf-8'):
@@ -124,6 +124,8 @@ class TestBPCUtils(unittest.TestCase):
 
     def test_exports(self):
         self.assertTrue(issubclass(BPCSyntaxError, SyntaxError))
+        with TaskLock():
+            pass
 
     def test_parso_grammar_versions(self):
         self.assertIsInstance(PARSO_GRAMMAR_VERSIONS, list)
@@ -425,29 +427,42 @@ class TestBPCUtils(unittest.TestCase):
         self.target_func = parso_parse
         self.generic_functional_test()
 
-    def test_map_tasks(self):
+    def test__mp_map_wrapper(self):
         self.success_cases = [
-            SuccessCase(args=(square, [1, 2, 3]), result=[1, 4, 9]),
-            SuccessCase(args=(square, range(1, 4)), result=[1, 4, 9]),  # pylint: disable=range-builtin-not-iterating
-            SuccessCase(args=(square, [1, 2, 3]), kwargs={'chunksize': 2}, result=[1, 4, 9]),
-            SuccessCase(args=(square, range(1, 4)), kwargs={'chunksize': 2}, result=[1, 4, 9]),  # pylint: disable=range-builtin-not-iterating
+            SuccessCase(args=((square, (6,), {}),), result=36),
+            SuccessCase(args=((int, ('0x10',), {'base': 16}),), result=16),
         ]
+        self.target_func = _mp_map_wrapper
+        self.generic_functional_test()
+
+    def test_map_tasks(self):
+        test_cases = [
+            (square, [1, 2, 3], None, None, [1, 4, 9]),
+            (square, range(1, 4), None, None, [1, 4, 9]),  # pylint: disable=range-builtin-not-iterating
+            (divmod, [4, 7, 9], (3,), None, [(1, 1), (2, 1), (3, 0)]),
+            (int, ['0x%c' % c for c in 'abc'], None, {'base': 0}, [10, 11, 12]),
+            (max, [4, -7, 9], (6,), {'key': abs}, [6, -7, 9]),
+        ]
+        self.success_cases = []
+        for tc in test_cases:
+            for processes in (None, 1, 2):
+                for chunksize in (None, 2):
+                    self.success_cases.append(SuccessCase(args=(tc[0], tc[1]), kwargs={
+                        'posargs': tc[2],
+                        'kwargs': tc[3],
+                        'processes': processes,
+                        'chunksize': chunksize,
+                    }, result=tc[4]))
         self.target_func = map_tasks
 
         # test under normal condition
         self.generic_functional_test()
 
-        # test when multiprocessing is not available
-        mp = sys.modules['bpc_utils'].mp
-        sys.modules['bpc_utils'].mp = None
+        # test when parallel execution is not available
+        parallel_available = sys.modules['bpc_utils'].parallel_available
+        sys.modules['bpc_utils'].parallel_available = False
         self.generic_functional_test()
-        sys.modules['bpc_utils'].mp = mp
-
-        # test when there is only one CPU
-        CPU_CNT = sys.modules['bpc_utils'].CPU_CNT
-        sys.modules['bpc_utils'].CPU_CNT = 1
-        self.generic_functional_test()
-        sys.modules['bpc_utils'].CPU_CNT = CPU_CNT
+        sys.modules['bpc_utils'].parallel_available = parallel_available
 
 
 if __name__ == '__main__':

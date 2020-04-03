@@ -47,6 +47,15 @@ finally:    # alias and aftermath
     mp = multiprocessing
     del multiprocessing
 
+parallel_available = mp is not None and CPU_CNT > 1
+
+try:
+    from contextlib import nullcontext
+except ImportError:  # backport contextlib.nullcontext for Python < 3.7 # pragma: no cover
+    @contextlib.contextmanager
+    def nullcontext(enter_result=None):
+        yield enter_result
+
 LOOKUP_TABLE = '_lookup_table.json'
 
 PARSO_GRAMMAR_VERSIONS = []
@@ -604,26 +613,52 @@ def parso_parse(code, filename=None, *, version=None):  # pylint: disable=redefi
     return module
 
 
-def map_tasks(func, iterable, chunksize=None):
+def _mp_map_wrapper(args):
+    """Map wrapper function for ``multiprocessing``.
+
+    Args:
+        args (Tuple[Callable, Iterable[Any], Mapping[str, Any]]): the function to execute,
+            the positional arguments and the keyword arguments packed into a tuple
+
+    Returns:
+        Any: the function execution result
+
+    """
+    func, posargs, kwargs = args
+    return func(*posargs, **kwargs)
+
+
+def map_tasks(func, iterable, posargs=None, kwargs=None, *, processes=None, chunksize=None):
     """Execute tasks in parallel if ``multiprocessing`` is available, otherwise execute them sequentially.
 
     Args:
-        func (Callable[[Any], Any]): the task function to execute
-        iterable (Iterable): the items to process
+        func (Callable): the task function to execute
+        iterable (Iterable[Any]): the items to process
+        posargs (Optional[Iterable[Any]]): additional positional arguments to pass to ``func``
+        kwargs (Optional[Mapping[str, Any]]): keyword arguments to pass to ``func``
+        processes (Optional[int]): the number of worker processes (default: auto determine)
         chunksize (Optional[int]): chunk size for multiprocessing
 
     Returns:
-        Iterable: the return values of the task function applied on the input items
+        List[Any]: the return values of the task function applied on the input items and additional arguments
 
     """
-    if mp is None or CPU_CNT <= 1:
-        return [func(item) for item in iterable]
+    if posargs is None:
+        posargs = ()
+    if kwargs is None:
+        kwargs = {}
 
-    with mp.Pool(processes=CPU_CNT) as pool:
-        return pool.map(func, iterable, chunksize)
+    if not parallel_available or processes == 1:  # sequential execution
+        return [func(item, *posargs, **kwargs) for item in iterable]
 
+    with mp.Pool(processes=processes or CPU_CNT) as pool:  # parallel execution
+        return pool.map(_mp_map_wrapper, [(func, (item, *posargs), kwargs) for item in iterable], chunksize)
+
+
+#: A lock for possibly concurrent tasks.
+TaskLock = mp.Lock if parallel_available else nullcontext
 
 __all__ = ['get_parso_grammar_versions', 'first_truthy', 'first_non_none',
            'parse_boolean_state', 'parse_linesep', 'parse_indentation', 'BPCSyntaxError', 'UUID4Generator',
            'detect_files', 'archive_files', 'recover_files', 'detect_encoding', 'detect_linesep',
-           'detect_indentation', 'parso_parse', 'map_tasks']
+           'detect_indentation', 'parso_parse', 'map_tasks', 'TaskLock']
