@@ -50,7 +50,7 @@ finally:    # alias and aftermath
 parallel_available = mp is not None and CPU_CNT > 1
 
 try:
-    from contextlib import nullcontext
+    from contextlib import nullcontext  # novermin
 except ImportError:  # backport contextlib.nullcontext for Python < 3.7 # pragma: no cover
     @contextlib.contextmanager
     def nullcontext(enter_result=None):
@@ -652,7 +652,7 @@ def map_tasks(func, iterable, posargs=None, kwargs=None, *, processes=None, chun
         return [func(item, *posargs, **kwargs) for item in iterable]
 
     with mp.Pool(processes=processes or CPU_CNT) as pool:  # parallel execution
-        return pool.map(_mp_map_wrapper, [(func, (item, *posargs), kwargs) for item in iterable], chunksize)
+        return pool.map(_mp_map_wrapper, [(func, (item,) + posargs, kwargs) for item in iterable], chunksize)
 
 
 #: A lock for possibly concurrent tasks.
