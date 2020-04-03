@@ -8,6 +8,9 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
+   :exclude-members: TaskLock
+
+.. autofunction:: bpc_utils.TaskLock
 
 Internal utilities
 ------------------
