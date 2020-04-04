@@ -7,8 +7,13 @@ python:
   - "3.7"
   - "3.8"
 install:
-  - pip install parso codecov coverage
+  - pip install parso
+  - pip install flake8 pylint bandit vermin coverage codecov
 script:
+  - flake8
+  - bash ./pylint.sh
+  - bandit .
+  - vermin -q -t=3.4- .
   - coverage run test_bpc_utils.py
 after_success:
   - codecov
