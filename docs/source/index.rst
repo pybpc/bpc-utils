@@ -31,7 +31,7 @@ Module contents
    :show-inheritance:
    :exclude-members: TaskLock
 
-.. function:: bpc_utils.TaskLock
+.. function:: TaskLock
 
    A lock for possibly concurrent tasks.
 
@@ -62,7 +62,7 @@ Internal utilities
       The original offset of :attr:`self.obj <MakeTextIO.obj>`,
       if only :attr:`self.obj <MakeTextIO.obj>` is ``TextIO``.
 
-.. function:: bpc_utils.expand_glob_iter(pathname)
+.. function:: expand_glob_iter(pathname)
 
    Wrapper function to perform glob expansion.
 

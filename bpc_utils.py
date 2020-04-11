@@ -674,6 +674,15 @@ class Config:
     def __contains__(self, key):
         return key in self.__dict__
 
+    def __getitem__(self, key):
+        return self.__dict__[key]
+
+    def __setitem__(self, key, value):
+        self.__dict__[key] = value
+
+    def __delitem__(self, key):
+        del self.__dict__[key]
+
     def __repr__(self):  # pragma: no cover
         type_name = type(self).__name__
         arg_strings = []
