@@ -18,8 +18,8 @@
 # -- Project information -----------------------------------------------------
 
 project = 'bpc-utils'
-copyright = '2020, Saiyang Gou, Jarry Shaw'
-author = 'Saiyang Gou, Jarry Shaw'
+copyright = '2020, Python Backport Compiler Project'
+author = 'Python Backport Compiler Project'
 
 # The full version, including alpha/beta/rc tags
 release = '0.3.1'
