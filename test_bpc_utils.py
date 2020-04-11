@@ -476,13 +476,17 @@ class TestBPCUtils(unittest.TestCase):
         self.assertTrue('foo' in config)
         self.assertFalse('moo' in config)
         self.assertFalse('666' in config)
+
         config['666'] = '777'
         self.assertTrue('666' in config)
         self.assertEqual(config['666'], '777')
+
         setattr(config, '666', '888')
         self.assertEqual(config['666'], '888')
+
         del config['666']
         self.assertFalse('666' in config)
+
         delattr(config, 'foo')
         self.assertFalse('foo' in config)
 
