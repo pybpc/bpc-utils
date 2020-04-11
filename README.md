@@ -2,6 +2,7 @@
 
 [![Travis CI - Status](https://img.shields.io/travis/com/pybpc/bpc-utils.svg)](https://travis-ci.com/pybpc/bpc-utils)
 [![Codecov - Coverage](https://codecov.io/gh/pybpc/bpc-utils/branch/master/graph/badge.svg)](https://codecov.io/gh/pybpc/bpc-utils)
+[![Documentation Status](https://readthedocs.org/projects/bpc-utils/badge/?version=latest)](https://bpc-utils.readthedocs.io/en/latest/?badge=latest)
 
 Documentation: https://bpc-utils.readthedocs.io
 
