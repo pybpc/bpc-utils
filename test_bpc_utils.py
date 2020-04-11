@@ -1,20 +1,22 @@
+# pylint: disable=line-too-long
+
 import inspect
 import io
 import os
 import shutil
+import socket
 import sys
 import tarfile
 import tempfile
-import types
 import unittest
 
 import parso
 from bpc_utils import (
-    CPU_CNT, LOOKUP_TABLE, PARSO_GRAMMAR_VERSIONS, BPCSyntaxError, MakeTextIO, UUID4Generator,
-    archive_files, detect_encoding, detect_files, detect_indentation, detect_linesep,
-    expand_glob_iter, first_non_none, first_truthy, get_parso_grammar_versions, is_python_filename,
-    is_windows, mp, parse_boolean_state, parse_indentation, parse_linesep, parso_parse,
-    recover_files)
+    LOOKUP_TABLE, PARSO_GRAMMAR_VERSIONS, BPCSyntaxError, MakeTextIO, TaskLock, UUID4Generator,
+    _mp_map_wrapper, archive_files, detect_encoding, detect_files, detect_indentation,
+    detect_linesep, expand_glob_iter, first_non_none, first_truthy, get_parso_grammar_versions,
+    is_python_filename, is_windows, map_tasks, parse_boolean_state, parse_indentation,
+    parse_linesep, parso_parse, recover_files)
 
 
 def read_text_file(filename, encoding='utf-8'):
@@ -32,6 +34,10 @@ def write_text_file(filename, content, encoding='utf-8'):
 def native_path(path):
     """Convert a file system path to the native form."""
     return path.replace('/', '\\') if is_windows else path
+
+
+def square(x):
+    return x ** 2
 
 
 class SuccessCase:
@@ -117,9 +123,9 @@ class TestBPCUtils(unittest.TestCase):
                     self.target_func(*test_case.args, **test_case.kwargs)
 
     def test_exports(self):
-        self.assertIsInstance(mp, (types.ModuleType, type(None)))
-        self.assertIsInstance(CPU_CNT, int)
         self.assertTrue(issubclass(BPCSyntaxError, SyntaxError))
+        with TaskLock():
+            pass
 
     def test_parso_grammar_versions(self):
         self.assertIsInstance(PARSO_GRAMMAR_VERSIONS, list)
@@ -329,17 +335,31 @@ class TestBPCUtils(unittest.TestCase):
         self.generic_functional_test()
 
     def test_MakeTextIO(self):
+        # str
         with MakeTextIO('hello') as file:
             self.assertIsInstance(file, io.StringIO)
             self.assertEqual(file.read(), 'hello')
         self.assertTrue(file.closed)
+
+        # seekable file
         with io.StringIO('deadbeef') as sio:
+            self.assertTrue(sio.seekable())
             sio.seek(2)
             self.assertEqual(sio.read(2), 'ad')
             with MakeTextIO(sio) as file:
                 self.assertEqual(file.read(), 'deadbeef')
             self.assertFalse(sio.closed)
             self.assertEqual(sio.tell(), 4)
+
+        # unseekable file
+        with socket.socket() as s:
+            s.connect(('httpbin.org', 80))
+            s.send(b'GET /anything HTTP/1.1\r\nHost: httpbin.org\r\nConnection: close\r\n\r\n')
+            with s.makefile() as file1:
+                self.assertFalse(file1.seekable())
+                with MakeTextIO(file1) as file2:
+                    data = file2.read()
+                    self.assertTrue(data.startswith('HTTP/1.1 200 OK'))
 
     def test_detect_linesep(self):
         test_cases = [
@@ -359,6 +379,12 @@ class TestBPCUtils(unittest.TestCase):
 
         with io.StringIO(test_cases[-1][0], newline='') as file:
             self.assertEqual(detect_linesep(file), test_cases[-1][1])
+
+        with socket.socket() as s:
+            s.connect(('httpbin.org', 80))
+            s.send(b'HEAD / HTTP/1.1\r\nHost: httpbin.org\r\nConnection: close\r\n\r\n')
+            with s.makefile(newline='') as file:
+                self.assertEqual(detect_linesep(file), '\r\n')
 
     def test_detect_indentation(self):
         test_cases = [
@@ -400,6 +426,43 @@ class TestBPCUtils(unittest.TestCase):
         ]
         self.target_func = parso_parse
         self.generic_functional_test()
+
+    def test__mp_map_wrapper(self):
+        self.success_cases = [
+            SuccessCase(args=((square, (6,), {}),), result=36),
+            SuccessCase(args=((int, ('0x10',), {'base': 16}),), result=16),
+        ]
+        self.target_func = _mp_map_wrapper
+        self.generic_functional_test()
+
+    def test_map_tasks(self):
+        test_cases = [
+            (square, [1, 2, 3], None, None, [1, 4, 9]),
+            (square, range(1, 4), None, None, [1, 4, 9]),  # pylint: disable=range-builtin-not-iterating
+            (divmod, [4, 7, 9], (3,), None, [(1, 1), (2, 1), (3, 0)]),
+            (int, ['0x%c' % c for c in 'abc'], None, {'base': 0}, [10, 11, 12]),
+            (max, [4, -7, 9], (6,), {'key': abs}, [6, -7, 9]),
+        ]
+        self.success_cases = []
+        for tc in test_cases:
+            for processes in (None, 1, 2):
+                for chunksize in (None, 2):
+                    self.success_cases.append(SuccessCase(args=(tc[0], tc[1]), kwargs={
+                        'posargs': tc[2],
+                        'kwargs': tc[3],
+                        'processes': processes,
+                        'chunksize': chunksize,
+                    }, result=tc[4]))
+        self.target_func = map_tasks
+
+        # test under normal condition
+        self.generic_functional_test()
+
+        # test when parallel execution is not available
+        parallel_available = sys.modules['bpc_utils'].parallel_available
+        sys.modules['bpc_utils'].parallel_available = False
+        self.generic_functional_test()
+        sys.modules['bpc_utils'].parallel_available = parallel_available
 
 
 if __name__ == '__main__':

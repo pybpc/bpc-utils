@@ -7,8 +7,11 @@ python:
   - "3.7"
   - "3.8"
 install:
-  - pip install parso codecov coverage
+  - pip install parso
+  - 'if [[ ! "${TRAVIS_PYTHON_VERSION}" < "3.5" ]] ; then pip install flake8 pylint bandit vermin; fi'
+  - pip install coverage codecov
 script:
+  - 'if [[ ! "${TRAVIS_PYTHON_VERSION}" < "3.5" ]] ; then flake8 && bash ./pylint.sh && bandit . && vermin -q -t=3.4- .; fi'
   - coverage run test_bpc_utils.py
 after_success:
   - codecov

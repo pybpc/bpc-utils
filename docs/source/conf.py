@@ -18,11 +18,11 @@
 # -- Project information -----------------------------------------------------
 
 project = 'bpc-utils'
-copyright = '2020, Python Backport Compiler Project'
+copyright = '2020, Python Backport Compiler Project'  # pylint: disable=redefined-builtin
 author = 'Python Backport Compiler Project'
 
 # The full version, including alpha/beta/rc tags
-release = '0.3.1'
+release = '0.5.0'
 
 
 # -- General configuration ---------------------------------------------------

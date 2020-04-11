@@ -29,17 +29,11 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
+   :exclude-members: TaskLock
 
-.. data:: mp
-   :type: Optional[ModuleType]
-   :value: <module 'multiprocessing'>
+.. function:: bpc_utils.TaskLock
 
-   An alias of the Python builtin :mod:`multiprocessing` module if available.
-
-.. data:: CPU_CNT
-   :type: int
-
-   Number of CPUs for multiprocessing support.
+   A lock for possibly concurrent tasks.
 
 Internal utilities
 ------------------
@@ -66,7 +60,31 @@ Internal utilities
       The original offset of :attr:`self.obj <MakeTextIO.obj>`,
       if only :attr:`self.obj <MakeTextIO.obj>` is ``TextIO``.
 
-.. autofunction:: bpc_utils.expand_glob_iter
+.. function:: bpc_utils.expand_glob_iter(pathname)
+
+   Wrapper function to perform glob expansion.
+
+   :param str pathname: pathname pattern
+   :returns: an iterator which yields the paths matching a pathname pattern
+   :rtype: Iterator[str]
+
+.. autofunction:: bpc_utils._mp_map_wrapper
+
+.. data:: mp
+   :type: Optional[ModuleType]
+   :value: <module 'multiprocessing'>
+
+   An alias of the Python builtin :mod:`multiprocessing` module if available.
+
+.. data:: CPU_CNT
+   :type: int
+
+   Number of CPUs for multiprocessing support.
+
+.. data:: parallel_available
+   :type: bool
+
+   Whether parallel execution is available.
 
 .. autodata:: bpc_utils._boolean_state_lookup
 .. autodata:: bpc_utils._linesep_lookup
