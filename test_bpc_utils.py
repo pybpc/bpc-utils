@@ -11,12 +11,13 @@ import tempfile
 import unittest
 
 import parso
+
 from bpc_utils import (
-    LOOKUP_TABLE, PARSO_GRAMMAR_VERSIONS, BPCSyntaxError, MakeTextIO, TaskLock, UUID4Generator,
-    _mp_map_wrapper, archive_files, detect_encoding, detect_files, detect_indentation,
-    detect_linesep, expand_glob_iter, first_non_none, first_truthy, get_parso_grammar_versions,
-    is_python_filename, is_windows, map_tasks, parse_boolean_state, parse_indentation,
-    parse_linesep, parso_parse, recover_files)
+    LOOKUP_TABLE, PARSO_GRAMMAR_VERSIONS, BPCSyntaxError, Config, MakeTextIO, TaskLock,
+    UUID4Generator, _mp_map_wrapper, archive_files, detect_encoding, detect_files,
+    detect_indentation, detect_linesep, expand_glob_iter, first_non_none, first_truthy,
+    get_parso_grammar_versions, is_python_filename, is_windows, map_tasks, parse_boolean_state,
+    parse_indentation, parse_linesep, parso_parse, recover_files)
 
 
 def read_text_file(filename, encoding='utf-8'):
@@ -463,6 +464,16 @@ class TestBPCUtils(unittest.TestCase):
         sys.modules['bpc_utils'].parallel_available = False
         self.generic_functional_test()
         sys.modules['bpc_utils'].parallel_available = parallel_available
+
+    def test_Config(self):
+        config = Config(foo='var', bar=True, boo=1)
+
+        self.assertEqual(config.foo, 'var')  # pylint: disable=no-member
+        self.assertEqual(config.bar, True)  # pylint: disable=no-member
+        self.assertEqual(config.boo, 1)  # pylint: disable=no-member
+
+        self.assertEqual('foo' in config, True)
+        self.assertEqual('moo' in config, False)
 
 
 if __name__ == '__main__':

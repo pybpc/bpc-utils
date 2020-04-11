@@ -18,12 +18,15 @@ bpc-utils = {editable = true,path = "."}
 autopep8 = "*"
 ipython = "*"
 pylint = "*"
+flake8 = "*"
+bandit = "*"
+vermin = "*"
 coverage = "*"
 codecov = "*"
 tox = "*"
 sphinx = "*"
 sphinxcontrib-napoleon = "*"
-doc8 = "*"
+rstcheck = "*"
 
 [packages]
 parso = ">=0.6.0"

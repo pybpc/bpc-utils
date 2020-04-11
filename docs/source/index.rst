@@ -35,6 +35,8 @@ Module contents
 
    A lock for possibly concurrent tasks.
 
+   :rtype: Union[contextlib.nullcontext, multiprocessing.Lock]
+
 Internal utilities
 ------------------
 

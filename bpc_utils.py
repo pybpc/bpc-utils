@@ -658,7 +658,37 @@ def map_tasks(func, iterable, posargs=None, kwargs=None, *, processes=None, chun
 #: A lock for possibly concurrent tasks.
 TaskLock = mp.Lock if parallel_available else nullcontext
 
+
+class Config:
+    """Configuration namespace.
+
+    This class is inspired from :class:`argparse.Namespace` for storing
+    internal attributes and/or configuration variables.
+
+    """
+
+    def __init__(self, **kwargs):
+        for name, value in kwargs.items():
+            setattr(self, name, value)
+
+    def __contains__(self, key):
+        return key in self.__dict__
+
+    def __repr__(self):  # pragma: no cover
+        type_name = type(self).__name__
+        arg_strings = []
+        star_args = {}
+        for name, value in self.__dict__.items():
+            if name.isidentifier():  # special case
+                arg_strings.append('%s=%r' % (name, value))
+            else:
+                star_args[name] = value
+        if star_args:
+            arg_strings.append('**%s' % repr(star_args))
+        return '%s(%s)' % (type_name, ', '.join(arg_strings))
+
+
 __all__ = ['get_parso_grammar_versions', 'first_truthy', 'first_non_none',
            'parse_boolean_state', 'parse_linesep', 'parse_indentation', 'BPCSyntaxError', 'UUID4Generator',
            'detect_files', 'archive_files', 'recover_files', 'detect_encoding', 'detect_linesep',
-           'detect_indentation', 'parso_parse', 'map_tasks', 'TaskLock']
+           'detect_indentation', 'parso_parse', 'map_tasks', 'TaskLock', 'Config']

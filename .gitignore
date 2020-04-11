@@ -12,3 +12,4 @@ __pycache__
 /.venv
 /Pipfile.lock
 /docs/build
+.tox/
