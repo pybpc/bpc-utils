@@ -467,13 +467,28 @@ class TestBPCUtils(unittest.TestCase):
 
     def test_Config(self):
         config = Config(foo='var', bar=True, boo=1)
-
         self.assertEqual(config.foo, 'var')  # pylint: disable=no-member
         self.assertEqual(config.bar, True)  # pylint: disable=no-member
         self.assertEqual(config.boo, 1)  # pylint: disable=no-member
+        self.assertEqual(config['foo'], 'var')
+        self.assertEqual(config['bar'], True)
+        self.assertEqual(config['boo'], 1)
+        self.assertTrue('foo' in config)
+        self.assertFalse('moo' in config)
+        self.assertFalse('666' in config)
 
-        self.assertEqual('foo' in config, True)
-        self.assertEqual('moo' in config, False)
+        config['666'] = '777'
+        self.assertTrue('666' in config)
+        self.assertEqual(config['666'], '777')
+
+        setattr(config, '666', '888')
+        self.assertEqual(config['666'], '888')
+
+        del config['666']
+        self.assertFalse('666' in config)
+
+        delattr(config, 'foo')
+        self.assertFalse('foo' in config)
 
 
 if __name__ == '__main__':
