@@ -53,8 +53,8 @@ Internal utilities
    .. attribute:: sio
       :type: StringIO
 
-      The I/O object to manage in the context if only :
-      attr:`self.obj <MakeTextIO.obj>` is ``str``.
+      The I/O object to manage in the context if only
+      :attr:`self.obj <MakeTextIO.obj>` is ``str``.
 
    .. attribute:: pos
       :type: int
