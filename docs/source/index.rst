@@ -53,14 +53,14 @@ Internal utilities
    .. attribute:: sio
       :type: StringIO
 
-      The I/O object to manage in the context if only
+      The I/O object to manage in the context only if
       :attr:`self.obj <MakeTextIO.obj>` is ``str``.
 
    .. attribute:: pos
       :type: int
 
       The original offset of :attr:`self.obj <MakeTextIO.obj>`,
-      if only :attr:`self.obj <MakeTextIO.obj>` is ``TextIO``.
+      only if :attr:`self.obj <MakeTextIO.obj>` is a seekable ``TextIO``.
 
 .. function:: expand_glob_iter(pathname)
 

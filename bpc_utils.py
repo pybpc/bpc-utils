@@ -1,11 +1,13 @@
 import binascii
 import collections
+import collections.abc
 import contextlib
 import functools
 import glob
 import io
 import itertools
 import json
+import keyword
 import os
 import platform
 import shutil
@@ -659,7 +661,7 @@ def map_tasks(func, iterable, posargs=None, kwargs=None, *, processes=None, chun
 TaskLock = mp.Lock if parallel_available else nullcontext
 
 
-class Config:
+class Config(collections.abc.MutableMapping):
     """Configuration namespace.
 
     This class is inspired from :class:`argparse.Namespace` for storing
@@ -674,6 +676,12 @@ class Config:
     def __contains__(self, key):
         return key in self.__dict__
 
+    def __iter__(self):
+        return iter(self.__dict__)
+
+    def __len__(self):
+        return len(self.__dict__)
+
     def __getitem__(self, key):
         return self.__dict__[key]
 
@@ -683,14 +691,17 @@ class Config:
     def __delitem__(self, key):
         del self.__dict__[key]
 
-    def __repr__(self):  # pragma: no cover
+    def __eq__(self, other):
+        return isinstance(other, Config) and self.__dict__ == other.__dict__
+
+    def __repr__(self):
         type_name = type(self).__name__
         arg_strings = []
         star_args = {}
-        for name, value in self.__dict__.items():
-            if name.isidentifier():  # special case
+        for name, value in sorted(self.__dict__.items()):
+            if name.isidentifier() and not keyword.iskeyword(name) and name != '__debug__':
                 arg_strings.append('%s=%r' % (name, value))
-            else:
+            else:  # wrap invalid names into a dict to make __repr__ round-trip
                 star_args[name] = value
         if star_args:
             arg_strings.append('**%s' % repr(star_args))

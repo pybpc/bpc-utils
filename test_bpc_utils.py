@@ -1,5 +1,6 @@
 # pylint: disable=line-too-long
 
+import collections.abc
 import inspect
 import io
 import os
@@ -11,7 +12,6 @@ import tempfile
 import unittest
 
 import parso
-
 from bpc_utils import (
     LOOKUP_TABLE, PARSO_GRAMMAR_VERSIONS, BPCSyntaxError, Config, MakeTextIO, TaskLock,
     UUID4Generator, _mp_map_wrapper, archive_files, detect_encoding, detect_files,
@@ -467,6 +467,7 @@ class TestBPCUtils(unittest.TestCase):
 
     def test_Config(self):
         config = Config(foo='var', bar=True, boo=1)
+        self.assertIsInstance(config, collections.abc.MutableMapping)
         self.assertEqual(config.foo, 'var')  # pylint: disable=no-member
         self.assertEqual(config.bar, True)  # pylint: disable=no-member
         self.assertEqual(config.boo, 1)  # pylint: disable=no-member
@@ -476,6 +477,8 @@ class TestBPCUtils(unittest.TestCase):
         self.assertTrue('foo' in config)
         self.assertFalse('moo' in config)
         self.assertFalse('666' in config)
+        self.assertEqual(len(config), 3)
+        self.assertEqual(repr(config), "Config(bar=True, boo=1, foo='var')")
 
         config['666'] = '777'
         self.assertTrue('666' in config)
@@ -489,6 +492,32 @@ class TestBPCUtils(unittest.TestCase):
 
         delattr(config, 'foo')
         self.assertFalse('foo' in config)
+
+        del config.bar  # pylint: disable=no-member
+        self.assertFalse('bar' in config)
+        self.assertEqual(len(config), 1)
+        for key, value in config.items():
+            self.assertEqual(key, 'boo')
+            self.assertEqual(value, 1)
+
+        config.xxx = 'yyy'
+        self.assertTrue('xxx' in config)
+        self.assertEqual(config['xxx'], 'yyy')
+
+        self.assertEqual(dict(Config(a=1, b=2)), {'a': 1, 'b': 2})
+        self.assertEqual(Config(a=1, b=2), Config(b=2, a=1))
+        self.assertNotEqual(Config(a=1, b=2), {'a': 1, 'b': 2})
+        self.assertNotEqual(Config(a=1, b=2), Config(b=1, a=2))
+
+        self.assertEqual(repr(Config(**{'z': 1, 'y': '2'})), "Config(y='2', z=1)")
+        self.assertEqual(repr(Config(**{'z': True, '@': []})), "Config(z=True, **{'@': []})")
+        self.assertEqual(repr(Config(**{'z': (), '8': 2})), "Config(z=(), **{'8': 2})")
+        self.assertEqual(repr(Config(zz='zoo', **{'z': 1, 'return': 2})), "Config(z=1, zz='zoo', **{'return': 2})")
+        self.assertEqual(repr(Config(**{'z': 1, '__debug__': {}})), "Config(z=1, **{'__debug__': {}})")
+        self.assertEqual(repr(Config(**{'return': 0})), "Config(**{'return': 0})")
+        if sys.version_info[:2] >= (3, 6):  # dict preserves insertion order  # pragma: no cover
+            self.assertEqual(repr(Config(**{'z': 1, 'return': 2, '8': 3})), "Config(z=1, **{'8': 3, 'return': 2})")
+            self.assertEqual(repr(Config(**{'return': 0, '8': 3})), "Config(**{'8': 3, 'return': 0})")
 
 
 if __name__ == '__main__':
