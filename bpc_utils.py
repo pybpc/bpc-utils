@@ -443,7 +443,7 @@ class MakeTextIO:
         sio (Optional[StringIO]): the I/O object to manage in the context
             only if :attr:`self.obj <MakeTextIO.obj>` is ``str``
         pos (Optional[int]): the original offset of :attr:`self.obj <MakeTextIO.obj>`,
-            only if :attr:`self.obj <MakeTextIO.obj>` is a *file* object
+            only if :attr:`self.obj <MakeTextIO.obj>` is a seekable *file* object
 
     """
 
