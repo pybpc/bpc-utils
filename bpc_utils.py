@@ -100,7 +100,7 @@ def first_truthy(*args):
             * If two or more positional arguments are provided, then the value list is the positional argument list.
 
     Returns:
-        Any: the first *truthy* value, if no *truthy* values found or sequence is empty, return ``None``
+        Any: the first *truthy* value, if no *truthy* values found or sequence is empty, return :data:`None`
 
     Raises:
         TypeError: if no arguments provided
@@ -114,7 +114,7 @@ def first_truthy(*args):
 
 
 def first_non_none(*args):
-    """Return the first non-``None`` value from a list of values.
+    """Return the first non-:data:`None` value from a list of values.
 
     Args:
         *args: variable length argument list
@@ -123,7 +123,7 @@ def first_non_none(*args):
             * If two or more positional arguments are provided, then the value list is the positional argument list.
 
     Returns:
-        Any: the first non-``None`` value, if all values are ``None`` or sequence is empty, return ``None``
+        Any: the first non-:data:`None` value, if all values are :data:`None` or sequence is empty, return :data:`None`
 
     Raises:
         TypeError: if no arguments provided
@@ -155,8 +155,8 @@ _boolean_state_lookup = {
 def parse_boolean_state(s):
     """Parse a boolean state from a string representation.
 
-    * These values are regarded as ``True``: ``'1'``, ``'yes'``, ``'y'``, ``'true'``, ``'on'``
-    * These values are regarded as ``False``: ``'0'``, ``'no'``, ``'n'``, ``'false'``, ``'off'``
+    * These values are regarded as :data:`True`: ``'1'``, ``'yes'``, ``'y'``, ``'true'``, ``'on'``
+    * These values are regarded as :data:`False`: ``'0'``, ``'no'``, ``'n'``, ``'false'``, ``'off'``
 
     Value matching is case **insensitive**.
 
@@ -164,7 +164,7 @@ def parse_boolean_state(s):
         s (Optional[str]): string representation of a boolean state
 
     Returns:
-        Optional[bool]: the parsed boolean result, return ``None`` if input is ``None``
+        Optional[bool]: the parsed boolean result, return :data:`None` if input is :data:`None`
 
     Raises:
         ValueError: if ``s`` is an invalid boolean state value
@@ -207,7 +207,7 @@ def parse_linesep(s):
 
     Returns:
         Optional[Literal['\\n', '\\r\\n', '\\r']]: the parsed linesep result,
-        return ``None`` if input is ``None`` or empty string
+        return :data:`None` if input is :data:`None` or empty string
 
     Raises:
         ValueError: if ``s`` is an invalid linesep value
@@ -236,7 +236,7 @@ def parse_indentation(s):
         s (Optional[str]): string representation of indentation
 
     Returns:
-        Optional[str]: the parsed indentation result, return ``None`` if input is ``None`` or empty string
+        Optional[str]: the parsed indentation result, return :data:`None` if input is :data:`None` or empty string
 
     Raises:
         ValueError: if ``s`` is an invalid indentation value
@@ -412,7 +412,7 @@ def recover_files(archive_file):
 
 
 def detect_encoding(code):
-    """Detect encoding of Python source code as specified in `PEP 263`_.
+    """Detect encoding of Python source code as specified in :pep:`263`.
 
     Args:
         code (bytes): the code to detect encoding
@@ -421,10 +421,7 @@ def detect_encoding(code):
         str: the detected encoding, or the default encoding (``utf-8``)
 
     Raises:
-        TypeError: if ``code`` is not a ``bytes`` string
-
-    .. _PEP 263:
-        https://www.python.org/dev/peps/pep-0263/
+        TypeError: if ``code`` is not a :obj:`bytes` string
 
     """
     if not isinstance(code, bytes):
@@ -434,12 +431,12 @@ def detect_encoding(code):
 
 
 class MakeTextIO:
-    """Context wrapper class to handle ``str`` and *file* objects together.
+    """Context wrapper class to handle :obj:`str` and *file* objects together.
 
     Attributes:
         obj (Union[str, TextIO]): the object to manage in the context
         sio (Optional[StringIO]): the I/O object to manage in the context
-            only if :attr:`self.obj <MakeTextIO.obj>` is ``str``
+            only if :attr:`self.obj <MakeTextIO.obj>` is :obj:`str`
         pos (Optional[int]): the original offset of :attr:`self.obj <MakeTextIO.obj>`,
             only if :attr:`self.obj <MakeTextIO.obj>` is a *file* object
 
@@ -457,8 +454,8 @@ class MakeTextIO:
     def __enter__(self):
         """Enter context.
 
-        * If :attr:`self.obj <MakeTextIO.obj>` is ``str``, a
-          ``StringIO`` will be created and returned.
+        * If :attr:`self.obj <MakeTextIO.obj>` is :obj:`str`, a
+          :class:`~io.StringIO` will be created and returned.
 
         * If :attr:`self.obj <MakeTextIO.obj>` is a seekable *file* object,
           it will be seeked to the beginning and returned.
@@ -469,12 +466,12 @@ class MakeTextIO:
         """
         if isinstance(self.obj, str):
             #: StringIO: the I/O object to manage in the context
-            #:     only if :attr:`self.obj <MakeTextIO.obj>` is ``str``
+            #:     only if :attr:`self.obj <MakeTextIO.obj>` is :obj:`str`
             self.sio = io.StringIO(self.obj, newline='')  # turn off newline translation # pylint: disable=W0201
             return self.sio
         if self.obj.seekable():
             #: int: the original offset of :attr:`self.obj <MakeTextIO.obj>`,
-            #:     only if :attr:`self.obj <MakeTextIO.obj>` is a seekable ``TextIO``
+            #:     only if :attr:`self.obj <MakeTextIO.obj>` is a seekable :class:`TextIO <io.TextIOWrapper>`
             self.pos = self.obj.tell()  # pylint: disable=W0201
             #: Union[str, TextIO]: the object to manage in the context
             self.obj.seek(0)
@@ -483,8 +480,8 @@ class MakeTextIO:
     def __exit__(self, exc_type, exc_value, traceback):
         """Exit context.
 
-        * If :attr:`self.obj <MakeTextIO.obj>` is ``str``, the
-          ``StringIO`` (:attr:`self.sio <MakeTextIO.sio>`) will be closed.
+        * If :attr:`self.obj <MakeTextIO.obj>` is :obj:`str`, the
+          :class:`~io.StringIO` (:attr:`self.sio <MakeTextIO.sio>`) will be closed.
 
         * If :attr:`self.obj <MakeTextIO.obj>` is a seekable *file* object,
           its stream position (:attr:`self.pos <MakeTextIO.pos>`) will be recovered.
@@ -548,10 +545,7 @@ def detect_indentation(code):
         In case of mixed indentation, try voting by the number of occurrences of
         each indentation value (*spaces* and *tabs*).
 
-        When there is a tie between *spaces* and *tabs*, prefer **4 spaces** for `PEP 8`_.
-
-    .. _PEP 8:
-        https://www.python.org/dev/peps/pep-0008/
+        When there is a tie between *spaces* and *tabs*, prefer **4 spaces** for :pep:`8`.
 
     """
     if isinstance(code, parso.tree.NodeOrLeaf):
@@ -629,7 +623,7 @@ def _mp_map_wrapper(args):
 
 
 def map_tasks(func, iterable, posargs=None, kwargs=None, *, processes=None, chunksize=None):
-    """Execute tasks in parallel if ``multiprocessing`` is available, otherwise execute them sequentially.
+    """Execute tasks in parallel if :mod:`multiprocessing` is available, otherwise execute them sequentially.
 
     Args:
         func (Callable): the task function to execute
