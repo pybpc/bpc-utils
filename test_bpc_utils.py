@@ -431,7 +431,9 @@ class TestBPCUtils(unittest.TestCase):
     def test__mp_map_wrapper(self):
         self.success_cases = [
             SuccessCase(args=((square, (6,), {}),), result=36),
+            SuccessCase(args=((square, range(6, 7), {}),), result=36),  # pylint: disable=range-builtin-not-iterating
             SuccessCase(args=((int, ('0x10',), {'base': 16}),), result=16),
+            SuccessCase(args=((int, ('0x10',), Config(base=16)),), result=16),
         ]
         self.target_func = _mp_map_wrapper
         self.generic_functional_test()
@@ -442,7 +444,7 @@ class TestBPCUtils(unittest.TestCase):
             (square, range(1, 4), None, None, [1, 4, 9]),  # pylint: disable=range-builtin-not-iterating
             (divmod, [4, 7, 9], (3,), None, [(1, 1), (2, 1), (3, 0)]),
             (int, ['0x%c' % c for c in 'abc'], None, {'base': 0}, [10, 11, 12]),
-            (max, [4, -7, 9], (6,), {'key': abs}, [6, -7, 9]),
+            (max, [4, -7, 9], range(6, 7), Config(key=abs), [6, -7, 9]),  # pylint: disable=range-builtin-not-iterating
         ]
         self.success_cases = []
         for tc in test_cases:

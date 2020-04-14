@@ -9,7 +9,7 @@ with open('README.md', 'r', encoding='utf-8') as f:
 
 setup(
     name='bpc-utils',
-    version='0.5.3',
+    version='0.5.4',
     description='Utility library for the Python bpc compiler.',
     long_description=long_description,
     long_description_content_type='text/markdown',
