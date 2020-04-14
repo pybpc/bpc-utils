@@ -63,6 +63,8 @@ Internal utilities
       if only :attr:`self.obj <MakeTextIO.obj>` is a seekable
       :class:`TextIO <io.TextIOWrapper>`.
 
+.. autofunction:: bpc_utils._mp_map_wrapper
+
 .. function:: expand_glob_iter(pathname)
 
    Wrapper function to perform glob expansion.
@@ -71,7 +73,13 @@ Internal utilities
    :returns: an iterator which yields the paths matching a pathname pattern
    :rtype: Iterator[str]
 
-.. autofunction:: bpc_utils._mp_map_wrapper
+.. autodata:: bpc_utils._boolean_state_lookup
+.. autodata:: bpc_utils._linesep_lookup
+
+.. data:: CPU_CNT
+   :type: int
+
+   Number of CPUs for multiprocessing support.
 
 .. data:: mp
    :type: Optional[ModuleType]
@@ -79,18 +87,10 @@ Internal utilities
 
    An alias of the Python builtin :mod:`multiprocessing` module if available.
 
-.. data:: CPU_CNT
-   :type: int
-
-   Number of CPUs for multiprocessing support.
-
 .. data:: parallel_available
    :type: bool
 
    Whether parallel execution is available.
-
-.. autodata:: bpc_utils._boolean_state_lookup
-.. autodata:: bpc_utils._linesep_lookup
 
 Indices and tables
 ==================

@@ -42,7 +42,8 @@ intersphinx_mapping = {
 }
 
 autodoc_typehints = 'description'
-autodoc_member_order = 'bysource'
+# autodoc_member_order = 'bysource'
+autodoc_member_order = 'groupwise'
 
 # Napoleon settings
 napoleon_google_docstring = True
