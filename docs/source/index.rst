@@ -29,13 +29,6 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-   :exclude-members: TaskLock
-
-.. function:: TaskLock
-
-   A lock for possibly concurrent tasks.
-
-   :rtype: Union[contextlib.nullcontext, multiprocessing.Lock]
 
 Internal utilities
 ------------------
@@ -64,6 +57,7 @@ Internal utilities
       :class:`TextIO <io.TextIOWrapper>`.
 
 .. autofunction:: bpc_utils._mp_map_wrapper
+.. autofunction:: bpc_utils._mp_init_lock
 
 .. function:: expand_glob_iter(pathname)
 
@@ -91,6 +85,11 @@ Internal utilities
    :type: bool
 
    Whether parallel execution is available.
+
+.. data:: task_lock
+   :type: Union[contextlib.nullcontext, multiprocessing.synchronize.Lock]
+
+   A lock for possibly concurrent tasks.
 
 Indices and tables
 ==================

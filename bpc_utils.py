@@ -625,6 +625,17 @@ def _mp_map_wrapper(args):
     return func(*posargs, **kwargs)
 
 
+def _mp_init_lock(lock):  # pragma: no cover
+    """Initialize lock for :mod:`multiprocessing`.
+
+    Args:
+        lock (multiprocessing.synchronize.Lock): the lock to be shared among tasks
+
+    """
+    global task_lock  # pylint: disable=global-statement
+    task_lock = lock
+
+
 def map_tasks(func, iterable, posargs=None, kwargs=None, *, processes=None, chunksize=None):
     """Execute tasks in parallel if :mod:`multiprocessing` is available, otherwise execute them sequentially.
 
@@ -640,6 +651,8 @@ def map_tasks(func, iterable, posargs=None, kwargs=None, *, processes=None, chun
         List[Any]: the return values of the task function applied on the input items and additional arguments
 
     """
+    global task_lock  # pylint: disable=global-statement
+
     if posargs is None:
         posargs = ()
     if kwargs is None:
@@ -648,12 +661,25 @@ def map_tasks(func, iterable, posargs=None, kwargs=None, *, processes=None, chun
     if not parallel_available or processes == 1:  # sequential execution
         return [func(item, *posargs, **kwargs) for item in iterable]
 
-    with mp.Pool(processes=processes or CPU_CNT) as pool:  # parallel execution
-        return pool.map(_mp_map_wrapper, [(func, (item,) + tuple(posargs), kwargs) for item in iterable], chunksize)
+    processes = processes or CPU_CNT
+    lock = mp.Lock()
+    with mp.Pool(processes=processes, initializer=_mp_init_lock, initargs=(lock,)) as pool:  # parallel execution
+        result = pool.map(_mp_map_wrapper, [(func, (item,) + tuple(posargs), kwargs) for item in iterable], chunksize)
+    task_lock = nullcontext()
+    return result
 
 
-#: A lock for possibly concurrent tasks.
-TaskLock = mp.Lock if parallel_available else nullcontext
+task_lock = nullcontext()
+
+
+def TaskLock():
+    """Function that returns a lock for possibly concurrent tasks.
+
+    Returns:
+        Union[contextlib.nullcontext, multiprocessing.synchronize.Lock]: a lock for possibly concurrent tasks
+
+    """
+    return task_lock
 
 
 class Config(collections.abc.MutableMapping):

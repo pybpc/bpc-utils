@@ -4,11 +4,14 @@ import collections.abc
 import inspect
 import io
 import os
+import re
 import shutil
 import socket
+import subprocess  # nosec
 import sys
 import tarfile
 import tempfile
+import textwrap
 import unittest
 
 import parso
@@ -466,6 +469,52 @@ class TestBPCUtils(unittest.TestCase):
         sys.modules['bpc_utils'].parallel_available = False
         self.generic_functional_test()
         sys.modules['bpc_utils'].parallel_available = parallel_available
+
+    def test_lock(self):
+        num_tasks = 10
+        num_print = 100
+        code_template = textwrap.dedent("""\
+            import sys
+
+            from bpc_utils import TaskLock, map_tasks
+
+
+            def task(task_id):
+                {context}
+                    for i in range({num_print}):
+                        print('Task %d says %d' % (task_id, i), flush=True, file=sys.stderr)
+
+
+            if __name__ == '__main__':
+                map_tasks(task, range({num_tasks}))
+        """)
+        code_no_lock = code_template.format(context='for _ in [0]:', num_print=num_print, num_tasks=num_tasks)
+        code_with_lock = code_template.format(context='with TaskLock():', num_print=num_print, num_tasks=num_tasks)
+
+        def has_interleave(output):
+            records = re.findall(r'Task (\d+) says (\d+)', output)
+            task_events = [[] for _ in range(num_tasks)]
+            for i, r in enumerate(records):
+                task_events[int(r[0])].append((i, int(r[1])))
+            for i in range(num_tasks):
+                if [ev[1] for ev in task_events[i]] != list(range(num_print)):  # pragma: no cover
+                    raise ValueError('task %d prints incorrectly' % i)
+            for i in range(num_tasks):
+                start = task_events[i][0][0]
+                if [ev[0] for ev in task_events[i]] != list(range(start, start + num_print)):
+                    return True
+            return False
+
+        shutil.copy(sys.modules['bpc_utils'].__file__, '.')
+        test_filename = 'test-lock.py'
+
+        write_text_file(test_filename, code_no_lock)
+        output = subprocess.run([sys.executable, '-u', test_filename], stderr=subprocess.PIPE, check=True).stderr.decode()  # nosec
+        self.assertTrue(has_interleave(output))
+
+        write_text_file(test_filename, code_with_lock)
+        output = subprocess.run([sys.executable, '-u', test_filename], stderr=subprocess.PIPE, check=True).stderr.decode()  # nosec
+        self.assertFalse(has_interleave(output))
 
     def test_Config(self):
         config = Config(foo='var', bar=True, boo=1)
