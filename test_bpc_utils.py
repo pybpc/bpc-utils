@@ -19,8 +19,8 @@ from bpc_utils import (
     LOOKUP_TABLE, PARSO_GRAMMAR_VERSIONS, BPCSyntaxError, Config, MakeTextIO, TaskLock,
     UUID4Generator, _mp_map_wrapper, archive_files, detect_encoding, detect_files,
     detect_indentation, detect_linesep, expand_glob_iter, first_non_none, first_truthy,
-    get_parso_grammar_versions, is_python_filename, is_windows, map_tasks, parse_boolean_state,
-    parse_indentation, parse_linesep, parso_parse, recover_files)
+    get_parso_grammar_versions, is_python_filename, is_windows, map_tasks, parallel_available,
+    parse_boolean_state, parse_indentation, parse_linesep, parso_parse, recover_files)
 
 
 def read_text_file(filename, encoding='utf-8'):
@@ -508,7 +508,7 @@ class TestBPCUtils(unittest.TestCase):
 
         write_text_file(test_filename, code_no_lock)
         output = subprocess.check_output([sys.executable, '-u', test_filename]).decode()  # nosec
-        self.assertTrue(has_interleave(output))
+        self.assertEqual(has_interleave(output), parallel_available)
 
         write_text_file(test_filename, code_with_lock)
         output = subprocess.check_output([sys.executable, '-u', test_filename]).decode()  # nosec
