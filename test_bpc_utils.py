@@ -465,14 +465,14 @@ class TestBPCUtils(unittest.TestCase):
         self.generic_functional_test()
 
         # test when parallel execution is not available
-        parallel_available = sys.modules['bpc_utils'].parallel_available
+        parallel_available_old = sys.modules['bpc_utils'].parallel_available
         sys.modules['bpc_utils'].parallel_available = False
         self.generic_functional_test()
-        sys.modules['bpc_utils'].parallel_available = parallel_available
+        sys.modules['bpc_utils'].parallel_available = parallel_available_old
 
     def test_lock(self):
         num_tasks = 10
-        num_print = 100
+        num_print = 1000
         code_template = textwrap.dedent("""\
             from bpc_utils import TaskLock, map_tasks
 
