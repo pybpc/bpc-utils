@@ -474,15 +474,13 @@ class TestBPCUtils(unittest.TestCase):
         num_tasks = 10
         num_print = 100
         code_template = textwrap.dedent("""\
-            import sys
-
             from bpc_utils import TaskLock, map_tasks
 
 
             def task(task_id):
                 {context}
                     for i in range({num_print}):
-                        print('Task %d says %d' % (task_id, i), flush=True, file=sys.stderr)
+                        print('Task %d says %d' % (task_id, i), flush=True)
 
 
             if __name__ == '__main__':
@@ -509,11 +507,11 @@ class TestBPCUtils(unittest.TestCase):
         test_filename = 'test-lock.py'
 
         write_text_file(test_filename, code_no_lock)
-        output = subprocess.run([sys.executable, '-u', test_filename], stderr=subprocess.PIPE, check=True).stderr.decode()  # nosec
+        output = subprocess.check_output([sys.executable, '-u', test_filename]).decode()  # nosec
         self.assertTrue(has_interleave(output))
 
         write_text_file(test_filename, code_with_lock)
-        output = subprocess.run([sys.executable, '-u', test_filename], stderr=subprocess.PIPE, check=True).stderr.decode()  # nosec
+        output = subprocess.check_output([sys.executable, '-u', test_filename]).decode()  # nosec
         self.assertFalse(has_interleave(output))
 
     def test_Config(self):
