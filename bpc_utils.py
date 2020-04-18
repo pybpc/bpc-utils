@@ -142,17 +142,20 @@ def parse_positive_integer(s):
     """Parse a positive integer from a string representation.
 
     Args:
-        s (Optional[str]): string representation of a positive integer
+        s (Optional[Union[str, int]]): string representation of a positive integer, or just an integer
 
     Returns:
         Optional[int]: the parsed integer result, return :data:`None` if input is :data:`None` or empty string
 
     Raises:
+        TypeError: if ``s`` is not :obj:`str` or :obj:`int`
         ValueError: if ``s`` is an invalid positive integer value
 
     """
-    if not s:
+    if s is None or s == '':  # pylint: disable=compare-to-empty-string
         return None
+    if not isinstance(s, (str, int)):
+        raise TypeError('expect str or int, got {!r}'.format(s))
     try:
         value = int(s)
     except ValueError:
@@ -251,27 +254,35 @@ def parse_linesep(s):
 
 
 def parse_indentation(s):
-    """Parse indentation from a string representation.
+    r"""Parse indentation from a string representation.
 
-    * If a string of positive integer ``n`` is specified, then indentation is ``n`` spaces.
+    * If an integer or a string of positive integer ``n`` is specified, then indentation is ``n`` spaces.
     * If ``'t'`` or ``'tab'`` is specified, then indentation is tab.
+    * If ``'\t'``  (the tab character itself) or a string consisting only of the space character (U+0020) is
+        specified, it is returned directly.
 
     Value matching is **case insensitive**.
 
     Args:
-        s (Optional[str]): string representation of indentation
+        s (Optional[Union[str, int]]): string representation of indentation
 
     Returns:
         Optional[str]: the parsed indentation result, return :data:`None` if input is :data:`None` or empty string
 
     Raises:
+        TypeError: if ``s`` is not :obj:`str` or :obj:`int`
         ValueError: if ``s`` is an invalid indentation value
 
     """
-    if not s:
+    if s is None or s == '':  # pylint: disable=compare-to-empty-string
         return None
-    if s.lower() in {'t', 'tab'}:
-        return '\t'
+    if not isinstance(s, (str, int)):
+        raise TypeError('expect str or int, got {!r}'.format(s))
+    if isinstance(s, str):
+        if s.lower() in {'t', 'tab', '\t'}:
+            return '\t'
+        if s == ' ' * len(s):
+            return s
     try:
         n = int(s)
         if n <= 0:

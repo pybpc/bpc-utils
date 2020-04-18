@@ -191,14 +191,20 @@ class TestBPCUtils(unittest.TestCase):
             SuccessCase(args=(None,), result=None),
             SuccessCase(args=('',), result=None),
             SuccessCase(args=('1',), result=1),
+            SuccessCase(args=(1,), result=1),
             SuccessCase(args=('2',), result=2),
+            SuccessCase(args=(2,), result=2),
             SuccessCase(args=('8',), result=8),
+            SuccessCase(args=(8,), result=8),
         ]
         self.fail_cases = [
             FailCase(args=('X',), exc=ValueError, msg="expect an integer value, got 'X'"),
             FailCase(args=('1.1',), exc=ValueError, msg="expect an integer value, got '1.1'"),
+            FailCase(args=(1.1,), exc=TypeError, msg="expect str or int, got 1.1"),
             FailCase(args=('0',), exc=ValueError, msg="expect integer value to be positive, got 0"),
+            FailCase(args=(0,), exc=ValueError, msg="expect integer value to be positive, got 0"),
             FailCase(args=('-1',), exc=ValueError, msg="expect integer value to be positive, got -1"),
+            FailCase(args=(-1,), exc=ValueError, msg="expect integer value to be positive, got -1"),
         ]
         self.target_func = parse_positive_integer
         self.generic_functional_test()
@@ -250,15 +256,27 @@ class TestBPCUtils(unittest.TestCase):
             SuccessCase(args=('tab',), result='\t'),
             SuccessCase(args=('Tab',), result='\t'),
             SuccessCase(args=('TAB',), result='\t'),
+            SuccessCase(args=('\t',), result='\t'),
             SuccessCase(args=('2',), result=' ' * 2),
+            SuccessCase(args=(2,), result=' ' * 2),
+            SuccessCase(args=(' ' * 2,), result=' ' * 2),
             SuccessCase(args=('4',), result=' ' * 4),
+            SuccessCase(args=(4,), result=' ' * 4),
+            SuccessCase(args=(' ' * 4,), result=' ' * 4),
             SuccessCase(args=('8',), result=' ' * 8),
+            SuccessCase(args=(8,), result=' ' * 8),
+            SuccessCase(args=(' ' * 8,), result=' ' * 8),
         ]
         self.fail_cases = [
             FailCase(args=('X',), exc=ValueError, msg="invalid indentation value 'X'"),
+            FailCase(args=('\t\t',), exc=ValueError, msg=r"invalid indentation value '\\t\\t'"),
+            FailCase(args=('\n',), exc=ValueError, msg=r"invalid indentation value '\\n'"),
             FailCase(args=('0',), exc=ValueError, msg="invalid indentation value '0'"),
+            FailCase(args=(0,), exc=ValueError, msg="invalid indentation value 0"),
             FailCase(args=('-1',), exc=ValueError, msg="invalid indentation value '-1'"),
+            FailCase(args=(-1,), exc=ValueError, msg="invalid indentation value -1"),
             FailCase(args=('1.1',), exc=ValueError, msg="invalid indentation value '1.1'"),
+            FailCase(args=(1.1,), exc=TypeError, msg="expect str or int, got 1.1"),
         ]
         self.target_func = parse_indentation
         self.generic_functional_test()
