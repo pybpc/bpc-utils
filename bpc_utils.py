@@ -138,6 +138,30 @@ def first_non_none(*args):
     return next(filter(lambda x: x is not None, args), None)  # pylint: disable=filter-builtin-not-iterating
 
 
+def parse_positive_integer(s):
+    """Parse a positive integer from a string representation.
+
+    Args:
+        s (Optional[str]): string representation of a positive integer
+
+    Returns:
+        Optional[int]: the parsed integer result, return :data:`None` if input is :data:`None` or empty string
+
+    Raises:
+        ValueError: if ``s`` is an invalid positive integer value
+
+    """
+    if not s:
+        return None
+    try:
+        value = int(s)
+    except ValueError:
+        raise ValueError('expect an integer value, got {!r}'.format(s)) from None
+    if value <= 0:
+        raise ValueError('expect integer value to be positive, got {!r}'.format(value))
+    return value
+
+
 #: Dict[str, bool]: A mapping from string representation to boolean states.
 #: The values are used for :func:`parse_boolean_state`.
 _boolean_state_lookup = {
@@ -729,7 +753,7 @@ class Config(collections.abc.MutableMapping):
         return '%s(%s)' % (type_name, ', '.join(arg_strings))
 
 
-__all__ = ['get_parso_grammar_versions', 'first_truthy', 'first_non_none',
+__all__ = ['get_parso_grammar_versions', 'first_truthy', 'first_non_none', 'parse_positive_integer',
            'parse_boolean_state', 'parse_linesep', 'parse_indentation', 'BPCSyntaxError', 'UUID4Generator',
            'detect_files', 'archive_files', 'recover_files', 'detect_encoding', 'detect_linesep',
            'detect_indentation', 'parso_parse', 'map_tasks', 'TaskLock', 'Config']

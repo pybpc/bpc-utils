@@ -20,7 +20,8 @@ from bpc_utils import (
     UUID4Generator, _mp_map_wrapper, archive_files, detect_encoding, detect_files,
     detect_indentation, detect_linesep, expand_glob_iter, first_non_none, first_truthy,
     get_parso_grammar_versions, is_python_filename, is_windows, map_tasks, parallel_available,
-    parse_boolean_state, parse_indentation, parse_linesep, parso_parse, recover_files)
+    parse_boolean_state, parse_indentation, parse_linesep, parse_positive_integer, parso_parse,
+    recover_files)
 
 
 def read_text_file(filename, encoding='utf-8'):
@@ -183,6 +184,23 @@ class TestBPCUtils(unittest.TestCase):
             FailCase(args=(1,), exc=TypeError, msg='is not iterable'),
         ]
         self.target_func = first_non_none
+        self.generic_functional_test()
+
+    def test_parse_positive_integer(self):
+        self.success_cases = [
+            SuccessCase(args=(None,), result=None),
+            SuccessCase(args=('',), result=None),
+            SuccessCase(args=('1',), result=1),
+            SuccessCase(args=('2',), result=2),
+            SuccessCase(args=('8',), result=8),
+        ]
+        self.fail_cases = [
+            FailCase(args=('X',), exc=ValueError, msg="expect an integer value, got 'X'"),
+            FailCase(args=('1.1',), exc=ValueError, msg="expect an integer value, got '1.1'"),
+            FailCase(args=('0',), exc=ValueError, msg="expect integer value to be positive, got 0"),
+            FailCase(args=('-1',), exc=ValueError, msg="expect integer value to be positive, got -1"),
+        ]
+        self.target_func = parse_positive_integer
         self.generic_functional_test()
 
     def test_parse_boolean_state(self):
