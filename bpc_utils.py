@@ -412,7 +412,8 @@ def archive_files(files, archive_dir):
     """
     uuid_gen = UUID4Generator()
     lookup_table = {uuid_gen.gen() + '.py': file for file in files}
-    archive_file = 'archive-{}-{}.tar'.format(time.strftime('%Y%m%d%H%M%S'), binascii.hexlify(os.urandom(8)))
+    random_string = binascii.hexlify(os.urandom(8)).decode('ascii')
+    archive_file = 'archive-{}-{}.tar'.format(time.strftime('%Y%m%d%H%M%S'), random_string)
     archive_mode = 'w'
     if has_gz_support:  # pragma: no cover
         archive_file += '.gz'
