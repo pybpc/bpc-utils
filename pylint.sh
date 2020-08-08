@@ -1,4 +1,5 @@
 #!/bin/bash
+set -Eeuxo pipefail
 shopt -s dotglob globstar nullglob
 pylint --load-plugins=pylint.extensions.check_elif,pylint.extensions.docstyle,pylint.extensions.emptystring,pylint.extensions.overlapping_exceptions \
        --disable=all \
