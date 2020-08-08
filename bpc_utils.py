@@ -775,6 +775,7 @@ class BaseContext:
 
     Keyword Args:
         column (int): current indentation level
+        raw (bool): raw processing flag
 
     """
 
@@ -787,7 +788,7 @@ class BaseContext:
         """
         return self._buffer
 
-    def __init__(self, node, config, *, column=0):
+    def __init__(self, node, config, *, column=0, raw=False):
         #: Config: Internal configurations as described in :class:`Config`
         self.config = config
         #: str: Indentation sequence.
@@ -797,6 +798,8 @@ class BaseContext:
 
         #: bool: :pep:`8` compliant conversion flag.
         self._pep8 = config.pep8
+        #: UUID4Generator: UUID generator.
+        self._uuid = UUID4Generator(dash=False)
 
         #: parso.tree.NodeOrLeaf: Root node as the ``node`` parameter.
         self._root = node
@@ -816,7 +819,10 @@ class BaseContext:
         self._buffer = ''
 
         self._walk(node)  # traverse children
-        self._concat()  # generate final result
+        if raw:
+            self._buffer = self._prefix + self._suffix
+        else:
+            self._concat()  # generate final result
 
     def __iadd__(self, code):
         """Support of ``+=`` operator.
