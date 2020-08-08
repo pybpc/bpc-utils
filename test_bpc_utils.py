@@ -1,5 +1,6 @@
 # pylint: disable=line-too-long
 
+import ast
 import collections.abc
 import inspect
 import io
@@ -14,7 +15,7 @@ import tempfile
 import textwrap
 import unittest
 
-import parso.tree
+import parso
 from bpc_utils import (
     LOOKUP_TABLE, PARSO_GRAMMAR_VERSIONS, BaseContext, BPCSyntaxError, Config, MakeTextIO, TaskLock,
     UUID4Generator, _mp_map_wrapper, archive_files, detect_encoding, detect_files,
@@ -69,31 +70,32 @@ class FailCase:
 
 
 class TestContext(BaseContext):
-    """A test context with abstract methods overwritten."""
+    """A test context class with abstract methods implemented."""
 
     def _concat(self):
-        """Concatenate final string."""
         self._buffer = self._prefix + ' \u0200 ' + self._suffix
 
     def has_expr(self, node):
-        """Check if node has target expression.
+        return 'magic' in node.get_code()
 
-        Args:
-            node (parso.tree.NodeOrLeaf): parso AST
-
-        Returns:
-            bool: if ``node`` has target expression
-
-        """
-        return node.type == 'string' and node.value == '"test"'
-
-    def process_number(self, node):  # pylint: disable=no-self-use
+    def _process_number(self, node):  # pylint: disable=no-self-use
         """Process number nodes.
 
         Args:
-            node (parso.tree.Number): Python number node
+            node (parso.python.tree.Number): a number node
 
         """
+        node.value = repr(ast.literal_eval(node.value) + 666)
+        self += node.get_code()
+
+    def _process_string(self, node):  # pylint: disable=no-self-use
+        """Process string nodes.
+
+        Args:
+            node (parso.python.tree.String): a string node
+
+        """
+        node.value = repr(ast.literal_eval(node.value) + 'nb')
         self += node.get_code()
 
 
@@ -485,13 +487,13 @@ class TestBPCUtils(unittest.TestCase):
     def test_parso_parse(self):
         parso_parse('1+1')
         parso_parse(b'1+1')
-        parso_parse('1@1', version='3.5')
+        parso_parse('(x := 1)', version='3.8')
         parso_parse(b'# coding: gbk\n\xd6\xd0\xce\xc4')
         self.fail_cases = [
-            FailCase(args=('1@1',), kwargs={'version': '3.4'}, exc=BPCSyntaxError, msg="source file '<unknown>' contains the following syntax errors"),
-            FailCase(args=('1@1',), kwargs={'version': '3.4', 'filename': 'temp'}, exc=BPCSyntaxError, msg="source file 'temp' contains the following syntax errors"),
-            FailCase(args=('1@1',), kwargs={'version': '3.4', 'filename': ''}, exc=BPCSyntaxError, msg="source file '' contains the following syntax errors"),
-            FailCase(args=('1@1',), kwargs={'version': ''}, exc=ValueError, msg='The given version is not in the right format.'),
+            FailCase(args=('(x := 1)',), kwargs={'version': '3.7'}, exc=BPCSyntaxError, msg="source file '<unknown>' contains the following syntax errors"),
+            FailCase(args=('(x := 1)',), kwargs={'version': '3.7', 'filename': 'temp'}, exc=BPCSyntaxError, msg="source file 'temp' contains the following syntax errors"),
+            FailCase(args=('(x := 1)',), kwargs={'version': '3.7', 'filename': ''}, exc=BPCSyntaxError, msg="source file '' contains the following syntax errors"),
+            FailCase(args=('(x := 1)',), kwargs={'version': ''}, exc=ValueError, msg='The given version is not in the right format.'),
         ]
         self.target_func = parso_parse
         self.generic_functional_test()
@@ -634,32 +636,77 @@ class TestBPCUtils(unittest.TestCase):
             self.assertEqual(repr(Config(**{'return': 0, '8': 3})), "Config(**{'8': 3, 'return': 0})")
 
     def test_BaseContext(self):
-        node = parso_parse('test = 123; "test"; test = "test", 123')
+        test_code = 'test = 123; "test"; test = "test", 123'
+        converted_result = "test = 789; 'testnb'; test = 'testnb', 789"
+        node = parso_parse(test_code)
         config = Config(
             indentation='\t',
             linesep='\n',
             pep8=True,
         )
-        context = TestContext(node, config, column=0)
-        self.assertEqual(context.string, 'test = 123; "test"; test = "test", 123 \u0200 ')
 
-    def test_BaseContext_missing_whitespaces(self):
-        self.assertEqual(BaseContext.missing_whitespaces('test', 'test', 2, '\n'), 2)
-        self.assertEqual(BaseContext.missing_whitespaces('test\n', 'test', 2, '\n'), 2)
-        self.assertEqual(BaseContext.missing_whitespaces('test', '\ntest', 2, '\n'), 1)
-        self.assertEqual(BaseContext.missing_whitespaces('test\n\n', 'test', 2, '\n'), 1)
-        self.assertEqual(BaseContext.missing_whitespaces('test\n\n', '\ntest', 2, '\n'), 0)
-        self.assertEqual(BaseContext.missing_whitespaces('test\n', '\n\ntest', 2, '\n'), 0)
+        context = TestContext(node, config)
+        self.assertEqual(context.config, config)
+        self.assertEqual(context._indentation, '\t')  # pylint: disable=protected-access
+        self.assertEqual(context._linesep, '\n')  # pylint: disable=protected-access
+        self.assertEqual(context._pep8, True)  # pylint: disable=protected-access
+        self.assertIs(context._root, node)  # pylint: disable=protected-access
+        self.assertEqual(context._indent_level, 0)  # pylint: disable=protected-access
+        self.assertIsInstance(context._uuid_gen, UUID4Generator)  # pylint: disable=protected-access
+        self.assertEqual(context.string, converted_result + ' \u0200 ')
+        self.assertEqual(str(context), converted_result + ' \u0200')
 
-        self.assertEqual(BaseContext.missing_whitespaces('test', '\rtest', 2, '\n'), 2)
-        self.assertEqual(BaseContext.missing_whitespaces('test', '\ntest', 2, '\r\n'), 2)
+        context = TestContext(parso_parse(test_code), config, raw=True)
+        self.assertEqual(context.string, converted_result)
+
+        # "magic" should go into suffix
+        context = TestContext(parso_parse('magic'), config)
+        self.assertEqual(context.string, ' \u0200 magic')
+
+        # test passing a leaf node to BaseContext
+        context = TestContext(parso_parse('123').children[0], config)
+        self.assertEqual(context.string, '123 \u0200 ')
+
+    def test_BaseContext_split_comments(self):
+        self.success_cases = [
+            SuccessCase(args=('print(666)', '\n'), result=('', 'print(666)')),
+            SuccessCase(args=('# comment\nprint(666)', '\n'), result=('# comment\n', 'print(666)')),
+            SuccessCase(args=('# comment\nprint(666)', '\r'), result=('# comment\nprint(666)', '')),
+            SuccessCase(args=('# comment\rprint(666)\r', '\r'), result=('# comment\r', 'print(666)\r')),
+            SuccessCase(args=('# c1\n #c2\nprint(666)\n', '\n'), result=('# c1\n #c2\n', 'print(666)\n')),
+            SuccessCase(args=('# coding: gbk\n \n# comment\nprint(666)\n', '\n'), result=('# coding: gbk\n', ' \n# comment\nprint(666)\n')),
+        ]
+        self.target_func = BaseContext.split_comments
+        self.generic_functional_test()
+
+    def test_BaseContext_missing_newlines(self):
+        self.success_cases = [
+            SuccessCase(args=('test', 'test', 2, '\n'), result=2),
+            SuccessCase(args=('test\n', 'test', 2, '\n'), result=2),
+            SuccessCase(args=('test', '\ntest', 2, '\n'), result=1),
+            SuccessCase(args=('test\n\n', 'test', 2, '\n'), result=1),
+            SuccessCase(args=('test\n\n', '\ntest', 2, '\n'), result=0),
+            SuccessCase(args=('test\n', '\n\ntest', 2, '\n'), result=0),
+            SuccessCase(args=('test', '\rtest', 2, '\n'), result=2),
+            SuccessCase(args=('test', '\ntest', 2, '\r\n'), result=2),
+            SuccessCase(args=('test', '', 2, '\n'), result=2),
+            SuccessCase(args=('', 'test', 2, '\n'), result=2),
+            SuccessCase(args=('', '', 2, '\n'), result=2),
+        ]
+        self.target_func = BaseContext.missing_newlines
+        self.generic_functional_test()
 
     def test_BaseContext_extract_whitespaces(self):
-        node = parso_parse('\ntest = "test", 123, "test", 123   ')
-        self.assertEqual(BaseContext.extract_whitespaces(node), ('\n', '   '))
-
-        node = parso_parse('test = 1')
-        self.assertEqual(BaseContext.extract_whitespaces(node), ('', ''))
+        self.success_cases = [
+            SuccessCase(args=('\ntest = "test", 123, "test", 123   ',), result=('\n', '   ')),
+            SuccessCase(args=('\rtest = "test", 123, "test", 123\f\t',), result=('\r', '\f\t')),
+            SuccessCase(args=('test = "test", 123, "test", 123\t',), result=('', '\t')),
+            SuccessCase(args=('\r\ntest = "test", 123, "test", 123',), result=('\r\n', '')),
+            SuccessCase(args=('test = 1',), result=('', '')),
+            SuccessCase(args=('',), result=('', '')),
+        ]
+        self.target_func = lambda node: BaseContext.extract_whitespaces(parso_parse(node))
+        self.generic_functional_test()
 
 
 if __name__ == '__main__':

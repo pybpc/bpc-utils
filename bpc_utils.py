@@ -719,7 +719,7 @@ def TaskLock():
     return task_lock
 
 
-class Config(collections.abc.MutableMapping):  # pylint: disable=eq-without-hash
+class Config(collections.abc.MutableMapping):
     """Configuration namespace.
 
     This class is inspired from :class:`argparse.Namespace` for storing
@@ -766,66 +766,59 @@ class Config(collections.abc.MutableMapping):  # pylint: disable=eq-without-hash
         return '%s(%s)' % (type_name, ', '.join(arg_strings))
 
 
-class BaseContext:
-    """General conversion context.
+class BaseContext(abc.ABC):
+    """Abstract base class for general conversion context."""
 
-    Args:
-        node (parso.tree.NodeOrLeaf): parso AST
-        config (Config): conversion configurations
+    def __init__(self, node, config, *, indent_level=0, raw=False):
+        """Initialize BaseContext.
 
-    Keyword Args:
-        column (int): current indentation level
-        raw (bool): raw processing flag
+        Args:
+            node (parso.tree.NodeOrLeaf): parso AST
+            config (Config): conversion configurations
 
-    """
-
-    @property
-    def string(self):
-        """Conversion buffer (:attr:`self._buffer <bpc_utils.BaseContext._buffer>`).
-
-        :rtype: str
+        Keyword Args:
+            indent_level (int): current indentation level
+            raw (bool): raw processing flag
 
         """
-        return self._buffer
-
-    def __init__(self, node, config, *, column=0, raw=False):
-        #: Config: Internal configurations as described in :class:`Config`
+        #: Config: Internal configurations.
         self.config = config
         #: str: Indentation sequence.
         self._indentation = config.indentation
         #: Literal['\\n', '\\r\\n', '\\r']: Line seperator.
         self._linesep = config.linesep
-
         #: bool: :pep:`8` compliant conversion flag.
         self._pep8 = config.pep8
-        #: UUID4Generator: UUID generator.
-        self._uuid = UUID4Generator(dash=False)
 
-        #: parso.tree.NodeOrLeaf: Root node as the ``node`` parameter.
+        #: parso.tree.NodeOrLeaf: Root node given by the ``node`` parameter.
         self._root = node
         #: int: Current indentation level.
-        self._column = column
+        self._indent_level = indent_level
 
-        #: bool: Flag if buffer is now :attr:`self._prefix <bpc_utils.BaseContext._prefix>`.
-        self._prefix_or_suffix = True
-        #: Optional[parso.tree.NodeOrLeaf]: Preceding node with target expression, i.e. the *insersion point*.
-        self._node_before_expr = None
+        #: UUID4Generator: UUID generator.
+        self._uuid_gen = UUID4Generator(dash=False)
 
-        #: str: Codes before insersion point.
+        #: str: Code before insertion point.
         self._prefix = ''
-        #: str: Codes after insersion point.
+        #: str: Code after insertion point.
         self._suffix = ''
         #: str: Final converted result.
         self._buffer = ''
 
+        #: bool: Flag if buffer is now :attr:`self._prefix <bpc_utils.BaseContext._prefix>`.
+        self._prefix_or_suffix = True
+        #: Optional[parso.tree.NodeOrLeaf]: Preceding node with the target expression, i.e. the *insertion point*.
+        self._node_before_expr = None
+
         self._walk(node)  # traverse children
+
         if raw:
             self._buffer = self._prefix + self._suffix
         else:
             self._concat()  # generate final result
 
     def __iadd__(self, code):
-        """Support of ``+=`` operator.
+        """Support of the ``+=`` operator.
 
         If :attr:`self._prefix_or_suffix <bpc_utils.BaseContext._prefix_or_suffix>` is :data:`True`,
         then the ``code`` will be appended to :attr:`self._prefix <bpc_utils.BaseContext._prefix>`;
@@ -833,6 +826,9 @@ class BaseContext:
 
         Args:
             code (str): code string
+
+        Returns:
+            BaseContext: self
 
         """
         if self._prefix_or_suffix:
@@ -842,21 +838,26 @@ class BaseContext:
         return self
 
     def __str__(self):
-        """Returns *stripped* :attr:`self._buffer <bpc_utils.BaseContext._buffer>`."""
+        """Returns a *stripped* version of :attr:`self._buffer <bpc_utils.BaseContext._buffer>`."""
         return self._buffer.strip()
+
+    @property
+    def string(self):
+        """Returns conversion buffer (:attr:`self._buffer <bpc_utils.BaseContext._buffer>`)."""
+        return self._buffer
 
     def _walk(self, node):
         """Start traversing the AST module.
 
-        Args:
-            node (parso.tree.NodeOrLeaf): parso AST
-
         The method traverses through all *children* of ``node``. It first checks
-        if such child has assignment expression. If so, it will toggle
+        if such child has the target expression. If so, it will toggle
         :attr:`self._prefix_or_suffix <bpc_utils.BaseContext._prefix_or_suffix>`
-        as :data:`False` and save the last previous child as
+        (set to :data:`False`) and save the last previous child as
         :attr:`self._node_before_expr <bpc_utils.BaseContext._node_before_expr>`.
         Then it processes the child with :meth:`self._process <bpc_utils.BaseContext._process>`.
+
+        Args:
+            node (parso.tree.NodeOrLeaf): parso AST
 
         """
         # process node
@@ -870,20 +871,20 @@ class BaseContext:
                 last_node = child
             return
 
-        # process leaf
+        # preserve leaf node as is by default
         self += node.get_code()
 
     def _process(self, node):
-        """Walk parso AST.
-
-        Args:
-            node (parso.tree.NodeOrLeaf): parso AST
+        """Recursively process parso AST.
 
         All processing methods for a specific ``node`` type are defined as
         ``_process_{type}``. This method first checks if such processing
         method exists. If so, it will call such method on the ``node``;
-        else it will traverse through all *children* of ``node``, and perform
+        otherwise it will traverse through all *children* of ``node``, and perform
         the same logic on each child.
+
+        Args:
+            node (parso.tree.NodeOrLeaf): parso AST
 
         """
         func_name = '_process_%s' % node.type
@@ -894,124 +895,133 @@ class BaseContext:
 
         if hasattr(node, 'children'):
             for child in node.children:
-                func_name = '_process_%s' % child.type
-                func = getattr(self, func_name, self._process)
-                func(child)
+                self._process(child)
             return
 
-        # leaf node
+        # preserve leaf node as is by default
         self += node.get_code()
 
     @abc.abstractmethod
     def _concat(self):
         """Concatenate final string."""
+        raise NotImplementedError  # pragma: no cover
 
     @abc.abstractmethod
     def has_expr(self, node):
-        """Check if node has target expression.
+        """Check if node has the target expression.
 
         Args:
             node (parso.tree.NodeOrLeaf): parso AST
 
         Returns:
-            bool: if ``node`` has target expression
+            bool: if ``node`` has the target expression
 
         """
+        raise NotImplementedError  # pragma: no cover
 
-    def _strip(self):
-        """Strip comments from suffix buffer.
+    @staticmethod
+    def split_comments(code, linesep):
+        """Separates prefixing comments from code.
 
-        Returns:
-            Tuple[str, str]: a tuple of *prefix comments* and *suffix strings*
-
-        This method separates *prefixing* comments and *suffixing* codes. It is
-        rather useful when inserting codes might break `shebang`_ and encoding
+        This method separates *prefixing* comments and *suffixing* code. It is
+        rather useful when inserting code might break `shebang`_ and encoding
         cookies (:pep:`263`), etc.
 
         .. _shebang: https://en.wikipedia.org/wiki/Shebang_(Unix)
 
+        Args:
+            code (str): the code to split comments
+            linesep (str): line seperator
+
+        Returns:
+            Tuple[str, str]: a tuple of *prefix comments* and *suffix code*
+
         """
         prefix = ''
         suffix = ''
+        prefix_or_suffix = True
 
-        lines = io.StringIO(self._suffix, newline=self._linesep)
-        for line in lines:
-            if line.strip().startswith('#'):
-                prefix += line
-                continue
-            suffix += line
-            break
+        for line in code.split(linesep):
+            if prefix_or_suffix:
+                if line.strip().startswith('#'):
+                    prefix += line + linesep
+                    continue
+                prefix_or_suffix = False
+            suffix += line + linesep
 
-        for line in lines:
-            suffix += line
+        if prefix_or_suffix:
+            prefix = prefix[:-len(linesep)]  # 3.9+ str.removesuffix
+        else:
+            suffix = suffix[:-len(linesep)]
+
         return prefix, suffix
 
     @staticmethod
-    def missing_whitespaces(prefix, suffix, blank, linesep):
-        """Count missing preceding or succeeding blank lines.
+    def missing_newlines(prefix, suffix, expected, linesep):
+        """Count missing blank lines for code insertion given surrounding code.
 
         Args:
             prefix (str): preceding source code
             suffix (str): succeeding source code
-            blank (int): number of expecting blank lines
+            expected (int): number of expected blank lines
             linesep (str): line seperator
 
         Returns:
-            int: number of preceding blank lines
+            int: number of blank lines to add
 
         """
-        count = 0
-        if prefix:
-            for line in reversed(prefix.split(linesep)):
-                if line.strip():
-                    break
-                count += 1
-            if count > 0:  # keep trailing newline in `prefix`
-                count -= 1
-        if suffix:
-            for line in suffix.split(linesep):
-                if line.strip():
-                    break
-                count += 1
+        current = 0
 
-        if count < 0:
-            count = 0
-        missing = blank - count
-        if missing > 0:
-            return missing
-        return 0
+        # count trailing newlines in `prefix`
+        if prefix:
+            for line in reversed(prefix.split(linesep)):  # pragma: no branch
+                if line.strip():
+                    break
+                current += 1
+            if current > 0:  # keep a trailing newline in `prefix`
+                current -= 1
+
+        # count leading newlines in `suffix`
+        if suffix:
+            for line in suffix.split(linesep):  # pragma: no branch
+                if line.strip():
+                    break
+                current += 1
+
+        missing = expected - current
+        return max(missing, 0)
 
     @staticmethod
     def extract_whitespaces(node):
-        """Extract preceding and succeeding whitespaces.
+        """Extract preceding and succeeding whitespaces from the node given.
 
         Args:
             node (parso.tree.NodeOrLeaf) parso AST
 
         Returns:
-            Tuple[str, str]: a tuple of *preceding* and *succeeding* whitespaces
+            Tuple[str, str]: a tuple of *preceding* and *succeeding* whitespaces in ``node``
 
         """
         code = node.get_code()
 
-        # preceding whitespaces
+        # get preceding whitespaces
         prefix = ''
         for char in code:
-            if char not in ' \t\n\r\f\v':
+            if char not in ' \t\n\r\f':
                 break
             prefix += char
 
-        # succeeding whitespaces
+        # get succeeding whitespaces
         suffix = ''
         for char in reversed(code):
-            if char not in ' \t\n\r\f\v':
+            if char not in ' \t\n\r\f':
                 break
             suffix += char
 
-        return prefix, suffix
+        return prefix, suffix[::-1]
 
 
 __all__ = ['get_parso_grammar_versions', 'first_truthy', 'first_non_none', 'parse_positive_integer',
            'parse_boolean_state', 'parse_linesep', 'parse_indentation', 'BPCSyntaxError', 'UUID4Generator',
            'detect_files', 'archive_files', 'recover_files', 'detect_encoding', 'detect_linesep',
-           'detect_indentation', 'parso_parse', 'map_tasks', 'TaskLock', 'Config']
+           'detect_indentation', 'parso_parse', 'map_tasks', 'TaskLock', 'Config', 'BaseContext']
