@@ -1,3 +1,4 @@
+import abc
 import binascii
 import collections
 import collections.abc
@@ -718,7 +719,7 @@ def TaskLock():
     return task_lock
 
 
-class Config(collections.abc.MutableMapping):
+class Config(collections.abc.MutableMapping):  # pylint: disable=eq-without-hash
     """Configuration namespace.
 
     This class is inspired from :class:`argparse.Namespace` for storing
@@ -763,6 +764,245 @@ class Config(collections.abc.MutableMapping):
         if star_args:
             arg_strings.append('**%s' % repr(star_args))
         return '%s(%s)' % (type_name, ', '.join(arg_strings))
+
+
+class BaseContext:
+    """General conversion context.
+
+    Args:
+        node (parso.tree.NodeOrLeaf): parso AST
+        config (Config): conversion configurations
+
+    Keyword Args:
+        column (int): current indentation level
+
+    """
+
+    @property
+    def string(self):
+        """Conversion buffer (:attr:`self._buffer <bpc_utils.BaseContext._buffer>`).
+
+        :rtype: str
+
+        """
+        return self._buffer
+
+    def __init__(self, node, config, *, column=0):
+        #: Config: Internal configurations as described in :class:`Config`
+        self.config = config
+        #: str: Indentation sequence.
+        self._indentation = config.indentation
+        #: Literal['\\n', '\\r\\n', '\\r']: Line seperator.
+        self._linesep = config.linesep
+
+        #: bool: :pep:`8` compliant conversion flag.
+        self._pep8 = config.pep8
+
+        #: parso.tree.NodeOrLeaf: Root node as the ``node`` parameter.
+        self._root = node
+        #: int: Current indentation level.
+        self._column = column
+
+        #: bool: Flag if buffer is now :attr:`self._prefix <bpc_utils.BaseContext._prefix>`.
+        self._prefix_or_suffix = True
+        #: Optional[parso.tree.NodeOrLeaf]: Preceding node with target expression, i.e. the *insersion point*.
+        self._node_before_expr = None
+
+        #: str: Codes before insersion point.
+        self._prefix = ''
+        #: str: Codes after insersion point.
+        self._suffix = ''
+        #: str: Final converted result.
+        self._buffer = ''
+
+        self._walk(node)  # traverse children
+        self._concat()  # generate final result
+
+    def __iadd__(self, code):
+        """Support of ``+=`` operator.
+
+        If :attr:`self._prefix_or_suffix <bpc_utils.BaseContext._prefix_or_suffix>` is :data:`True`,
+        then the ``code`` will be appended to :attr:`self._prefix <bpc_utils.BaseContext._prefix>`;
+        else it will be appended to :attr:`self._suffix <bpc_utils.BaseContext._suffix>`.
+
+        Args:
+            code (str): code string
+
+        """
+        if self._prefix_or_suffix:
+            self._prefix += code
+        else:
+            self._suffix += code
+        return self
+
+    def __str__(self):
+        """Returns *stripped* :attr:`self._buffer <bpc_utils.BaseContext._buffer>`."""
+        return self._buffer.strip()
+
+    def _walk(self, node):
+        """Start traversing the AST module.
+
+        Args:
+            node (parso.tree.NodeOrLeaf): parso AST
+
+        The method traverses through all *children* of ``node``. It first checks
+        if such child has assignment expression. If so, it will toggle
+        :attr:`self._prefix_or_suffix <bpc_utils.BaseContext._prefix_or_suffix>`
+        as :data:`False` and save the last previous child as
+        :attr:`self._node_before_expr <bpc_utils.BaseContext._node_before_expr>`.
+        Then it processes the child with :meth:`self._process <bpc_utils.BaseContext._process>`.
+
+        """
+        # process node
+        if hasattr(node, 'children'):
+            last_node = None
+            for child in node.children:
+                if self.has_expr(child):
+                    self._prefix_or_suffix = False
+                    self._node_before_expr = last_node
+                self._process(child)
+                last_node = child
+            return
+
+        # process leaf
+        self += node.get_code()
+
+    def _process(self, node):
+        """Walk parso AST.
+
+        Args:
+            node (parso.tree.NodeOrLeaf): parso AST
+
+        All processing methods for a specific ``node`` type are defined as
+        ``_process_{type}``. This method first checks if such processing
+        method exists. If so, it will call such method on the ``node``;
+        else it will traverse through all *children* of ``node``, and perform
+        the same logic on each child.
+
+        """
+        func_name = '_process_%s' % node.type
+        if hasattr(self, func_name):
+            func = getattr(self, func_name)
+            func(node)
+            return
+
+        if hasattr(node, 'children'):
+            for child in node.children:
+                func_name = '_process_%s' % child.type
+                func = getattr(self, func_name, self._process)
+                func(child)
+            return
+
+        # leaf node
+        self += node.get_code()
+
+    @abc.abstractmethod
+    def _concat(self):
+        """Concatenate final string."""
+
+    @abc.abstractmethod
+    def has_expr(self, node):
+        """Check if node has target expression.
+
+        Args:
+            node (parso.tree.NodeOrLeaf): parso AST
+
+        Returns:
+            bool: if ``node`` has target expression
+
+        """
+
+    def _strip(self):
+        """Strip comments from suffix buffer.
+
+        Returns:
+            Tuple[str, str]: a tuple of *prefix comments* and *suffix strings*
+
+        This method separates *prefixing* comments and *suffixing* codes. It is
+        rather useful when inserting codes might break `shebang`_ and encoding
+        cookies (:pep:`263`), etc.
+
+        .. _shebang: https://en.wikipedia.org/wiki/Shebang_(Unix)
+
+        """
+        prefix = ''
+        suffix = ''
+
+        lines = io.StringIO(self._suffix, newline=self._linesep)
+        for line in lines:
+            if line.strip().startswith('#'):
+                prefix += line
+                continue
+            suffix += line
+            break
+
+        for line in lines:
+            suffix += line
+        return prefix, suffix
+
+    @staticmethod
+    def missing_whitespaces(prefix, suffix, blank, linesep):
+        """Count missing preceding or succeeding blank lines.
+
+        Args:
+            prefix (str): preceding source code
+            suffix (str): succeeding source code
+            blank (int): number of expecting blank lines
+            linesep (str): line seperator
+
+        Returns:
+            int: number of preceding blank lines
+
+        """
+        count = 0
+        if prefix:
+            for line in reversed(prefix.split(linesep)):
+                if line.strip():
+                    break
+                count += 1
+            if count > 0:  # keep trailing newline in `prefix`
+                count -= 1
+        if suffix:
+            for line in suffix.split(linesep):
+                if line.strip():
+                    break
+                count += 1
+
+        if count < 0:
+            count = 0
+        missing = blank - count
+        if missing > 0:
+            return missing
+        return 0
+
+    @staticmethod
+    def extract_whitespaces(node):
+        """Extract preceding and succeeding whitespaces.
+
+        Args:
+            node (parso.tree.NodeOrLeaf) parso AST
+
+        Returns:
+            Tuple[str, str]: a tuple of *preceding* and *succeeding* whitespaces
+
+        """
+        code = node.get_code()
+
+        # preceding whitespaces
+        prefix = ''
+        for char in code:
+            if char not in ' \t\n\r\f\v':
+                break
+            prefix += char
+
+        # succeeding whitespaces
+        suffix = ''
+        for char in reversed(code):
+            if char not in ' \t\n\r\f\v':
+                break
+            suffix += char
+
+        return prefix, suffix
 
 
 __all__ = ['get_parso_grammar_versions', 'first_truthy', 'first_non_none', 'parse_positive_integer',

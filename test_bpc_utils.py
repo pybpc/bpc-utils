@@ -14,9 +14,9 @@ import tempfile
 import textwrap
 import unittest
 
-import parso
+import parso.tree
 from bpc_utils import (
-    LOOKUP_TABLE, PARSO_GRAMMAR_VERSIONS, BPCSyntaxError, Config, MakeTextIO, TaskLock,
+    LOOKUP_TABLE, PARSO_GRAMMAR_VERSIONS, BaseContext, BPCSyntaxError, Config, MakeTextIO, TaskLock,
     UUID4Generator, _mp_map_wrapper, archive_files, detect_encoding, detect_files,
     detect_indentation, detect_linesep, expand_glob_iter, first_non_none, first_truthy,
     get_parso_grammar_versions, is_python_filename, is_windows, map_tasks, parallel_available,
@@ -66,6 +66,35 @@ class FailCase:
 
     def __repr__(self):  # pragma: no cover
         return 'FailCase(args={!r}, kwargs={!r}, exc={!r}, msg={!r})'.format(self.args, self.kwargs, self.exc, self.msg)
+
+
+class TestContext(BaseContext):
+    """A test context with abstract methods overwritten."""
+
+    def _concat(self):
+        """Concatenate final string."""
+        self._buffer = self._prefix + ' \u0200 ' + self._suffix
+
+    def has_expr(self, node):
+        """Check if node has target expression.
+
+        Args:
+            node (parso.tree.NodeOrLeaf): parso AST
+
+        Returns:
+            bool: if ``node`` has target expression
+
+        """
+        return node.type == 'string' and node.value == '"test"'
+
+    def process_number(self, node):  # pylint: disable=no-self-use
+        """Process number nodes.
+
+        Args:
+            node (parso.tree.Number): Python number node
+
+        """
+        self += node.get_code()
 
 
 class TestBPCUtils(unittest.TestCase):
@@ -603,6 +632,34 @@ class TestBPCUtils(unittest.TestCase):
         if sys.version_info[:2] >= (3, 6):  # dict preserves insertion order  # pragma: no cover
             self.assertEqual(repr(Config(**{'z': 1, 'return': 2, '8': 3})), "Config(z=1, **{'8': 3, 'return': 2})")
             self.assertEqual(repr(Config(**{'return': 0, '8': 3})), "Config(**{'8': 3, 'return': 0})")
+
+    def test_BaseContext(self):
+        node = parso_parse('test = 123; "test"; test = "test", 123')
+        config = Config(
+            indentation='\t',
+            linesep='\n',
+            pep8=True,
+        )
+        context = TestContext(node, config, column=0)
+        self.assertEqual(context.string, 'test = 123; "test"; test = "test", 123 \u0200 ')
+
+    def test_BaseContext_missing_whitespaces(self):
+        self.assertEqual(BaseContext.missing_whitespaces('test', 'test', 2, '\n'), 2)
+        self.assertEqual(BaseContext.missing_whitespaces('test\n', 'test', 2, '\n'), 2)
+        self.assertEqual(BaseContext.missing_whitespaces('test', '\ntest', 2, '\n'), 1)
+        self.assertEqual(BaseContext.missing_whitespaces('test\n\n', 'test', 2, '\n'), 1)
+        self.assertEqual(BaseContext.missing_whitespaces('test\n\n', '\ntest', 2, '\n'), 0)
+        self.assertEqual(BaseContext.missing_whitespaces('test\n', '\n\ntest', 2, '\n'), 0)
+
+        self.assertEqual(BaseContext.missing_whitespaces('test', '\rtest', 2, '\n'), 2)
+        self.assertEqual(BaseContext.missing_whitespaces('test', '\ntest', 2, '\r\n'), 2)
+
+    def test_BaseContext_extract_whitespaces(self):
+        node = parso_parse('\ntest = "test", 123, "test", 123   ')
+        self.assertEqual(BaseContext.extract_whitespaces(node), ('\n', '   '))
+
+        node = parso_parse('test = 1')
+        self.assertEqual(BaseContext.extract_whitespaces(node), ('', ''))
 
 
 if __name__ == '__main__':
