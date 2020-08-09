@@ -45,6 +45,8 @@ autodoc_typehints = 'description'
 # autodoc_member_order = 'bysource'
 autodoc_member_order = 'groupwise'
 
+autoclass_content = 'both'
+
 # Napoleon settings
 napoleon_google_docstring = True
 napoleon_numpy_docstring = True
