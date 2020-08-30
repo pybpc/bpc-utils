@@ -10,10 +10,15 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
-
+import os
+import sys
+sys.path.insert(0, os.path.abspath(
+    os.path.dirname(  # docs/
+        os.path.dirname(  # docs/source
+            os.path.dirname(__file__)  # docs/source/conf.py
+        )
+    )
+))
 
 # -- Project information -----------------------------------------------------
 
@@ -39,6 +44,7 @@ extensions = [
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
+    'parso': ('https://parso.readthedocs.io/en/latest/', None),
 }
 
 autodoc_typehints = 'description'
@@ -77,6 +83,13 @@ exclude_patterns = []
 # a list of builtin themes.
 #
 html_theme = 'alabaster'
+
+
+html_theme_options = {
+    'github_user': 'pybpc',
+    'github_repo': 'bpc-utils',
+    'github_banner': True,
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

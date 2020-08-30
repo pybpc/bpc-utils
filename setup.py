@@ -33,7 +33,7 @@ setup(
         'Topic :: Utilities',
     ],
     keywords='bpc backport utilities',
-    py_modules=['bpc_utils'],
+    packages=['bpc_utils'],
     python_requires='>=3.4',
     install_requires=['parso>=0.6.0'],
 )

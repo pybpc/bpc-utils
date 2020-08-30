@@ -27,6 +27,7 @@ tox = "*"
 sphinx = "*"
 sphinxcontrib-napoleon = "*"
 rstcheck = "*"
+pytest = "*"
 
 [packages]
 parso = ">=0.6.0"

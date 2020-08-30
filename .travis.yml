@@ -9,9 +9,16 @@ python:
 install:
   - pip install parso
   - 'if [[ ! "${TRAVIS_PYTHON_VERSION}" < "3.5" ]]; then pip install flake8 pylint bandit vermin; fi'
-  - pip install coverage codecov
+  - pip install pytest coverage codecov
+  - pip install .
 script:
   - 'if [[ ! "${TRAVIS_PYTHON_VERSION}" < "3.5" ]]; then ./run_linters.sh; fi'
-  - coverage run test_bpc_utils.py
+  - |
+    python -c 'print(__import__("bpc_utils").__file__)' && \
+    coverage run -m pytest && \
+    mv bpc_utils bpc_utils~ && \
+    python -c 'print(__import__("bpc_utils").__file__)' && \
+    pytest && \
+    mv bpc_utils~ bpc_utils
 after_success:
   - codecov

@@ -13,3 +13,4 @@ __pycache__
 /Pipfile.lock
 /docs/build
 .tox/
+.pytest_cache
