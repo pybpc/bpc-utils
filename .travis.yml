@@ -7,10 +7,7 @@ python:
   - "3.7"
   - "3.8"
 install:
-  - pip install parso
-  - 'if [[ ! "${TRAVIS_PYTHON_VERSION}" < "3.5" ]]; then pip install flake8 pylint bandit vermin; fi'
-  - pip install pytest coverage codecov
-  - pip install .
+  - pip install -r requirements-ci.txt
 script:
   - 'if [[ ! "${TRAVIS_PYTHON_VERSION}" < "3.5" ]]; then ./run_linters.sh; fi'
   - |
