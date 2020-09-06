@@ -1,14 +1,16 @@
 """Utility functions for argument parsing."""
 
+from .typing import Dict, Final, Linesep, Optional, Union
 
-def parse_positive_integer(s):
+
+def parse_positive_integer(s: Optional[Union[str, int]]) -> Optional[int]:
     """Parse a positive integer from a string representation.
 
     Args:
-        s (Optional[Union[str, int]]): string representation of a positive integer, or just an integer
+        s: string representation of a positive integer, or just an integer
 
     Returns:
-        Optional[int]: the parsed integer result, return :data:`None` if input is :data:`None` or empty string
+        the parsed integer result, return :data:`None` if input is :data:`None` or empty string
 
     Raises:
         TypeError: if ``s`` is not :obj:`str` or :obj:`int`
@@ -28,8 +30,6 @@ def parse_positive_integer(s):
     return value
 
 
-#: Dict[str, bool]: A mapping from string representation to boolean states.
-#: The values are used for :func:`~bpc_utils.parse_boolean_state`.
 _boolean_state_lookup = {
     '1': True,
     'yes': True,
@@ -41,10 +41,10 @@ _boolean_state_lookup = {
     'n': False,
     'false': False,
     'off': False,
-}
+}  # type: Final[Dict[str, bool]]
 
 
-def parse_boolean_state(s):
+def parse_boolean_state(s: Optional[str]) -> Optional[bool]:
     """Parse a boolean state from a string representation.
 
     * These values are regarded as :data:`True`: ``'1'``, ``'yes'``, ``'y'``, ``'true'``, ``'on'``
@@ -53,10 +53,10 @@ def parse_boolean_state(s):
     Value matching is case **insensitive**.
 
     Args:
-        s (Optional[str]): string representation of a boolean state
+        s: string representation of a boolean state
 
     Returns:
-        Optional[bool]: the parsed boolean result, return :data:`None` if input is :data:`None`
+        the parsed boolean result, return :data:`None` if input is :data:`None`
 
     Raises:
         ValueError: if ``s`` is an invalid boolean state value
@@ -73,8 +73,6 @@ def parse_boolean_state(s):
         raise ValueError('invalid boolean state value {!r}'.format(s)) from None
 
 
-#: Dict[str, str]: A mapping from string representation to linesep.
-#: The values are used for :func:`~bpc_utils.parse_linesep`.
 _linesep_lookup = {
     '\n': '\n',
     'lf': '\n',
@@ -82,10 +80,10 @@ _linesep_lookup = {
     'crlf': '\r\n',
     '\r': '\r',
     'cr': '\r',
-}
+}  # type: Final[Dict[str, Linesep]]
 
 
-def parse_linesep(s):
+def parse_linesep(s: Optional[str]) -> Optional[Linesep]:
     r"""Parse linesep from a string representation.
 
     * These values are regarded as ``'\n'``: ``'\n'``, ``'lf'``
@@ -95,10 +93,10 @@ def parse_linesep(s):
     Value matching is **case insensitive**.
 
     Args:
-        s (Optional[str]): string representation of linesep
+        s: string representation of linesep
 
     Returns:
-        Optional[Literal['\\n', '\\r\\n', '\\r']]: the parsed linesep result,
+        Optional[:data:`~bpc_utils.Linesep`]: the parsed linesep result,
         return :data:`None` if input is :data:`None` or empty string
 
     Raises:
@@ -116,21 +114,21 @@ def parse_linesep(s):
         raise ValueError('invalid linesep value {!r}'.format(s)) from None
 
 
-def parse_indentation(s):
+def parse_indentation(s: Optional[Union[str, int]]) -> Optional[str]:
     r"""Parse indentation from a string representation.
 
     * If an integer or a string of positive integer ``n`` is specified, then indentation is ``n`` spaces.
     * If ``'t'`` or ``'tab'`` is specified, then indentation is tab.
-    * If ``'\t'``  (the tab character itself) or a string consisting only of the space character (U+0020) is
-        specified, it is returned directly.
+    * If ``'\t'``  (the tab character itself) or a string consisting only of the space character (U+0020)
+      is specified, it is returned directly.
 
     Value matching is **case insensitive**.
 
     Args:
-        s (Optional[Union[str, int]]): string representation of indentation
+        s: string representation of indentation
 
     Returns:
-        Optional[str]: the parsed indentation result, return :data:`None` if input is :data:`None` or empty string
+        the parsed indentation result, return :data:`None` if input is :data:`None` or empty string
 
     Raises:
         TypeError: if ``s`` is not :obj:`str` or :obj:`int`

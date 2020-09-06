@@ -7,14 +7,14 @@ python:
   - "3.7"
   - "3.8"
 install:
-  - pip install -r requirements-ci.txt
+  - pip install -r ci/requirements.txt
 script:
-  - 'if [[ ! "${TRAVIS_PYTHON_VERSION}" < "3.5" ]]; then ./run_linters.sh; fi'
+  - 'if [[ ! "${TRAVIS_PYTHON_VERSION}" < "3.5" ]]; then ci/run_linters.sh; fi'
   - |
-    python -c 'print(__import__("bpc_utils").__file__)' && \
+    python ci/path_checker.py && \
     coverage run -m pytest && \
     mv bpc_utils bpc_utils~ && \
-    python -c 'print(__import__("bpc_utils").__file__)' && \
+    python ci/path_checker.py strict && \
     pytest && \
     mv bpc_utils~ bpc_utils
 after_success:

@@ -31,9 +31,15 @@ setup(
         'Programming Language :: Python :: 3 :: Only',
         'Topic :: Software Development',
         'Topic :: Utilities',
+        'Typing :: Typed',
     ],
     keywords='bpc backport utilities',
     packages=['bpc_utils'],
+    package_data={'bpc_utils': ['py.typed']},
     python_requires='>=3.4',
-    install_requires=['parso>=0.6.0'],
+    install_requires=[
+        'parso>=0.6.0',
+        'typing;python_version<"3.5"',
+        'typing_extensions',
+    ],
 )

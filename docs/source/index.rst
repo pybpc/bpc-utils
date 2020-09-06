@@ -30,15 +30,31 @@ Module contents
    :undoc-members:
    :show-inheritance:
    :private-members:
+   :exclude-members: _abc_impl, Linesep
+
+.. data:: bpc_utils.Linesep
+
+   Type alias for ``Literal['\n', '\r\n', '\r']``.
 
 Internal utilities
 ------------------
 
-.. autodata:: bpc_utils.argparse._boolean_state_lookup
+.. data:: bpc_utils.argparse._boolean_state_lookup
 
-.. autodata:: bpc_utils.argparse._linesep_lookup
+   :type: Final[Dict[str, bool]]
+
+   A mapping from string representation to boolean states.
+   The values are used for :func:`~bpc_utils.parse_boolean_state`.
+
+.. data:: bpc_utils.argparse._linesep_lookup
+
+   :type: Final[Dict[str, :data:`~bpc_utils.Linesep`]]
+
+   A mapping from string representation to linesep.
+   The values are used for :func:`~bpc_utils.parse_linesep`.
 
 .. data:: bpc_utils.fileprocessing.has_gz_support
+
    :type: bool
 
    Whether gzip is supported.
@@ -56,6 +72,7 @@ Internal utilities
    :rtype: Iterator[str]
 
 .. data:: bpc_utils.misc.is_windows
+
    :type: bool
 
    Whether the current operating system is Windows.
@@ -66,17 +83,20 @@ Internal utilities
    :show-inheritance:
 
    .. attribute:: obj
+
       :type: Union[str, TextIO]
 
       The object to manage in the context.
 
    .. attribute:: sio
+
       :type: StringIO
 
       The I/O object to manage in the context only if
       :attr:`self.obj <MakeTextIO.obj>` is :obj:`str`.
 
    .. attribute:: pos
+
       :type: int
 
       The original offset of :attr:`self.obj <MakeTextIO.obj>`,
@@ -84,17 +104,20 @@ Internal utilities
       :class:`TextIO <io.TextIOWrapper>`.
 
 .. data:: bpc_utils.multiprocessing.CPU_CNT
+
    :type: int
 
    Number of CPUs for multiprocessing support.
 
 .. data:: bpc_utils.multiprocessing.mp
+
    :type: Optional[ModuleType]
    :value: <module 'multiprocessing'>
 
    An alias of the Python builtin :mod:`multiprocessing` module if available.
 
 .. data:: bpc_utils.multiprocessing.parallel_available
+
    :type: bool
 
    Whether parallel execution is available.
@@ -104,6 +127,7 @@ Internal utilities
 .. autofunction:: bpc_utils.multiprocessing._mp_init_lock
 
 .. data:: bpc_utils.multiprocessing.task_lock
+
    :type: Union[contextlib.nullcontext, multiprocessing.synchronize.Lock]
 
    A lock for possibly concurrent tasks.
