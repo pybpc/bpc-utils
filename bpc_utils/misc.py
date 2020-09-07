@@ -17,7 +17,7 @@ def first_truthy(*args: T) -> Optional[T]:
     ...
 
 
-@overload
+@overload  # noqa: F811
 def first_truthy(args: Iterable[T]) -> Optional[T]:  # noqa: F811
     ...
 
@@ -50,7 +50,7 @@ def first_non_none(*args: T) -> Optional[T]:
     ...
 
 
-@overload
+@overload  # noqa: F811
 def first_non_none(args: Iterable[T]) -> Optional[T]:  # noqa: F811
     ...
 
