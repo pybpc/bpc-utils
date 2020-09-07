@@ -63,13 +63,7 @@ Internal utilities
 
 .. autofunction:: bpc_utils.fileprocessing.is_python_filename
 
-.. function:: bpc_utils.fileprocessing.expand_glob_iter(pathname)
-
-   Wrapper function to perform glob expansion.
-
-   :param str pathname: pathname pattern
-   :returns: an iterator which yields the paths matching a pathname pattern
-   :rtype: Iterator[str]
+.. autofunction:: bpc_utils.fileprocessing.expand_glob_iter
 
 .. data:: bpc_utils.misc.is_windows
 
@@ -128,7 +122,7 @@ Internal utilities
 
 .. data:: bpc_utils.multiprocessing.task_lock
 
-   :type: Union[contextlib.nullcontext, multiprocessing.synchronize.Lock]
+   :type: ContextManager[None]
 
    A lock for possibly concurrent tasks.
 

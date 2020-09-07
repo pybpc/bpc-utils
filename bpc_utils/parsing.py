@@ -3,55 +3,59 @@
 import glob
 import io
 import os
+import re
 import token
 import tokenize
 
 import parso
 
 from .misc import MakeTextIO, first_non_none
+from .typing import Dict, Linesep, List, Literal, Optional, TextIO, Tuple, Union, cast
 
-PARSO_GRAMMAR_VERSIONS = []
-for grammar_file in glob.iglob(os.path.join(parso.__path__[0], 'python', 'grammar*.txt')):
+PARSO_GRAMMAR_VERSIONS = []  # type: List[Tuple[int, int]]
+for grammar_file in glob.iglob(os.path.join(parso.__path__[0], 'python', 'grammar*.txt')):  # type: ignore[attr-defined]
     grammar_version = os.path.basename(grammar_file)[7:-4]
     PARSO_GRAMMAR_VERSIONS.append((int(grammar_version[0]), int(grammar_version[1:])))
 PARSO_GRAMMAR_VERSIONS = sorted(PARSO_GRAMMAR_VERSIONS)
 
 
-def get_parso_grammar_versions(minimum=None):
+def get_parso_grammar_versions(minimum: Optional[str] = None) -> List[str]:
     """Get Python versions that parso supports to parse grammar.
 
     Args:
-        minimum (str): filter result by this minimum version
+        minimum: filter result by this minimum version
 
     Returns:
-        List[str]: a list of Python versions that parso supports to parse grammar
+        a list of Python versions that parso supports to parse grammar
 
     Raises:
+        TypeError: if ``minimum`` is not :obj:`str`
         ValueError: if ``minimum`` is invalid
 
     """
     if minimum is None:
-        return ['{}.{}'.format(*v) for v in PARSO_GRAMMAR_VERSIONS]
-    try:
-        minimum = tuple(map(int, minimum.split('.')))
-    except Exception:
-        raise ValueError('invalid minimum version') from None
+        minimum_tuple = ()  # type: Tuple[int, ...]
     else:
-        return ['{}.{}'.format(*v) for v in PARSO_GRAMMAR_VERSIONS if v >= minimum]
+        if not isinstance(minimum, str):
+            raise TypeError('minimum version should be a string')
+        if not re.fullmatch(r'(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)', minimum):
+            raise ValueError('invalid minimum version')
+        minimum_tuple = tuple(map(int, minimum.split('.')))
+    return ['{}.{}'.format(*v) for v in PARSO_GRAMMAR_VERSIONS if v >= minimum_tuple]
 
 
 class BPCSyntaxError(SyntaxError):
     """Syntax error detected when parsing code."""
 
 
-def detect_encoding(code):
+def detect_encoding(code: bytes) -> str:
     """Detect encoding of Python source code as specified in :pep:`263`.
 
     Args:
-        code (bytes): the code to detect encoding
+        code: the code to detect encoding
 
     Returns:
-        str: the detected encoding, or the default encoding (``utf-8``)
+        the detected encoding, or the default encoding (``utf-8``)
 
     Raises:
         TypeError: if ``code`` is not a :obj:`bytes` string
@@ -63,14 +67,14 @@ def detect_encoding(code):
         return tokenize.detect_encoding(file.readline)[0]
 
 
-def detect_linesep(code):
+def detect_linesep(code: Union[str, bytes, TextIO, parso.tree.NodeOrLeaf]) -> Linesep:
     r"""Detect linesep of Python source code.
 
     Args:
-        code (Union[str, bytes, TextIO, parso.tree.NodeOrLeaf]): the code to detect linesep
+        code: the code to detect linesep
 
     Returns:
-        Literal['\\n', '\\r\\n', '\\r']: the detected linesep (one of ``'\n'``, ``'\r\n'`` and ``'\r'``)
+        :data:`~bpc_utils.Linesep`: the detected linesep (one of ``'\n'``, ``'\r\n'`` and ``'\r'``)
 
     Notes:
         In case of mixed linesep, try voting by the number of occurrences of each linesep value.
@@ -87,9 +91,9 @@ def detect_linesep(code):
         'CR': 0,
         'CRLF': 0,
         'LF': 0,
-    }
+    }  # type: Dict[Literal['CR', 'CRLF', 'LF'], int]
 
-    with MakeTextIO(code) as file:
+    with MakeTextIO(cast(Union[str, TextIO], code)) as file:
         for line in file:
             if line.endswith('\r'):
                 pool['CR'] += 1
@@ -99,17 +103,17 @@ def detect_linesep(code):
                 pool['LF'] += 1
 
     # when there is a tie, prefer LF to CRLF, prefer CRLF to CR
-    return max((pool['LF'], 3, '\n'), (pool['CRLF'], 2, '\r\n'), (pool['CR'], 1, '\r'))[2]
+    return cast(Linesep, max((pool['LF'], 3, '\n'), (pool['CRLF'], 2, '\r\n'), (pool['CR'], 1, '\r'))[2])
 
 
-def detect_indentation(code):
+def detect_indentation(code: Union[str, bytes, TextIO, parso.tree.NodeOrLeaf]) -> str:
     """Detect indentation of Python source code.
 
     Args:
-        code (Union[str, bytes, TextIO, parso.tree.NodeOrLeaf]): the code to detect indentation
+        code: the code to detect indentation
 
     Returns:
-        str: the detected indentation sequence
+        the detected indentation sequence
 
     Notes:
         In case of mixed indentation, try voting by the number of occurrences of
@@ -126,10 +130,10 @@ def detect_indentation(code):
     pool = {
         'space': 0,
         'tab': 0
-    }
-    min_spaces = None
+    }  # type: Dict[Literal['space', 'tab'], int]
+    min_spaces = None  # type: Optional[int]
 
-    with MakeTextIO(code) as file:
+    with MakeTextIO(cast(Union[str, TextIO], code)) as file:
         for token_info in tokenize.generate_tokens(file.readline):
             if token_info.type == token.INDENT:
                 if '\t' in token_info.string and ' ' in token_info.string:
@@ -144,22 +148,23 @@ def detect_indentation(code):
                         min_spaces = min(min_spaces, len(token_info.string))
 
     if pool['space'] > pool['tab']:
-        return ' ' * min_spaces
+        return ' ' * cast(int, min_spaces)
     if pool['space'] < pool['tab']:
         return '\t'
     return ' ' * 4  # same number of spaces and tabs, prefer 4 spaces for PEP 8
 
 
-def parso_parse(code, filename=None, *, version=None):
+def parso_parse(code: Union[str, bytes], filename: Optional[str] = None, *,
+                version: Optional[str] = None) -> parso.python.tree.Module:
     """Parse Python source code with parso.
 
     Args:
-        code (Union[str, bytes]): the code to be parsed
-        filename (str): an optional source file name to provide a context in case of error
-        version (str): parse the code as this version (uses the latest version by default)
+        code: the code to be parsed
+        filename: an optional source file name to provide a context in case of error
+        version: parse the code as this version (uses the latest version by default)
 
     Returns:
-        parso.python.tree.Module: parso AST
+        parso AST
 
     Raises:
         :exc:`BPCSyntaxError`: when source code contains syntax errors

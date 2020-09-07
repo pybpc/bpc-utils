@@ -4,12 +4,25 @@ import collections.abc
 import io
 import keyword
 import platform
+import types
 import uuid
+
+from .typing import Dict, Iterable, Iterator, List, Optional, Set, T, TextIO, Type, Union, overload
 
 is_windows = platform.system() == 'Windows'
 
 
-def first_truthy(*args):
+@overload
+def first_truthy(*args: T) -> Optional[T]:
+    ...
+
+
+@overload
+def first_truthy(args: Iterable[T]) -> Optional[T]:  # noqa: F811
+    ...
+
+
+def first_truthy(*args):  # type: ignore[no-untyped-def]  # noqa: F811
     """Return the first *truthy* value from a list of values.
 
     Args:
@@ -19,7 +32,7 @@ def first_truthy(*args):
             * If two or more positional arguments are provided, then the value list is the positional argument list.
 
     Returns:
-        Any: the first *truthy* value, if no *truthy* values found or sequence is empty, return :data:`None`
+        the first *truthy* value, if no *truthy* values found or sequence is empty, return :data:`None`
 
     Raises:
         TypeError: if no arguments provided
@@ -32,7 +45,17 @@ def first_truthy(*args):
     return next(filter(bool, args), None)  # pylint: disable=filter-builtin-not-iterating
 
 
-def first_non_none(*args):
+@overload
+def first_non_none(*args: T) -> Optional[T]:
+    ...
+
+
+@overload
+def first_non_none(args: Iterable[T]) -> Optional[T]:  # noqa: F811
+    ...
+
+
+def first_non_none(*args):  # type: ignore[no-untyped-def]  # noqa: F811
     """Return the first non-:data:`None` value from a list of values.
 
     Args:
@@ -42,7 +65,7 @@ def first_non_none(*args):
             * If two or more positional arguments are provided, then the value list is the positional argument list.
 
     Returns:
-        Any: the first non-:data:`None` value, if all values are :data:`None` or sequence is empty, return :data:`None`
+        the first non-:data:`None` value, if all values are :data:`None` or sequence is empty, return :data:`None`
 
     Raises:
         TypeError: if no arguments provided
@@ -58,26 +81,26 @@ def first_non_none(*args):
 class UUID4Generator:
     """UUID 4 generator wrapper to prevent UUID collisions."""
 
-    def __init__(self, dash=True):
+    def __init__(self, dash: bool = True) -> None:
         """Constructor of UUID 4 generator wrapper.
 
         Args:
-            dash (bool): whether the generated UUID string has dashes or not
+            dash: whether the generated UUID string has dashes or not
 
         """
-        self.used_uuids = set()
+        self.used_uuids = set()  # type: Set[str]
         self.dash = dash
 
-    def gen(self):
+    def gen(self) -> str:
         """Generate a new UUID 4 string that is guaranteed not to collide with used UUIDs.
 
         Returns:
-            str: a new UUID 4 string
+            a new UUID 4 string
 
         """
         while True:
-            nuid = uuid.uuid4()
-            nuid = str(nuid) if self.dash else nuid.hex
+            new_uuid = uuid.uuid4()
+            nuid = str(new_uuid) if self.dash else new_uuid.hex
             if nuid not in self.used_uuids:  # pragma: no cover
                 break
         self.used_uuids.add(nuid)
@@ -96,16 +119,16 @@ class MakeTextIO:
 
     """
 
-    def __init__(self, obj):
+    def __init__(self, obj: Union[str, TextIO]) -> None:
         """Initialize context.
 
         Args:
-            obj (Union[str, TextIO]): the object to manage in the context
+            obj: the object to manage in the context
 
         """
         self.obj = obj
 
-    def __enter__(self):
+    def __enter__(self) -> TextIO:
         """Enter context.
 
         * If :attr:`self.obj <MakeTextIO.obj>` is :obj:`str`, a
@@ -132,7 +155,8 @@ class MakeTextIO:
             self.obj.seek(0)
         return self.obj
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(self, exc_type: Optional[Type[BaseException]], exc_value: Optional[BaseException],
+                 traceback: Optional[types.TracebackType]) -> None:
         """Exit context.
 
         * If :attr:`self.obj <MakeTextIO.obj>` is :obj:`str`, the
@@ -156,35 +180,35 @@ class Config(collections.abc.MutableMapping):
 
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: object) -> None:
         for name, value in kwargs.items():
             setattr(self, name, value)
 
-    def __contains__(self, key):
+    def __contains__(self, key: object) -> bool:
         return key in self.__dict__
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[str]:
         return iter(self.__dict__)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.__dict__)
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str) -> object:
         return self.__dict__[key]
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: str, value: object) -> None:
         self.__dict__[key] = value
 
-    def __delitem__(self, key):
+    def __delitem__(self, key: str) -> None:
         del self.__dict__[key]
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         return isinstance(other, Config) and self.__dict__ == other.__dict__
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         type_name = type(self).__name__
-        arg_strings = []
-        star_args = {}
+        arg_strings = []  # type: List[str]
+        star_args = {}  # type: Dict[str, object]
         for name, value in sorted(self.__dict__.items()):
             if name.isidentifier() and not keyword.iskeyword(name) and name != '__debug__':
                 arg_strings.append('%s=%r' % (name, value))

@@ -26,7 +26,7 @@ coverage = "*"
 codecov = "*"
 tox = "*"
 sphinx = "*"
-sphinxcontrib-napoleon = "*"
+sphinx-autodoc-typehints = "*"
 rstcheck = "*"
 pytest = ">=4.5.0"
 

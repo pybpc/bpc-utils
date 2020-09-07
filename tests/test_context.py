@@ -1,40 +1,42 @@
 import ast
 
+import parso
 import pytest
-from bpc_utils import BaseContext, Config, UUID4Generator, parso_parse
+from bpc_utils import BaseContext, Config, Linesep, UUID4Generator, parso_parse
+from bpc_utils.typing import Tuple
 
 
 class MagicContext(BaseContext):
     """A test context class with abstract methods implemented."""
 
-    def _concat(self):
+    def _concat(self) -> None:
         self._buffer = self._prefix + ' \u0200 ' + self._suffix
 
-    def has_expr(self, node):
+    def has_expr(self, node: parso.tree.NodeOrLeaf) -> bool:
         return 'magic' in node.get_code()
 
-    def _process_number(self, node):  # pylint: disable=no-self-use
+    def _process_number(self, node: parso.python.tree.Number) -> None:  # pylint: disable=no-self-use
         """Process number nodes.
 
         Args:
-            node (parso.python.tree.Number): a number node
+            node: a number node
 
         """
         node.value = repr(ast.literal_eval(node.value) + 666)
         self += node.get_code()
 
-    def _process_string(self, node):  # pylint: disable=no-self-use
+    def _process_string(self, node: parso.python.tree.String) -> None:  # pylint: disable=no-self-use
         """Process string nodes.
 
         Args:
-            node (parso.python.tree.String): a string node
+            node: a string node
 
         """
         node.value = repr(ast.literal_eval(node.value) + 'nb')
         self += node.get_code()
 
 
-def test_BaseContext():
+def test_BaseContext() -> None:
     test_code = 'test = 123; "test"; test = "test", 123'
     converted_result = "test = 789; 'testnb'; test = 'testnb', 789"
     node = parso_parse(test_code)
@@ -78,7 +80,7 @@ def test_BaseContext():
         ('# coding: gbk\n \n# comment\nprint(666)\n', '\n', ('# coding: gbk\n', ' \n# comment\nprint(666)\n')),
     ]
 )
-def test_BaseContext_split_comments(code, linesep, result):
+def test_BaseContext_split_comments(code: str, linesep: Linesep, result: Tuple[str, str]) -> None:
     assert BaseContext.split_comments(code, linesep) == result  # nosec
 
 
@@ -98,7 +100,7 @@ def test_BaseContext_split_comments(code, linesep, result):
         ('', '', 2, '\n', 2),
     ]
 )
-def test_BaseContext_missing_newlines(prefix, suffix, expected, linesep, result):
+def test_BaseContext_missing_newlines(prefix: str, suffix: str, expected: int, linesep: Linesep, result: int) -> None:
     assert BaseContext.missing_newlines(prefix, suffix, expected, linesep) == result  # nosec
 
 
@@ -113,5 +115,5 @@ def test_BaseContext_missing_newlines(prefix, suffix, expected, linesep, result)
         ('', ('', '')),
     ]
 )
-def test_BaseContext_extract_whitespaces(node, result):
+def test_BaseContext_extract_whitespaces(node: str, result: Tuple[str, str]) -> None:
     assert BaseContext.extract_whitespaces(parso_parse(node)) == result  # nosec

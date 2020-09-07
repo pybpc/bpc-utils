@@ -6,6 +6,7 @@ import sys
 import pytest
 from bpc_utils import Config, UUID4Generator, first_non_none, first_truthy
 from bpc_utils.misc import MakeTextIO
+from bpc_utils.typing import Tuple, Type
 
 
 @pytest.mark.parametrize(
@@ -22,7 +23,7 @@ from bpc_utils.misc import MakeTextIO
         ((0, ()), None),
     ]
 )
-def test_first_truthy(args, result):
+def test_first_truthy(args: Tuple[object], result: object) -> None:
     assert first_truthy(*args) == result  # nosec
 
 
@@ -33,7 +34,7 @@ def test_first_truthy(args, result):
         ((1,), TypeError, 'is not iterable'),
     ]
 )
-def test_first_truthy_error(args, exc, msg):
+def test_first_truthy_error(args: Tuple[object], exc: Type[BaseException], msg: str) -> None:
     with pytest.raises(exc, match=msg):
         first_truthy(*args)
 
@@ -54,7 +55,7 @@ def test_first_truthy_error(args, exc, msg):
         ((None, None), None),
     ]
 )
-def test_first_non_none(args, result):
+def test_first_non_none(args: Tuple[object], result: object) -> None:
     assert first_non_none(*args) == result  # nosec
 
 
@@ -65,27 +66,27 @@ def test_first_non_none(args, result):
         ((1,), TypeError, 'is not iterable'),
     ]
 )
-def test_first_non_none_error(args, exc, msg):
+def test_first_non_none_error(args: Tuple[object], exc: Type[BaseException], msg: str) -> None:
     with pytest.raises(exc, match=msg):
         first_non_none(*args)
 
 
 @pytest.mark.parametrize('dash', [True, False])
-def test_uuid_gen(dash):
+def test_uuid_gen(dash: bool) -> None:
     uuid_gen = UUID4Generator(dash=dash)
     uuids = [uuid_gen.gen() for _ in range(1000)]
     assert all(('-' in x) == dash for x in uuids)  # nosec
     assert len(uuids) == len(set(uuids))  # nosec
 
 
-def test_MakeTextIO_str():
+def test_MakeTextIO_str() -> None:
     with MakeTextIO('hello') as file:
         assert isinstance(file, io.StringIO)  # nosec
         assert file.read() == 'hello'  # nosec
     assert file.closed  # nosec
 
 
-def test_MakeTextIO_seekable_file():
+def test_MakeTextIO_seekable_file() -> None:
     with io.StringIO('deadbeef') as sio:
         assert sio.seekable()  # nosec
         sio.seek(2)
@@ -96,7 +97,7 @@ def test_MakeTextIO_seekable_file():
         assert sio.tell() == 4  # nosec
 
 
-def test_MakeTextIO_unseekable_file():
+def test_MakeTextIO_unseekable_file() -> None:
     with socket.socket() as s:
         s.connect(('httpbin.org', 80))
         s.send(b'GET /anything HTTP/1.1\r\nHost: httpbin.org\r\nConnection: close\r\n\r\n')
@@ -107,12 +108,12 @@ def test_MakeTextIO_unseekable_file():
                 assert data.startswith('HTTP/1.1 200 OK')  # nosec
 
 
-def test_Config():
+def test_Config() -> None:
     config = Config(foo='var', bar=True, boo=1)
     assert isinstance(config, collections.abc.MutableMapping)  # nosec
-    assert config.foo == 'var'  # pylint: disable=no-member  # nosec
-    assert config.bar is True  # pylint: disable=no-member  # nosec
-    assert config.boo == 1  # pylint: disable=no-member  # nosec
+    assert config.foo == 'var'  # type: ignore[attr-defined]  # pylint: disable=no-member  # nosec
+    assert config.bar is True  # type: ignore[attr-defined]  # pylint: disable=no-member  # nosec
+    assert config.boo == 1  # type: ignore[attr-defined]  # pylint: disable=no-member  # nosec
     assert config['foo'] == 'var'  # nosec
     assert config['bar'] is True  # nosec
     assert config['boo'] == 1  # nosec
@@ -135,14 +136,14 @@ def test_Config():
     delattr(config, 'foo')
     assert 'foo' not in config  # nosec
 
-    del config.bar  # pylint: disable=no-member
+    del config.bar  # type: ignore[attr-defined]  # pylint: disable=no-member
     assert 'bar' not in config  # nosec
     assert len(config) == 1  # nosec
     for key, value in config.items():
         assert key == 'boo'  # nosec
         assert value == 1  # nosec
 
-    config.xxx = 'yyy'
+    config.xxx = 'yyy'  # type: ignore[attr-defined]
     assert 'xxx' in config  # nosec
     assert config['xxx'] == 'yyy'  # nosec
 

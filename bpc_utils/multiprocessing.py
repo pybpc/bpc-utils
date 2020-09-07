@@ -2,21 +2,24 @@
 
 import contextlib
 import os
+import types
+
+from .typing import Callable, ContextManager, Generator, Iterable, List, Mapping, Optional, T, Tuple
 
 # multiprocessing support detection and CPU_CNT retrieval
 try:        # try first
     import multiprocessing
 except ImportError:  # pragma: no cover
-    multiprocessing = None
+    multiprocessing = None  # type: ignore[assignment]
 else:       # CPU number if multiprocessing supported
-    if os.name == 'posix' and 'SC_NPROCESSORS_CONF' in os.sysconf_names:  # pylint: disable=no-member # pragma: no cover
-        CPU_CNT = os.sysconf('SC_NPROCESSORS_CONF')  # pylint: disable=no-member
-    elif 'sched_getaffinity' in os.__all__:  # pragma: no cover
-        CPU_CNT = len(os.sched_getaffinity(0))  # pylint: disable=no-member
+    if os.name == 'posix' and 'SC_NPROCESSORS_CONF' in getattr(os, 'sysconf_names'):  # pragma: no cover
+        CPU_CNT = getattr(os, 'sysconf')('SC_NPROCESSORS_CONF')
+    elif hasattr(os, 'sched_getaffinity'):  # pragma: no cover
+        CPU_CNT = len(getattr(os, 'sched_getaffinity')(0))
     else:  # pragma: no cover
         CPU_CNT = os.cpu_count() or 1
 finally:    # alias and aftermath
-    mp = multiprocessing
+    mp = multiprocessing  # type: Optional[types.ModuleType]
     del multiprocessing
 
 parallel_available = mp is not None and CPU_CNT > 1
@@ -24,50 +27,51 @@ parallel_available = mp is not None and CPU_CNT > 1
 try:
     from contextlib import nullcontext  # novermin
 except ImportError:  # backport contextlib.nullcontext for Python < 3.7 # pragma: no cover
-    @contextlib.contextmanager
-    def nullcontext(enter_result=None):
+    @contextlib.contextmanager  # type: ignore[no-redef]
+    def nullcontext(enter_result: T = None) -> Generator[T, None, None]:   # type: ignore[assignment]
         yield enter_result
 
 
-def _mp_map_wrapper(args):
+def _mp_map_wrapper(args: Tuple[Callable[..., T], Iterable[object], Mapping[str, object]]) -> T:
     """Map wrapper function for :mod:`multiprocessing`.
 
     Args:
-        args (Tuple[Callable, Iterable[Any], Mapping[str, Any]]): the function to execute,
-            the positional arguments and the keyword arguments packed into a tuple
+        args: the function to execute, the positional arguments and the keyword arguments packed into a tuple
 
     Returns:
-        Any: the function execution result
+        the function execution result
 
     """
     func, posargs, kwargs = args
     return func(*posargs, **kwargs)
 
 
-def _mp_init_lock(lock):  # pragma: no cover
+def _mp_init_lock(lock: ContextManager[None]) -> None:  # pragma: no cover
     """Initialize lock for :mod:`multiprocessing`.
 
     Args:
-        lock (multiprocessing.synchronize.Lock): the lock to be shared among tasks
+        lock: the lock to be shared among tasks
 
     """
     global task_lock  # pylint: disable=global-statement
     task_lock = lock
 
 
-def map_tasks(func, iterable, posargs=None, kwargs=None, *, processes=None, chunksize=None):
+def map_tasks(func: Callable[..., T], iterable: Iterable[object], posargs: Optional[Iterable[object]] = None,
+              kwargs: Optional[Mapping[str, object]] = None, *,
+              processes: Optional[int] = None, chunksize: Optional[int] = None) -> List[T]:
     """Execute tasks in parallel if :mod:`multiprocessing` is available, otherwise execute them sequentially.
 
     Args:
-        func (Callable): the task function to execute
-        iterable (Iterable[Any]): the items to process
-        posargs (Optional[Iterable[Any]]): additional positional arguments to pass to ``func``
-        kwargs (Optional[Mapping[str, Any]]): keyword arguments to pass to ``func``
-        processes (Optional[int]): the number of worker processes (default: auto determine)
-        chunksize (Optional[int]): chunk size for multiprocessing
+        func: the task function to execute
+        iterable: the items to process
+        posargs: additional positional arguments to pass to ``func``
+        kwargs: keyword arguments to pass to ``func``
+        processes: the number of worker processes (default: auto determine)
+        chunksize: chunk size for multiprocessing
 
     Returns:
-        List[Any]: the return values of the task function applied on the input items and additional arguments
+        the return values of the task function applied on the input items and additional arguments
 
     """
     global task_lock  # pylint: disable=global-statement
@@ -77,25 +81,27 @@ def map_tasks(func, iterable, posargs=None, kwargs=None, *, processes=None, chun
     if kwargs is None:
         kwargs = {}
 
-    if not parallel_available or processes == 1:  # sequential execution
+    # sequential execution
+    if not parallel_available or processes == 1:
         return [func(item, *posargs, **kwargs) for item in iterable]
 
+    # parallel execution
     processes = processes or CPU_CNT
-    lock = mp.Lock()
-    with mp.Pool(processes=processes, initializer=_mp_init_lock, initargs=(lock,)) as pool:  # parallel execution
+    lock = mp.Lock()  # type: ignore[union-attr]
+    with mp.Pool(processes=processes, initializer=_mp_init_lock, initargs=(lock,)) as pool:  # type: ignore[union-attr]
         result = pool.map(_mp_map_wrapper, [(func, (item,) + tuple(posargs), kwargs) for item in iterable], chunksize)
     task_lock = nullcontext()
     return result
 
 
-task_lock = nullcontext()
+task_lock = nullcontext()  # type: ContextManager[None]
 
 
-def TaskLock():
+def TaskLock() -> ContextManager[None]:
     """Function that returns a lock for possibly concurrent tasks.
 
     Returns:
-        Union[contextlib.nullcontext, multiprocessing.synchronize.Lock]: a lock for possibly concurrent tasks
+        a lock for possibly concurrent tasks
 
     """
     return task_lock

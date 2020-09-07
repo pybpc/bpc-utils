@@ -8,6 +8,6 @@ fi
 
 flake8
 ./ci/pylint.sh
-mypy . || true  # TODO: enforce mypy later
+mypy .
 bandit -r .
 vermin --backport typing -q -t=3.4- .

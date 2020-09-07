@@ -3,7 +3,6 @@
 import binascii
 import collections
 import contextlib
-import functools
 import glob
 import itertools
 import json
@@ -15,6 +14,7 @@ import tempfile
 import time
 
 from .misc import UUID4Generator, is_windows
+from .typing import Deque, Dict, Final, Iterable, Iterator, List, Set, Tuple
 
 # gzip support detection
 try:
@@ -26,18 +26,18 @@ except (ImportError, AttributeError):  # pragma: no cover
 else:
     has_gz_support = True
 
-#: str: File name for the lookup table in the archive file.
-LOOKUP_TABLE = '_lookup_table.json'
+#: Final[str]: File name for the lookup table in the archive file.
+LOOKUP_TABLE = '_lookup_table.json'  # type: Final[str]
 
 
-def is_python_filename(filename):
+def is_python_filename(filename: str) -> bool:
     """Determine whether a file is a Python source file by its extension.
 
     Args:
-        filename (str): the name of the file
+        filename: the name of the file
 
     Returns:
-        bool: whether the file is a Python source file
+        whether the file is a Python source file
 
     """
     if is_windows:  # pragma: no cover
@@ -45,30 +45,40 @@ def is_python_filename(filename):
     return os.path.splitext(filename)[1] in {'.py', '.pyw'}
 
 
-#: Wrapper function to perform glob expansion.
-expand_glob_iter = glob.iglob if sys.version_info[:2] < (3, 5) else functools.partial(glob.iglob, recursive=True)
+def expand_glob_iter(pattern: str) -> Iterator[str]:
+    """Wrapper function to perform glob expansion.
+
+    Args:
+        pattern: the pattern to expand
+
+    Returns:
+        an iterator of expansion result
+
+    """
+    if sys.version_info[:2] < (3, 5):
+        return glob.iglob(pattern)
+    return glob.iglob(pattern, recursive=True)  # novermin
 
 
-def detect_files(files):
+def detect_files(files: Iterable[str]) -> List[str]:
     """Get a list of Python files to be processed according to user input.
 
     This will perform *glob* expansion on Windows, make all paths absolute,
     resolve symbolic links and remove duplicates.
 
     Args:
-        files (List[str]): a list of files and directories to process
-            (usually provided by users on command-line)
+        files: a list of files and directories to process (usually provided by users on command-line)
 
     Returns:
-        List[str]: a list of Python files to be processed
+        a list of Python files to be processed
 
     See Also:
         See :func:`~bpc_utils.fileprocessing.expand_glob_iter` for more information.
 
     """
-    file_list = []
-    directory_queue = collections.deque()
-    directory_visited = set()
+    file_list = []  # type: List[str]
+    directory_queue = collections.deque()  # type: Deque[str]
+    directory_visited = set()  # type: Set[str]
 
     # perform glob expansion on windows
     if is_windows:  # pragma: no cover
@@ -97,26 +107,26 @@ def detect_files(files):
                     directory_visited.add(item_realpath)
 
     # remove duplicates (including hard links pointing to the same file)
-    file_dict = {}
+    file_dict = {}  # type: Dict[Tuple[int, int], str]
     for file in file_list:
         file_stat = os.stat(file)
         file_dict[(file_stat.st_ino, file_stat.st_dev)] = file
     return list(file_dict.values())
 
 
-def archive_files(files, archive_dir):
+def archive_files(files: Iterable[str], archive_dir: str) -> str:
     """Archive the list of files into a *tar* file.
 
     Args:
-        files (List[str]): a list of files to be archived (should be *absolute path*)
-        archive_dir (os.PathLike): the directory to save the archive
+        files: a list of files to be archived (should be *absolute path*)
+        archive_dir: the directory to save the archive
 
     Returns:
-        str: path to the generated *tar* archive
+        path to the generated *tar* archive
 
     """
     uuid_gen = UUID4Generator()
-    lookup_table = {uuid_gen.gen() + '.py': file for file in files}
+    lookup_table = {uuid_gen.gen() + '.py': file for file in files}  # type: Dict[str, str]
     random_string = binascii.hexlify(os.urandom(8)).decode('ascii')
     archive_file = 'archive-{}-{}.tar'.format(time.strftime('%Y%m%d%H%M%S'), random_string)
     archive_mode = 'w'
@@ -137,18 +147,18 @@ def archive_files(files, archive_dir):
     return archive_file
 
 
-def recover_files(archive_file):
+def recover_files(archive_file: str) -> None:
     """Recover files from a *tar* archive.
 
     Args:
-        archive_file (os.PathLike): path to the *tar* archive file
+        archive_file: path to the *tar* archive file
 
     """
     with tarfile.open(archive_file, 'r') as tarf:
         with tempfile.TemporaryDirectory(prefix='bpc-archive-extract-') as tmpd:
             tarf.extractall(tmpd)
             with open(os.path.join(tmpd, LOOKUP_TABLE)) as lookupf:
-                lookup_table = json.load(lookupf)
+                lookup_table = json.load(lookupf)  # type: Dict[str, str]
             for arcname, realname in lookup_table.items():
                 os.makedirs(os.path.dirname(realname), exist_ok=True)
                 shutil.move(os.path.join(tmpd, arcname), realname)

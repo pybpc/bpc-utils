@@ -4,15 +4,17 @@ import shutil
 import subprocess  # nosec
 import sys
 import textwrap
+from pathlib import Path
 
 import pytest
 from bpc_utils import Config, TaskLock, map_tasks
 from bpc_utils.multiprocessing import _mp_map_wrapper, parallel_available
+from bpc_utils.typing import Callable, Iterable, List, Mapping, Optional, T, Tuple
 
-from . import write_text_file
+from .testutils import CaptureFixture, MonkeyPatch, write_text_file
 
 
-def square(x):
+def square(x: int) -> int:
     return x ** 2
 
 
@@ -25,7 +27,7 @@ def square(x):
         ((int, ('0x10',), Config(base=16)), 16),
     ]
 )
-def test__mp_map_wrapper(args, result):
+def test__mp_map_wrapper(args: Tuple[Callable[..., T], Iterable[object], Mapping[str, object]], result: T) -> None:
     assert _mp_map_wrapper(args) == result  # nosec
 
 
@@ -42,7 +44,9 @@ def test__mp_map_wrapper(args, result):
 @pytest.mark.parametrize('processes', [None, 1, 2])
 @pytest.mark.parametrize('chunksize', [None, 2])
 @pytest.mark.parametrize('parallel', [True, False])
-def test_map_tasks(func, iterable, posargs, kwargs, processes, chunksize, parallel, result, monkeypatch):
+def test_map_tasks(func: Callable[..., T], iterable: Iterable[object], posargs: Optional[Iterable[object]],
+                   kwargs: Optional[Mapping[str, object]], processes: Optional[int], chunksize: Optional[int],
+                   parallel: bool, result: List[T], monkeypatch: MonkeyPatch) -> None:
     # test both under normal condition and when parallel execution is not available
     if not parallel:
         monkeypatch.setattr(sys.modules['bpc_utils.multiprocessing'], 'parallel_available', False)
@@ -50,7 +54,7 @@ def test_map_tasks(func, iterable, posargs, kwargs, processes, chunksize, parall
                      processes=processes, chunksize=chunksize) == result
 
 
-def test_lock(tmp_path, monkeypatch, capfd):
+def test_lock(tmp_path: Path, monkeypatch: MonkeyPatch, capfd: CaptureFixture) -> None:
     with TaskLock():
         pass
 
@@ -72,9 +76,9 @@ def test_lock(tmp_path, monkeypatch, capfd):
     code_no_lock = code_template.format(context='for _ in [0]:', num_print=num_print, num_tasks=num_tasks)
     code_with_lock = code_template.format(context='with TaskLock():', num_print=num_print, num_tasks=num_tasks)
 
-    def has_interleave(output):
-        records = re.findall(r'Task (\d+) says (\d+)', output)
-        task_events = [[] for _ in range(num_tasks)]
+    def has_interleave(output: str) -> bool:
+        records = re.findall(r'Task (\d+) says (\d+)', output)  # type: List[Tuple[str, str]]
+        task_events = [[] for _ in range(num_tasks)]  # type: List[List[Tuple[int, int]]]
         for i, r in enumerate(records):
             task_events[int(r[0])].append((i, int(r[1])))
         for i in range(num_tasks):

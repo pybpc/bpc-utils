@@ -40,8 +40,9 @@ release = '0.7.0'
 extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.intersphinx',
-    'sphinx.ext.autodoc', 'sphinx.ext.autodoc.typehints',
-    'sphinxcontrib.napoleon'
+    'sphinx.ext.napoleon',
+    'sphinx.ext.autodoc',
+    'sphinx_autodoc_typehints',
 ]
 
 intersphinx_mapping = {
@@ -49,7 +50,9 @@ intersphinx_mapping = {
     'parso': ('https://parso.readthedocs.io/en/latest/', None),
 }
 
-autodoc_typehints = 'description'
+# type hints will be taken care of by sphinx_autodoc_typehints instead of sphinx.ext.autodoc.typehints
+autodoc_typehints = 'none'
+
 # autodoc_member_order = 'bysource'
 autodoc_member_order = 'groupwise'
 

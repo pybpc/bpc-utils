@@ -1,6 +1,7 @@
 import pytest
-from _pytest.monkeypatch import MonkeyPatch
 from bpc_utils.typing import Generator
+
+from .testutils import MonkeyPatch
 
 
 @pytest.fixture(scope='class')

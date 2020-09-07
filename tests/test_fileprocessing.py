@@ -7,17 +7,18 @@ import pytest
 from bpc_utils import archive_files, detect_files, recover_files
 from bpc_utils.fileprocessing import LOOKUP_TABLE, expand_glob_iter, is_python_filename
 from bpc_utils.misc import is_windows
+from bpc_utils.typing import List, Tuple
 
-from . import read_text_file, write_text_file
+from .testutils import MonkeyPatch, TempPathFactory, read_text_file, write_text_file
 
 
-def native_path(path):
+def native_path(path: str) -> str:
     """Convert a file system path to the native form."""
     return path.replace('/', '\\') if is_windows else path
 
 
 @pytest.fixture(scope='class')
-def setup_files_for_tests(tmp_path_factory, monkeypatch_class):
+def setup_files_for_tests(tmp_path_factory: TempPathFactory, monkeypatch_class: MonkeyPatch) -> None:
     tmp_path = tmp_path_factory.mktemp('bpc-utils-tests-')
     monkeypatch_class.chdir(tmp_path)
     write_text_file('README.md', 'rrr')
@@ -60,11 +61,11 @@ def setup_files_for_tests(tmp_path_factory, monkeypatch_class):
         ('.hidden.py', True),
     ]
 )
-def test_is_python_filename(filename, result):
+def test_is_python_filename(filename: str, result: bool) -> None:
     assert is_python_filename(filename) == result  # nosec
 
 
-def test_expand_glob_iter_is_generator():
+def test_expand_glob_iter_is_generator() -> None:
     assert inspect.isgenerator(expand_glob_iter('*'))  # nosec
 
 
@@ -76,7 +77,7 @@ class TestFileProcessingReadOnly:
         ('./.*', ['./.hidden.py', './.hidden_dir']),
         ('*.py', ['a.py', 'prefix1.py', 'prefix2.py', 'fake.py']),
         ('prefix*', ['prefix1.py', 'prefix2.py']),
-    ]
+    ]  # type: List[Tuple[str, List[str]]]
 
     if is_windows:  # pragma: no cover
         expand_glob_iter_test_cases[3][1].append('b.PY')
@@ -91,7 +92,7 @@ class TestFileProcessingReadOnly:
         expand_glob_iter_test_cases.append(('./**/*.pyw', ['./c.pyw', './dir/e.pyw']))
 
     @pytest.mark.parametrize('pattern,result', expand_glob_iter_test_cases)
-    def test_expand_glob_iter(self, pattern, result):  # pylint: disable=no-self-use
+    def test_expand_glob_iter(self, pattern: str, result: List[str]) -> None:  # pylint: disable=no-self-use
         assert sorted(expand_glob_iter(pattern)) == sorted(map(native_path, result))  # nosec
 
     detect_files_test_cases = [
@@ -99,7 +100,7 @@ class TestFileProcessingReadOnly:
         (['myscript'], ['myscript']),
         (['myscript', '.'], ['myscript', 'a.py', 'c.pyw', 'prefix1.py', 'prefix2.py', '.hidden.py', 'dir/d.py',
                              'dir/e.pyw', 'dir/bpy.py', 'fake.py/f.py', '.hidden_dir/g.py']),
-    ]
+    ]  # type: List[Tuple[List[str], List[str]]]
 
     if is_windows:  # pragma: no cover
         detect_files_test_cases[2][1].append('b.PY')
@@ -109,14 +110,14 @@ class TestFileProcessingReadOnly:
         detect_files_test_cases.append((['*.py'], []))  # glob expansion should not be performed on Unix-like platforms
 
     @pytest.mark.parametrize('files,result', detect_files_test_cases)
-    def test_detect_files(self, files, result):  # pylint: disable=no-self-use
-        assert sorted(detect_files(files)) == sorted(map(os.path.abspath, result))  # nosec
+    def test_detect_files(self, files: List[str], result: List[str]) -> None:  # pylint: disable=no-self-use
+        assert sorted(detect_files(files)) == sorted(map(os.path.abspath, result))  # type: ignore[arg-type]  # nosec
 
 
 @pytest.mark.usefixtures('setup_files_for_tests')
 class TestFileProcessingReadWrite:
-    def test_archive_and_restore(self):  # pylint: disable=no-self-use
-        file_list = ['a.py', 'myscript', os.path.join('dir', 'e.pyw')]
+    def test_archive_and_restore(self) -> None:  # pylint: disable=no-self-use
+        file_list = ['a.py', 'myscript', os.path.join('dir', 'e.pyw')]  # type: List[str]
         file_list = [os.path.abspath(p) for p in file_list]
         archive_file = archive_files(file_list, 'archive')
         with tarfile.open(archive_file, 'r') as tarf:

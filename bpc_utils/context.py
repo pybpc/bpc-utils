@@ -2,32 +2,36 @@
 
 import abc
 
-from .misc import UUID4Generator
+import parso
+
+from .misc import Config, UUID4Generator
+from .typing import Callable, Linesep, Tuple, TypeVar
+
+BaseContextType = TypeVar('BaseContextType', bound='BaseContext')
 
 
 class BaseContext(abc.ABC):
     """Abstract base class for general conversion context."""
 
-    def __init__(self, node, config, *, indent_level=0, raw=False):
+    def __init__(self, node: parso.tree.NodeOrLeaf, config: Config, *,
+                 indent_level: int = 0, raw: bool = False) -> None:
         """Initialize BaseContext.
 
         Args:
-            node (parso.tree.NodeOrLeaf): parso AST
-            config (Config): conversion configurations
-
-        Keyword Args:
-            indent_level (int): current indentation level
-            raw (bool): raw processing flag
+            node: parso AST
+            config (:class:`~bpc_utils.Config`): conversion configurations
+            indent_level: current indentation level
+            raw: raw processing flag
 
         """
-        #: Config: Internal configurations.
+        #: :class:`~bpc_utils.Config`: Internal configurations.
         self.config = config
         #: str: Indentation sequence.
-        self._indentation = config.indentation
-        #: Literal['\\n', '\\r\\n', '\\r']: Line seperator.
-        self._linesep = config.linesep
+        self._indentation = config.indentation  # type: str # type: ignore[attr-defined]
+        #: :data:`~bpc_utils.Linesep`: Line seperator.
+        self._linesep = config.linesep  # type: Linesep # type: ignore[attr-defined]
         #: bool: :pep:`8` compliant conversion flag.
-        self._pep8 = config.pep8
+        self._pep8 = config.pep8  # type: bool  # type: ignore[attr-defined]
 
         #: parso.tree.NodeOrLeaf: Root node given by the ``node`` parameter.
         self._root = node
@@ -56,7 +60,7 @@ class BaseContext(abc.ABC):
         else:
             self._concat()  # generate final result
 
-    def __iadd__(self, code):
+    def __iadd__(self: BaseContextType, code: str) -> BaseContextType:
         """Support of the ``+=`` operator.
 
         If :attr:`self._prefix_or_suffix <bpc_utils.BaseContext._prefix_or_suffix>` is :data:`True`,
@@ -64,7 +68,7 @@ class BaseContext(abc.ABC):
         else it will be appended to :attr:`self._suffix <bpc_utils.BaseContext._suffix>`.
 
         Args:
-            code (str): code string
+            code: code string
 
         Returns:
             BaseContext: self
@@ -76,16 +80,16 @@ class BaseContext(abc.ABC):
             self._suffix += code
         return self
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Returns a *stripped* version of :attr:`self._buffer <bpc_utils.BaseContext._buffer>`."""
         return self._buffer.strip()
 
     @property
-    def string(self):
+    def string(self) -> str:
         """Returns conversion buffer (:attr:`self._buffer <bpc_utils.BaseContext._buffer>`)."""
         return self._buffer
 
-    def _walk(self, node):
+    def _walk(self, node: parso.tree.NodeOrLeaf) -> None:
         """Start traversing the AST module.
 
         The method traverses through all *children* of ``node``. It first checks
@@ -96,13 +100,13 @@ class BaseContext(abc.ABC):
         Then it processes the child with :meth:`self._process <bpc_utils.BaseContext._process>`.
 
         Args:
-            node (parso.tree.NodeOrLeaf): parso AST
+            node: parso AST
 
         """
         # process node
         if hasattr(node, 'children'):
             last_node = None
-            for child in node.children:
+            for child in node.children:  # type: ignore[attr-defined]
                 if self.has_expr(child):
                     self._prefix_or_suffix = False
                     self._node_before_expr = last_node
@@ -113,7 +117,7 @@ class BaseContext(abc.ABC):
         # preserve leaf node as is by default
         self += node.get_code()
 
-    def _process(self, node):
+    def _process(self, node: parso.tree.NodeOrLeaf) -> None:
         """Recursively process parso AST.
 
         All processing methods for a specific ``node`` type are defined as
@@ -123,17 +127,17 @@ class BaseContext(abc.ABC):
         the same logic on each child.
 
         Args:
-            node (parso.tree.NodeOrLeaf): parso AST
+            node: parso AST
 
         """
         func_name = '_process_%s' % node.type
         if hasattr(self, func_name):
-            func = getattr(self, func_name)
+            func = getattr(self, func_name)  # type: Callable[[parso.tree.NodeOrLeaf], None]
             func(node)
             return
 
         if hasattr(node, 'children'):
-            for child in node.children:
+            for child in node.children:  # type: ignore[attr-defined]
                 self._process(child)
             return
 
@@ -141,25 +145,25 @@ class BaseContext(abc.ABC):
         self += node.get_code()
 
     @abc.abstractmethod
-    def _concat(self):
+    def _concat(self) -> None:
         """Concatenate final string."""
         raise NotImplementedError  # pragma: no cover
 
     @abc.abstractmethod
-    def has_expr(self, node):
+    def has_expr(self, node: parso.tree.NodeOrLeaf) -> bool:
         """Check if node has the target expression.
 
         Args:
-            node (parso.tree.NodeOrLeaf): parso AST
+            node: parso AST
 
         Returns:
-            bool: if ``node`` has the target expression
+            whether ``node`` has the target expression
 
         """
         raise NotImplementedError  # pragma: no cover
 
     @staticmethod
-    def split_comments(code, linesep):
+    def split_comments(code: str, linesep: Linesep) -> Tuple[str, str]:
         """Separates prefixing comments from code.
 
         This method separates *prefixing* comments and *suffixing* code. It is
@@ -169,11 +173,11 @@ class BaseContext(abc.ABC):
         .. _shebang: https://en.wikipedia.org/wiki/Shebang_(Unix)
 
         Args:
-            code (str): the code to split comments
-            linesep (str): line seperator
+            code: the code to split comments
+            linesep (:data:`~bpc_utils.Linesep`): line seperator
 
         Returns:
-            Tuple[str, str]: a tuple of *prefix comments* and *suffix code*
+            a tuple of *prefix comments* and *suffix code*
 
         """
         prefix = ''
@@ -196,17 +200,17 @@ class BaseContext(abc.ABC):
         return prefix, suffix
 
     @staticmethod
-    def missing_newlines(prefix, suffix, expected, linesep):
+    def missing_newlines(prefix: str, suffix: str, expected: int, linesep: Linesep) -> int:
         """Count missing blank lines for code insertion given surrounding code.
 
         Args:
-            prefix (str): preceding source code
-            suffix (str): succeeding source code
-            expected (int): number of expected blank lines
-            linesep (str): line seperator
+            prefix: preceding source code
+            suffix: succeeding source code
+            expected: number of expected blank lines
+            linesep (:data:`~bpc_utils.Linesep`): line seperator
 
         Returns:
-            int: number of blank lines to add
+            number of blank lines to add
 
         """
         current = 0
@@ -231,14 +235,14 @@ class BaseContext(abc.ABC):
         return max(missing, 0)
 
     @staticmethod
-    def extract_whitespaces(node):
+    def extract_whitespaces(node: parso.tree.NodeOrLeaf) -> Tuple[str, str]:
         """Extract preceding and succeeding whitespaces from the node given.
 
         Args:
-            node (parso.tree.NodeOrLeaf) parso AST
+            node: parso AST
 
         Returns:
-            Tuple[str, str]: a tuple of *preceding* and *succeeding* whitespaces in ``node``
+            a tuple of *preceding* and *succeeding* whitespaces in ``node``
 
         """
         code = node.get_code()

@@ -3,9 +3,11 @@ import io
 import socket
 
 import pytest
-from bpc_utils import (BPCSyntaxError, detect_encoding, detect_indentation, detect_linesep,
-                       get_parso_grammar_versions, parso_parse)
+from bpc_utils import (
+    BPCSyntaxError, Linesep, detect_encoding, detect_indentation, detect_linesep,
+    get_parso_grammar_versions, parso_parse)
 from bpc_utils.parsing import PARSO_GRAMMAR_VERSIONS
+from bpc_utils.typing import Optional, Tuple, Type, Union
 
 
 class CodeType(enum.Enum):
@@ -16,25 +18,52 @@ class CodeType(enum.Enum):
     PARSO_NODE = 3
 
 
-def test_parso_grammar_versions():
+def test_parso_grammar_versions() -> None:
     assert isinstance(PARSO_GRAMMAR_VERSIONS, list)  # nosec
     assert isinstance(PARSO_GRAMMAR_VERSIONS[0], tuple)  # nosec
+    assert isinstance(PARSO_GRAMMAR_VERSIONS[0][0], int)  # nosec
+    assert isinstance(PARSO_GRAMMAR_VERSIONS[0][1], int)  # nosec
 
     versions1 = get_parso_grammar_versions()
     assert len(versions1) > 1  # nosec
-    assert isinstance(versions1[0], str)  # nosec
-    assert '.' in versions1[0]  # nosec
+    assert all(isinstance(x, str) for x in versions1)  # nosec
+    assert all(x.count('.') == 1 for x in versions1)  # nosec
 
     versions2 = get_parso_grammar_versions(minimum=versions1[1])
     assert len(versions1) - len(versions2) == 1  # nosec
+    assert all(isinstance(x, str) for x in versions2)  # nosec
+    assert all(x.count('.') == 1 for x in versions2)  # nosec
 
-    with pytest.raises(ValueError, match='invalid minimum version'):
-        get_parso_grammar_versions(3.8)
-    with pytest.raises(ValueError, match='invalid minimum version'):
-        get_parso_grammar_versions('x.y')
+    versions3 = get_parso_grammar_versions(minimum='0.0')
+    assert versions1 == versions3  # nosec
+
+    versions4 = get_parso_grammar_versions(minimum='3.10')
+    assert all(isinstance(x, str) for x in versions4)  # nosec
+    assert all(x.count('.') == 1 for x in versions4)  # nosec
 
 
-def test_BPCSyntaxError():
+@pytest.mark.parametrize(
+    'minimum,exc,msg',
+    [
+        (3.8, TypeError, 'minimum version should be a string'),
+        ('x.y', ValueError, 'invalid minimum version'),
+        ('', ValueError, 'invalid minimum version'),
+        ('3.8.3', ValueError, 'invalid minimum version'),
+        ('3.08', ValueError, 'invalid minimum version'),
+        ('03.8', ValueError, 'invalid minimum version'),
+        ('3. 8', ValueError, 'invalid minimum version'),
+        ('3 .8', ValueError, 'invalid minimum version'),
+        ('+3.8', ValueError, 'invalid minimum version'),
+        ('3.+8', ValueError, 'invalid minimum version'),
+        ('3.-0', ValueError, 'invalid minimum version'),
+    ]
+)
+def test_get_parso_grammar_versions_error(minimum: Optional[str], exc: Type[BaseException], msg: str) -> None:
+    with pytest.raises(exc, match=msg):
+        get_parso_grammar_versions(minimum)
+
+
+def test_BPCSyntaxError() -> None:
     assert issubclass(BPCSyntaxError, SyntaxError)  # nosec
 
 
@@ -46,7 +75,7 @@ def test_BPCSyntaxError():
         (b'hello', 'utf-8'),
     ]
 )
-def test_detect_encoding(code, result):
+def test_detect_encoding(code: bytes, result: str) -> None:
     assert detect_encoding(code) == result  # nosec
 
 
@@ -56,7 +85,7 @@ def test_detect_encoding(code, result):
         ('hello', TypeError, "'code' should be bytes"),
     ]
 )
-def test_detect_encoding_error(code, exc, msg):
+def test_detect_encoding_error(code: bytes, exc: Type[BaseException], msg: str) -> None:
     with pytest.raises(exc, match=msg):
         detect_encoding(code)
 
@@ -74,7 +103,7 @@ def test_detect_encoding_error(code, exc, msg):
     ]
 )
 @pytest.mark.parametrize('code_type', CodeType)
-def test_detect_linesep(code_type, code, result):
+def test_detect_linesep(code_type: CodeType, code: str, result: Linesep) -> None:
     if code_type is CodeType.STR:
         assert detect_linesep(code) == result  # nosec
     elif code_type is CodeType.BYTES:
@@ -88,7 +117,7 @@ def test_detect_linesep(code_type, code, result):
         raise ValueError('unknown code type')
 
 
-def test_detect_linesep_unseekable_file():
+def test_detect_linesep_unseekable_file() -> None:
     with socket.socket() as s:
         s.connect(('httpbin.org', 80))
         s.send(b'HEAD / HTTP/1.1\r\nHost: httpbin.org\r\nConnection: close\r\n\r\n')
@@ -109,7 +138,7 @@ def test_detect_linesep_unseekable_file():
     ]
 )
 @pytest.mark.parametrize('code_type', CodeType)
-def test_detect_indentation(code_type, code, result):
+def test_detect_indentation(code_type: CodeType, code: str, result: str) -> None:
     if code_type is CodeType.STR:
         assert detect_indentation(code) == result  # nosec
     elif code_type is CodeType.BYTES:
@@ -123,8 +152,8 @@ def test_detect_indentation(code_type, code, result):
         raise ValueError('unknown code type')
 
 
-def test_mixed_linesep_and_indentation():
-    test_case = ('for x in [1]:\n    pass\rfor x in [1]:\r  pass', '\r', '  ')
+def test_mixed_linesep_and_indentation() -> None:
+    test_case = ('for x in [1]:\n    pass\rfor x in [1]:\r  pass', '\r', '  ')  # type: Tuple[str, Linesep, str]
     assert detect_linesep(test_case[0]) == test_case[1]  # nosec
     assert detect_indentation(test_case[0]) == test_case[2]  # nosec
     with io.StringIO(test_case[0], newline='') as file:
@@ -141,7 +170,7 @@ def test_mixed_linesep_and_indentation():
         (b'# coding: gbk\n\xd6\xd0\xce\xc4', None),
     ]
 )
-def test_parso_parse(code, version):
+def test_parso_parse(code: Union[str, bytes], version: Optional[str]) -> None:
     parso_parse(code, version=version)
 
 
@@ -154,6 +183,7 @@ def test_parso_parse(code, version):
         ('(x := 1)', None, '', ValueError, 'The given version is not in the right format.'),
     ]
 )
-def test_parso_parse_error(code, filename, version, exc, msg):
+def test_parso_parse_error(code: Union[str, bytes], filename: Optional[str], version: Optional[str],
+                           exc: Type[BaseException], msg: str) -> None:
     with pytest.raises(exc, match=msg):
         parso_parse(code, filename=filename, version=version)
