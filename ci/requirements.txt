@@ -3,8 +3,8 @@
 pytest>=4.5.0
 coverage
 codecov
-flake8;python_version>="3.5"
-pylint;python_version>="3.5"
-mypy;python_version>="3.5"
-bandit;python_version>="3.5"
-vermin>=0.10.3;python_version>="3.5"
+flake8;python_version=="3.8"
+pylint;python_version=="3.8"
+mypy;python_version=="3.8"
+bandit;python_version=="3.8"
+vermin>=0.10.3;python_version=="3.8"

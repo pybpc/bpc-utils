@@ -9,7 +9,7 @@ python:
 install:
   - pip install -r ci/requirements.txt
 script:
-  - 'if [[ ! "${TRAVIS_PYTHON_VERSION}" < "3.5" ]]; then ci/run_linters.sh; fi'
+  - 'if [ "${TRAVIS_PYTHON_VERSION}" = "3.8" ]; then ci/run_linters.sh; fi'
   - |
     python ci/path_checker.py && \
     coverage run -m pytest && \
