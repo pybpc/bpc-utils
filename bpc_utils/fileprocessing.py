@@ -55,9 +55,9 @@ def expand_glob_iter(pattern: str) -> Iterator[str]:
         an iterator of expansion result
 
     """
-    if sys.version_info[:2] < (3, 5):
-        return glob.iglob(pattern)
-    return glob.iglob(pattern, recursive=True)  # novermin
+    if sys.version_info[:2] < (3, 5):  # pragma: no branch
+        return glob.iglob(pattern)  # pragma: no cover
+    return glob.iglob(pattern, recursive=True)  # pragma: no cover  # novermin
 
 
 def detect_files(files: Iterable[str]) -> List[str]:
