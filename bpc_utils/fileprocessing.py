@@ -147,13 +147,46 @@ def archive_files(files: Iterable[str], archive_dir: str) -> str:
     return archive_file
 
 
-def recover_files(archive_file: str) -> None:
-    """Recover files from a *tar* archive.
+def recover_files(archive_file_or_dir: str, *, rr: bool = False, rs: bool = False) -> None:
+    """Recover files from a *tar* archive, optionally removing the archive file and archive directory after recovery.
+
+    This function supports three modes:
+
+    * Normal mode (when ``rr`` and ``rs`` are both :data:`False`):
+        Recover from the archive file specified by ``archive_file_or_dir``.
+    * Recover and remove (when ``rr`` is :data:`True`):
+        Recover from the archive file specified by ``archive_file_or_dir``, and remove this archive file after recovery.
+    * Recover from the only file in the archive directory (when ``rs`` is :data:`True`):
+        If the directory specified by ``archive_file_or_dir`` contains exactly one (regular) file, recover from that
+        file and remove the archive directory.
+
+    Specifying both ``rr`` and ``rs`` as :data:`True` is not accepted.
 
     Args:
-        archive_file: path to the *tar* archive file
+        archive_file: path to the *tar* archive file, or the archive directory
+        rr: whether to run in "recover and remove" mode
+        rs: whether to run in "recover from the only file in the archive directory" mode
+
+    Raises:
+        ValueError: when ``rr`` and ``rs`` are both :data:`True`
+        :exc:`BPCRecoveryError`: when ``rs`` is :data:`True`, and the directory specified by ``archive_file_or_dir``
+            is empty, contains more than one item, or contains a non-regular file
 
     """
+    if rr and rs:
+        raise ValueError("cannot use 'rr' and 'rs' at the same time")
+    if rs:
+        files = os.listdir(archive_file_or_dir)
+        if not files:
+            raise BPCRecoveryError('no archive files found in %r' % archive_file_or_dir)
+        if len(files) > 1:
+            raise BPCRecoveryError('more than one item found in %r' % archive_file_or_dir)
+        archive_file = os.path.join(archive_file_or_dir, files[0])
+        if not os.path.isfile(archive_file) or os.path.islink(archive_file):
+            raise BPCRecoveryError('item %r in %r is not a regular file' % (files[0], archive_file_or_dir))
+    else:
+        archive_file = archive_file_or_dir
+
     with tarfile.open(archive_file, 'r') as tarf:
         with tempfile.TemporaryDirectory(prefix='bpc-archive-extract-') as tmpd:
             tarf.extractall(tmpd)
@@ -163,5 +196,14 @@ def recover_files(archive_file: str) -> None:
                 os.makedirs(os.path.dirname(realname), exist_ok=True)
                 shutil.move(os.path.join(tmpd, arcname), realname)
 
+    if rr or rs:
+        os.remove(archive_file)
+    if rs:
+        os.rmdir(archive_file_or_dir)
 
-__all__ = ['detect_files', 'archive_files', 'recover_files']
+
+class BPCRecoveryError(RuntimeError):
+    """Error during file recovery."""
+
+
+__all__ = ['detect_files', 'archive_files', 'recover_files', 'BPCRecoveryError']

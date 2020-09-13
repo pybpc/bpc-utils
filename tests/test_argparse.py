@@ -1,3 +1,5 @@
+import re
+
 import pytest
 from bpc_utils import (Linesep, parse_boolean_state, parse_indentation, parse_linesep,
                        parse_positive_integer)
@@ -32,7 +34,7 @@ def test_parse_positive_integer(s: Optional[Union[str, int]], result: Optional[i
     ]
 )
 def test_parse_positive_integer_error(s: Optional[Union[str, int]], exc: Type[BaseException], msg: str) -> None:
-    with pytest.raises(exc, match=msg):
+    with pytest.raises(exc, match=re.escape(msg)):
         parse_positive_integer(s)
 
 
@@ -64,7 +66,7 @@ def test_parse_boolean_state(s: Optional[str], result: Optional[bool]) -> None:
     ]
 )
 def test_parse_boolean_state_error(s: Optional[str], exc: Type[BaseException], msg: str) -> None:
-    with pytest.raises(exc, match=msg):
+    with pytest.raises(exc, match=re.escape(msg)):
         parse_boolean_state(s)
 
 
@@ -92,7 +94,7 @@ def test_parse_linesep(s: Optional[str], result: Optional[Linesep]) -> None:
     ]
 )
 def test_parse_linesep_error(s: Optional[str], exc: Type[BaseException], msg: str) -> None:
-    with pytest.raises(exc, match=msg):
+    with pytest.raises(exc, match=re.escape(msg)):
         parse_linesep(s)
 
 
@@ -126,8 +128,8 @@ def test_parse_indentation(s: Optional[Union[str, int]], result: Optional[str]) 
     's,exc,msg',
     [
         ('X', ValueError, "invalid indentation value 'X'"),
-        ('\t\t', ValueError, r"invalid indentation value '\\t\\t'"),
-        ('\n', ValueError, r"invalid indentation value '\\n'"),
+        ('\t\t', ValueError, r"invalid indentation value '\t\t'"),
+        ('\n', ValueError, r"invalid indentation value '\n'"),
         ('0', ValueError, "invalid indentation value '0'"),
         (0, ValueError, "invalid indentation value 0"),
         ('-1', ValueError, "invalid indentation value '-1'"),
@@ -137,5 +139,5 @@ def test_parse_indentation(s: Optional[Union[str, int]], result: Optional[str]) 
     ]
 )
 def test_parse_indentation_error(s: Optional[Union[str, int]], exc: Type[BaseException], msg: str) -> None:
-    with pytest.raises(exc, match=msg):
+    with pytest.raises(exc, match=re.escape(msg)):
         parse_indentation(s)

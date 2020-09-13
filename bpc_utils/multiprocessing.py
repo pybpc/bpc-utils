@@ -1,10 +1,10 @@
 """Parallel execution support for BPC."""
 
-import contextlib
 import os
 import types
 
-from .typing import Callable, ContextManager, Generator, Iterable, List, Mapping, Optional, T, Tuple
+from .misc import nullcontext
+from .typing import Callable, ContextManager, Iterable, List, Mapping, Optional, T, Tuple
 
 # multiprocessing support detection and CPU_CNT retrieval
 try:        # try first
@@ -23,13 +23,6 @@ finally:    # alias and aftermath
     del multiprocessing
 
 parallel_available = mp is not None and CPU_CNT > 1
-
-try:
-    from contextlib import nullcontext  # novermin
-except ImportError:  # backport contextlib.nullcontext for Python < 3.7 # pragma: no cover
-    @contextlib.contextmanager  # type: ignore[no-redef]
-    def nullcontext(enter_result: T = None) -> Generator[T, None, None]:   # type: ignore[assignment]
-        yield enter_result
 
 
 def _mp_map_wrapper(args: Tuple[Callable[..., T], Iterable[object], Mapping[str, object]]) -> T:

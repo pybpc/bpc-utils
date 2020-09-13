@@ -1,5 +1,6 @@
 import enum
 import io
+import re
 import socket
 
 import pytest
@@ -59,7 +60,7 @@ def test_parso_grammar_versions() -> None:
     ]
 )
 def test_get_parso_grammar_versions_error(minimum: Optional[str], exc: Type[BaseException], msg: str) -> None:
-    with pytest.raises(exc, match=msg):
+    with pytest.raises(exc, match=re.escape(msg)):
         get_parso_grammar_versions(minimum)
 
 
@@ -86,7 +87,7 @@ def test_detect_encoding(code: bytes, result: str) -> None:
     ]
 )
 def test_detect_encoding_error(code: bytes, exc: Type[BaseException], msg: str) -> None:
-    with pytest.raises(exc, match=msg):
+    with pytest.raises(exc, match=re.escape(msg)):
         detect_encoding(code)
 
 
@@ -185,5 +186,5 @@ def test_parso_parse(code: Union[str, bytes], version: Optional[str]) -> None:
 )
 def test_parso_parse_error(code: Union[str, bytes], filename: Optional[str], version: Optional[str],
                            exc: Type[BaseException], msg: str) -> None:
-    with pytest.raises(exc, match=msg):
+    with pytest.raises(exc, match=re.escape(msg)):
         parso_parse(code, filename=filename, version=version)

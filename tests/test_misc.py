@@ -1,5 +1,6 @@
 import collections.abc
 import io
+import re
 import socket
 import sys
 
@@ -35,7 +36,7 @@ def test_first_truthy(args: Tuple[object], result: object) -> None:
     ]
 )
 def test_first_truthy_error(args: Tuple[object], exc: Type[BaseException], msg: str) -> None:
-    with pytest.raises(exc, match=msg):
+    with pytest.raises(exc, match=re.escape(msg)):
         first_truthy(*args)
 
 
@@ -67,7 +68,7 @@ def test_first_non_none(args: Tuple[object], result: object) -> None:
     ]
 )
 def test_first_non_none_error(args: Tuple[object], exc: Type[BaseException], msg: str) -> None:
-    with pytest.raises(exc, match=msg):
+    with pytest.raises(exc, match=re.escape(msg)):
         first_non_none(*args)
 
 

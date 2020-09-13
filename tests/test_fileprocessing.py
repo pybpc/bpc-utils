@@ -1,10 +1,12 @@
 import inspect
 import os
+import re
 import sys
 import tarfile
+from pathlib import Path
 
 import pytest
-from bpc_utils import archive_files, detect_files, recover_files
+from bpc_utils import BPCRecoveryError, archive_files, detect_files, recover_files
 from bpc_utils.fileprocessing import LOOKUP_TABLE, expand_glob_iter, is_python_filename
 from bpc_utils.misc import is_windows
 from bpc_utils.typing import List, Tuple
@@ -69,6 +71,10 @@ def test_expand_glob_iter_is_generator() -> None:
     assert inspect.isgenerator(expand_glob_iter('*'))  # nosec
 
 
+def test_BPCRecoveryError() -> None:
+    assert issubclass(BPCRecoveryError, RuntimeError)  # nosec
+
+
 @pytest.mark.usefixtures('setup_files_for_tests')
 class TestFileProcessingReadOnly:
     expand_glob_iter_test_cases = [
@@ -114,19 +120,55 @@ class TestFileProcessingReadOnly:
         assert sorted(detect_files(files)) == sorted(map(os.path.abspath, result))  # type: ignore[arg-type]  # nosec
 
 
+@pytest.mark.parametrize(
+    'rr,rs',
+    [
+        (False, False),
+        (True, False),
+        (False, True),
+    ]
+)
 @pytest.mark.usefixtures('setup_files_for_tests')
-class TestFileProcessingReadWrite:
-    def test_archive_and_restore(self) -> None:  # pylint: disable=no-self-use
-        file_list = ['a.py', 'myscript', os.path.join('dir', 'e.pyw')]  # type: List[str]
-        file_list = [os.path.abspath(p) for p in file_list]
-        archive_file = archive_files(file_list, 'archive')
-        with tarfile.open(archive_file, 'r') as tarf:
-            items = tarf.getnames()
-            assert len(items) == 4  # nosec
-            assert LOOKUP_TABLE in items  # nosec
-            assert sum(x.endswith('.py') for x in items) == 3  # nosec
-        write_text_file('a.py', '[redacted]')
-        write_text_file(os.path.join('dir', 'e.pyw'), '[redacted]')
-        recover_files(archive_file)
-        assert read_text_file('a.py') == 'aaa'  # nosec
-        assert read_text_file(os.path.join('dir', 'e.pyw')) == 'eee'  # nosec
+def test_archive_and_restore(rr: bool, rs: bool) -> None:
+    file_list = ['a.py', 'myscript', os.path.join('dir', 'e.pyw')]  # type: List[str]
+    file_list = [os.path.abspath(p) for p in file_list]
+    archive_dir = 'archive'
+    archive_file = archive_files(file_list, archive_dir)
+    with tarfile.open(archive_file, 'r') as tarf:
+        items = tarf.getnames()
+        assert len(items) == 4  # nosec
+        assert LOOKUP_TABLE in items  # nosec
+        assert sum(x.endswith('.py') for x in items) == 3  # nosec
+    write_text_file('a.py', '[redacted]')
+    write_text_file(os.path.join('dir', 'e.pyw'), '[redacted]')
+    assert not (rr and rs)  # nosec
+    recover_files(archive_dir if rs else archive_file, rr=rr, rs=rs)
+    assert read_text_file('a.py') == 'aaa'  # nosec
+    assert read_text_file(os.path.join('dir', 'e.pyw')) == 'eee'  # nosec
+    if rs:
+        assert not os.path.exists(archive_dir)  # nosec
+        assert not os.path.exists(archive_file)  # nosec
+    elif rr:
+        assert not os.path.exists(archive_file)  # nosec
+        assert os.path.isdir(archive_dir)  # nosec
+    else:
+        assert os.path.isdir(archive_dir)  # nosec
+        assert os.path.isfile(archive_file)  # nosec
+
+
+def test_recover_files_both_rr_rs() -> None:
+    with pytest.raises(ValueError, match=re.escape("cannot use 'rr' and 'rs' at the same time")):
+        recover_files(os.devnull, rr=True, rs=True)
+
+
+def test_recover_files_rs_errors(tmp_path: Path, monkeypatch: MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    with pytest.raises(BPCRecoveryError, match=re.escape("no archive files found in '.'")):
+        recover_files('.', rs=True)
+    Path('dir').mkdir()
+    Path('file').touch()
+    with pytest.raises(BPCRecoveryError, match=re.escape("more than one item found in '.'")):
+        recover_files('.', rs=True)
+    Path('file').unlink()
+    with pytest.raises(BPCRecoveryError, match=re.escape("item 'dir' in '.' is not a regular file")):
+        recover_files('.', rs=True)
