@@ -29,7 +29,7 @@ copyright = '2020, Python Backport Compiler Project'  # pylint: disable=redefine
 author = 'Python Backport Compiler Project'
 
 # The full version, including alpha/beta/rc tags
-release = '0.7.0'
+release = '0.8.0'
 
 
 # -- General configuration ---------------------------------------------------
