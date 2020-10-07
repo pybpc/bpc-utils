@@ -1,3 +1,7 @@
+import os
+import sys
+from typing import List
+
 # Configuration file for the Sphinx documentation builder.
 #
 # This file only contains a selection of the most common options. For a full
@@ -10,10 +14,13 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
-
+sys.path.insert(0, os.path.abspath(
+    os.path.dirname(  # docs/
+        os.path.dirname(  # docs/source
+            os.path.dirname(__file__)  # docs/source/conf.py
+        )
+    )
+))
 
 # -- Project information -----------------------------------------------------
 
@@ -22,7 +29,7 @@ copyright = '2020, Python Backport Compiler Project'  # pylint: disable=redefine
 author = 'Python Backport Compiler Project'
 
 # The full version, including alpha/beta/rc tags
-release = '0.6.2'
+release = '0.8.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -33,22 +40,28 @@ release = '0.6.2'
 extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.intersphinx',
-    'sphinx.ext.autodoc', 'sphinx.ext.autodoc.typehints',
-    'sphinxcontrib.napoleon'
+    'sphinx.ext.napoleon',
+    'sphinx.ext.autodoc',
+    'sphinx_autodoc_typehints',
 ]
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
+    'parso': ('https://parso.readthedocs.io/en/latest/', None),
 }
 
-autodoc_typehints = 'description'
+# type hints will be taken care of by sphinx_autodoc_typehints instead of sphinx.ext.autodoc.typehints
+autodoc_typehints = 'none'
+
 # autodoc_member_order = 'bysource'
 autodoc_member_order = 'groupwise'
+
+autoclass_content = 'both'
 
 # Napoleon settings
 napoleon_google_docstring = True
 napoleon_numpy_docstring = True
-napoleon_include_init_with_doc = True
+napoleon_include_init_with_doc = False
 napoleon_include_private_with_doc = True
 napoleon_include_special_with_doc = True
 napoleon_use_admonition_for_examples = True
@@ -66,7 +79,7 @@ templates_path = ['_templates']
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
+exclude_patterns = []  # type: List[str]
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -75,6 +88,13 @@ exclude_patterns = []
 # a list of builtin themes.
 #
 html_theme = 'alabaster'
+
+
+html_theme_options = {
+    'github_user': 'pybpc',
+    'github_repo': 'bpc-utils',
+    'github_banner': True,
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

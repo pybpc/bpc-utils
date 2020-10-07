@@ -9,7 +9,7 @@ with open('README.md', 'r', encoding='utf-8') as f:
 
 setup(
     name='bpc-utils',
-    version='0.6.2',
+    version='0.8.0',
     description='Utility library for the Python bpc compiler.',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -31,9 +31,15 @@ setup(
         'Programming Language :: Python :: 3 :: Only',
         'Topic :: Software Development',
         'Topic :: Utilities',
+        'Typing :: Typed',
     ],
     keywords='bpc backport utilities',
-    py_modules=['bpc_utils'],
+    packages=['bpc_utils'],
+    package_data={'bpc_utils': ['py.typed']},
     python_requires='>=3.4',
-    install_requires=['parso>=0.6.0'],
+    install_requires=[
+        'parso>=0.6.0',
+        'typing;python_version<"3.5"',
+        'typing_extensions',
+    ],
 )
