@@ -102,5 +102,5 @@ html_theme_options = {
     'github_user': 'pybpc',
     'github_repo': 'bpc-utils',
     'github_banner': True,
-    #'github_type': 'star',
+    # 'github_type': 'star',
 }
