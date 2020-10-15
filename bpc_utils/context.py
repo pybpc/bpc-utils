@@ -107,7 +107,7 @@ class BaseContext(abc.ABC):
         if hasattr(node, 'children'):
             last_node = None
             for child in node.children:  # type: ignore[attr-defined]
-                if self.has_expr(child):
+                if self._prefix_or_suffix and self.has_expr(child):
                     self._prefix_or_suffix = False
                     self._node_before_expr = last_node
                 self._process(child)
