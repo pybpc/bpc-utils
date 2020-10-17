@@ -1,4 +1,5 @@
 import os
+import subprocess  # nosec
 import sys
 from typing import List
 
@@ -14,13 +15,14 @@ from typing import List
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-sys.path.insert(0, os.path.abspath(
+PROJECT_ROOT = os.path.abspath(
     os.path.dirname(  # docs/
         os.path.dirname(  # docs/source
             os.path.dirname(__file__)  # docs/source/conf.py
         )
     )
-))
+)
+sys.path.insert(0, PROJECT_ROOT)
 
 # -- Project information -----------------------------------------------------
 
@@ -29,7 +31,9 @@ copyright = '2020, Python Backport Compiler Project'  # pylint: disable=redefine
 author = 'Python Backport Compiler Project'
 
 # The full version, including alpha/beta/rc tags
-release = '0.8.0'
+release = subprocess.check_output([sys.executable,  # nosec
+                                   os.path.join(PROJECT_ROOT, 'scripts', 'find_version.py')],
+                                  universal_newlines=True)
 
 
 # -- General configuration ---------------------------------------------------

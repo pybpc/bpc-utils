@@ -1,4 +1,6 @@
 import os
+import subprocess  # nosec
+import sys
 
 from setuptools import setup
 
@@ -7,9 +9,14 @@ os.chdir(os.path.dirname(os.path.realpath(__file__)))
 with open('README.md', 'r', encoding='utf-8') as f:
     long_description = f.read()
 
+module_name = 'bpc_utils'
+version = subprocess.check_output([sys.executable,  # nosec
+                                   os.path.join('scripts', 'find_version.py')],
+                                  universal_newlines=True)
+
 setup(
     name='bpc-utils',
-    version='0.8.0',
+    version=version,
     description='Utility library for the Python bpc compiler.',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -34,8 +41,8 @@ setup(
         'Typing :: Typed',
     ],
     keywords='bpc backport utilities',
-    packages=['bpc_utils'],
-    package_data={'bpc_utils': ['py.typed']},
+    packages=[module_name],
+    package_data={module_name: ['py.typed']},
     python_requires='>=3.4',
     install_requires=[
         'parso>=0.6.0',
