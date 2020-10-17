@@ -2,6 +2,7 @@ import ast
 
 import parso
 import pytest
+
 from bpc_utils import BaseContext, Config, Linesep, UUID4Generator, parso_parse
 from bpc_utils.typing import Tuple
 
@@ -105,7 +106,7 @@ def test_BaseContext_missing_newlines(prefix: str, suffix: str, expected: int, l
 
 
 @pytest.mark.parametrize(
-    'node,result',
+    'code,result',
     [
         ('\ntest = "test", 123, "test", 123   ', ('\n', '   ')),
         ('\rtest = "test", 123, "test", 123\f\t', ('\r', '\f\t')),
@@ -115,5 +116,5 @@ def test_BaseContext_missing_newlines(prefix: str, suffix: str, expected: int, l
         ('', ('', '')),
     ]
 )
-def test_BaseContext_extract_whitespaces(node: str, result: Tuple[str, str]) -> None:
-    assert BaseContext.extract_whitespaces(node) == result  # nosec
+def test_BaseContext_extract_whitespaces(code: str, result: Tuple[str, str]) -> None:
+    assert BaseContext.extract_whitespaces(code) == result  # nosec
