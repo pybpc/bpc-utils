@@ -235,18 +235,16 @@ class BaseContext(abc.ABC):
         return max(missing, 0)
 
     @staticmethod
-    def extract_whitespaces(node: parso.tree.NodeOrLeaf) -> Tuple[str, str]:
-        """Extract preceding and succeeding whitespaces from the node given.
+    def extract_whitespaces(code: str) -> Tuple[str, str]:
+        """Extract preceding and succeeding whitespaces from the code given.
 
         Args:
-            node: parso AST
+            code: the code to extract whitespaces
 
         Returns:
-            a tuple of *preceding* and *succeeding* whitespaces in ``node``
+            a tuple of *preceding* and *succeeding* whitespaces in ``code``
 
         """
-        code = node.get_code()
-
         # get preceding whitespaces
         prefix = ''
         for char in code:
