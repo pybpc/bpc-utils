@@ -116,4 +116,4 @@ def test_BaseContext_missing_newlines(prefix: str, suffix: str, expected: int, l
     ]
 )
 def test_BaseContext_extract_whitespaces(node: str, result: Tuple[str, str]) -> None:
-    assert BaseContext.extract_whitespaces(parso_parse(node)) == result  # nosec
+    assert BaseContext.extract_whitespaces(node) == result  # nosec
