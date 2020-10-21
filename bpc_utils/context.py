@@ -275,7 +275,8 @@ class BaseContext(abc.ABC):
         Returns:
             normalized variable name
 
-        .. _Python documentation about identifiers: https://docs.python.org/3/reference/lexical_analysis.html#identifiers
+        .. _Python documentation about identifiers:
+            https://docs.python.org/3/reference/lexical_analysis.html#identifiers
 
         """
         return unicodedata.normalize('NFKC', name)
