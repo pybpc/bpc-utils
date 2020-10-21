@@ -1,6 +1,7 @@
 """BPC conversion context."""
 
 import abc
+import unicodedata
 
 import parso
 
@@ -260,6 +261,51 @@ class BaseContext(abc.ABC):
             suffix += char
 
         return prefix, suffix[::-1]
+
+    @staticmethod
+    def normalize(name: str) -> str:
+        """Normalize variable names.
+
+        The method normalizes variable names as described in `Python documentation`_
+        and :pep:`3131`.
+
+        Args:
+            name (str): variable name
+
+        Returns:
+            str: normalized variable name
+
+        .. Python documentation: https://docs.python.org/3/reference/lexical_analysis.html#identifiers
+
+        """
+        return unicodedata.normalize('NFKC', name)
+
+    @classmethod
+    def mangle(cls, cls_name: str, var_name: str) -> str:
+        """Mangle variable names.
+
+        The method mangles variable names as described in `Python documentation`_
+        and further normalizes the mangled variable name through
+        :meth:`~bpc_utils.context.Context.normalize`.
+
+        Args:
+            cls_name (str): class name
+            var_name (str): variable name
+
+        Returns:
+            str: mangled variable name
+
+        .. _Python documentation: https://docs.python.org/3/reference/expressions.html#atom-identifiers
+
+        """
+        # should only perform mangling if variable name begins with two or more underscores
+        # and does not end in two or more underscores
+        if not var_name.startswith('__') or var_name.endswith('__'):
+            name = var_name
+        # perform mangling, remove leading underscores from the class name when inserting
+        else:
+            name = '_%(cls)s%(var)s' % dict(cls=cls_name.lstrip('_'), var=var_name)
+        return cls.normalize(name)
 
 
 __all__ = ['BaseContext']
