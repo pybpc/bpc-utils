@@ -6,7 +6,7 @@ import unicodedata
 import parso
 
 from .misc import Config, UUID4Generator
-from .typing import Callable, Linesep, Tuple, TypeVar
+from .typing import Callable, Linesep, Tuple, TypeVar, final
 
 BaseContextType = TypeVar('BaseContextType', bound='BaseContext')
 
@@ -61,6 +61,7 @@ class BaseContext(abc.ABC):
         else:
             self._concat()  # generate final result
 
+    @final
     def __iadd__(self: BaseContextType, code: str) -> BaseContextType:
         """Support of the ``+=`` operator.
 
@@ -81,15 +82,18 @@ class BaseContext(abc.ABC):
             self._suffix += code
         return self
 
+    @final
     def __str__(self) -> str:
         """Returns a *stripped* version of :attr:`self._buffer <bpc_utils.BaseContext._buffer>`."""
         return self._buffer.strip()
 
+    @final
     @property
     def string(self) -> str:
         """Returns conversion buffer (:attr:`self._buffer <bpc_utils.BaseContext._buffer>`)."""
         return self._buffer
 
+    @final
     def _walk(self, node: parso.tree.NodeOrLeaf) -> None:
         """Start traversing the AST module.
 
@@ -118,6 +122,7 @@ class BaseContext(abc.ABC):
         # preserve leaf node as is by default
         self += node.get_code()
 
+    @final
     def _process(self, node: parso.tree.NodeOrLeaf) -> None:
         """Recursively process parso AST.
 
@@ -163,6 +168,7 @@ class BaseContext(abc.ABC):
         """
         raise NotImplementedError  # pragma: no cover
 
+    @final
     @staticmethod
     def split_comments(code: str, linesep: Linesep) -> Tuple[str, str]:
         """Separates prefixing comments from code.
@@ -200,6 +206,7 @@ class BaseContext(abc.ABC):
 
         return prefix, suffix
 
+    @final
     @staticmethod
     def missing_newlines(prefix: str, suffix: str, expected: int, linesep: Linesep) -> int:
         """Count missing blank lines for code insertion given surrounding code.
@@ -235,6 +242,7 @@ class BaseContext(abc.ABC):
         missing = expected - current
         return max(missing, 0)
 
+    @final
     @staticmethod
     def extract_whitespaces(code: str) -> Tuple[str, str]:
         """Extract preceding and succeeding whitespaces from the code given.
@@ -262,6 +270,7 @@ class BaseContext(abc.ABC):
 
         return prefix, suffix[::-1]
 
+    @final
     @staticmethod
     def normalize(name: str) -> str:
         """Normalize variable names.
@@ -281,6 +290,7 @@ class BaseContext(abc.ABC):
         """
         return unicodedata.normalize('NFKC', name)
 
+    @final
     @classmethod
     def mangle(cls, cls_name: str, var_name: str) -> str:
         """Mangle variable names.
