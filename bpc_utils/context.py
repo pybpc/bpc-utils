@@ -266,16 +266,16 @@ class BaseContext(abc.ABC):
     def normalize(name: str) -> str:
         """Normalize variable names.
 
-        The method normalizes variable names as described in `Python documentation`_
+        This method normalizes variable names as described in `Python documentation about identifiers`_
         and :pep:`3131`.
 
         Args:
-            name (str): variable name
+            name: variable name as it appears in the source code
 
         Returns:
-            str: normalized variable name
+            normalized variable name
 
-        .. Python documentation: https://docs.python.org/3/reference/lexical_analysis.html#identifiers
+        .. _Python documentation about identifiers: https://docs.python.org/3/reference/lexical_analysis.html#identifiers
 
         """
         return unicodedata.normalize('NFKC', name)
@@ -284,27 +284,31 @@ class BaseContext(abc.ABC):
     def mangle(cls, cls_name: str, var_name: str) -> str:
         """Mangle variable names.
 
-        The method mangles variable names as described in `Python documentation`_
-        and further normalizes the mangled variable name through
-        :meth:`~bpc_utils.context.Context.normalize`.
+        This method mangles variable names as described in `Python documentation about mangling`_
+        and further normalizes the mangled variable name through :meth:`~bpc_utils.BaseContext.normalize`.
 
         Args:
-            cls_name (str): class name
-            var_name (str): variable name
+            cls_name: class name
+            var_name: variable name
 
         Returns:
-            str: mangled variable name
+            mangled and normalized variable name
 
-        .. _Python documentation: https://docs.python.org/3/reference/expressions.html#atom-identifiers
+        .. _Python documentation about mangling: https://docs.python.org/3/reference/expressions.html#atom-identifiers
 
         """
         # should only perform mangling if variable name begins with two or more underscores
         # and does not end in two or more underscores
         if not var_name.startswith('__') or var_name.endswith('__'):
             name = var_name
-        # perform mangling, remove leading underscores from the class name when inserting
         else:
-            name = '_%(cls)s%(var)s' % dict(cls=cls_name.lstrip('_'), var=var_name)
+            # perform mangling, remove leading underscores from the class name when inserting
+            class_name_stripped = cls_name.lstrip('_')
+            if class_name_stripped:
+                name = '_%(cls)s%(var)s' % {'cls': class_name_stripped, 'var': var_name}
+            else:
+                # if the class name consists only of underscores, do not mangle
+                name = var_name
         return cls.normalize(name)
 
 

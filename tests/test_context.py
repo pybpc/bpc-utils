@@ -118,3 +118,83 @@ def test_BaseContext_missing_newlines(prefix: str, suffix: str, expected: int, l
 )
 def test_BaseContext_extract_whitespaces(code: str, result: Tuple[str, str]) -> None:
     assert BaseContext.extract_whitespaces(code) == result  # nosec
+
+
+@pytest.mark.parametrize(
+    'name,result',
+    [
+        ('A', 'A'),
+        ('__x', '__x'),
+        ('\u4e2d\u6587', '\u4e2d\u6587'),
+        ('__\u4e2d\u6587', '__\u4e2d\u6587'),
+        ('\u0043\u0327', '\u00c7'),
+        ('__\u0043\u0327', '__\u00c7'),
+    ]
+)
+def test_BaseContext_normalize(name: str, result: str) -> None:
+    assert BaseContext.normalize(name) == result  # nosec
+
+
+@pytest.mark.parametrize('cls_name', ['Foo', '_Foo', '__Foo'])
+@pytest.mark.parametrize(
+    'var_name,result',
+    [
+        ('__x', '_Foo__x'),
+        ('__x_', '_Foo__x_'),
+        ('__\u0043\u0327', '_Foo__\u00c7'),
+        ('__\u0043\u0327_', '_Foo__\u00c7_'),
+    ]
+)
+def test_BaseContext_mangle_var_name(cls_name: str, var_name: str, result: str) -> None:
+    assert BaseContext.mangle(cls_name, var_name) == result  # nosec
+
+
+@pytest.mark.parametrize('cls_name', ['\u0044\u0327_', '_\u0044\u0327_', '__\u0044\u0327_'])
+@pytest.mark.parametrize(
+    'var_name,result',
+    [
+        ('__x', '_\u1e10___x'),
+        ('__x_', '_\u1e10___x_'),
+        ('__\u0043\u0327', '_\u1e10___\u00c7'),
+        ('__\u0043\u0327_', '_\u1e10___\u00c7_'),
+    ]
+)
+def test_BaseContext_mangle_class_name(cls_name: str, var_name: str, result: str) -> None:
+    assert BaseContext.mangle(cls_name, var_name) == result  # nosec
+
+
+@pytest.mark.parametrize('cls_name', ['Foo', '_Foo', '__Foo', '_', '__'])
+@pytest.mark.parametrize(
+    'var_name,result',
+    [
+        ('\u0043\u0327', '\u00c7'),
+        ('_\u0043\u0327', '_\u00c7'),
+        ('__\u0043\u0327__', '__\u00c7__'),
+    ]
+)
+def test_BaseContext_mangle_normalize_only_var(cls_name: str, var_name: str, result: str) -> None:
+    assert BaseContext.mangle(cls_name, var_name) == result  # nosec
+
+
+@pytest.mark.parametrize('cls_name', ['_', '__', '___'])
+@pytest.mark.parametrize(
+    'var_name,result',
+    [
+        ('__\u0043\u0327', '__\u00c7'),
+        ('__\u0043\u0327_', '__\u00c7_'),
+    ]
+)
+def test_BaseContext_mangle_normalize_only_class(cls_name: str, var_name: str, result: str) -> None:
+    assert BaseContext.mangle(cls_name, var_name) == result  # nosec
+
+
+@pytest.mark.parametrize('cls_name', ['Foo', '_Foo', '__Foo', '_', '__'])
+@pytest.mark.parametrize('var_name', ['x', '_x', '__x__', '__x___'])
+def test_BaseContext_mangle_should_not_alter_var(cls_name: str, var_name: str) -> None:
+    assert BaseContext.mangle(cls_name, var_name) == var_name  # nosec
+
+
+@pytest.mark.parametrize('cls_name', ['_', '__', '___'])
+@pytest.mark.parametrize('var_name', ['__x', '__x_'])
+def test_BaseContext_mangle_should_not_alter_class(cls_name: str, var_name: str) -> None:
+    assert BaseContext.mangle(cls_name, var_name) == var_name  # nosec
