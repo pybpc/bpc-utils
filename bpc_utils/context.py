@@ -6,7 +6,7 @@ import unicodedata
 import parso.tree
 
 from .misc import Config, UUID4Generator
-from .typing import Callable, Linesep, Optional, Tuple, TypeVar, final
+from .typing import Callable, Final, Linesep, Optional, Tuple, TypeVar, final
 
 BaseContextType = TypeVar('BaseContextType', bound='BaseContext')
 
@@ -25,33 +25,33 @@ class BaseContext(abc.ABC):
             raw: raw processing flag
 
         """
-        #: :class:`~bpc_utils.Config`: Internal configurations.
-        self.config = config
-        #: str: Indentation sequence.
-        self._indentation = config.indentation  # type: str # type: ignore[attr-defined]
-        #: :data:`~bpc_utils.Linesep`: Line seperator.
-        self._linesep = config.linesep  # type: Linesep # type: ignore[attr-defined]
-        #: bool: :pep:`8` compliant conversion flag.
-        self._pep8 = config.pep8  # type: bool  # type: ignore[attr-defined]
+        #: Internal configurations.
+        self.config = config  # type: Final[Config]
+        #: Indentation sequence.
+        self._indentation = config.indentation  # type: Final[str]  # type: ignore[attr-defined]
+        #: Final[:data:`~bpc_utils.Linesep`]: Line seperator.
+        self._linesep = config.linesep  # type: Final[Linesep]  # type: ignore[attr-defined]
+        #: :pep:`8` compliant conversion flag.
+        self._pep8 = config.pep8  # type: Final[bool]  # type: ignore[attr-defined]
 
-        #: parso.tree.NodeOrLeaf: Root node given by the ``node`` parameter.
-        self._root = node  # type: parso.tree.NodeOrLeaf
-        #: int: Current indentation level.
-        self._indent_level = indent_level  # type: int
+        #: Root node given by the ``node`` parameter.
+        self._root = node  # type: Final[parso.tree.NodeOrLeaf]
+        #: Current indentation level.
+        self._indent_level = indent_level  # type: Final[int]
 
-        #: UUID4Generator: UUID generator.
-        self._uuid_gen = UUID4Generator(dash=False)
+        #: UUID generator.
+        self._uuid_gen = UUID4Generator(dash=False)  # type: Final[UUID4Generator]
 
-        #: str: Code before insertion point.
+        #: Code before insertion point.
         self._prefix = ''  # type: str
-        #: str: Code after insertion point.
+        #: Code after insertion point.
         self._suffix = ''  # type: str
-        #: str: Final converted result.
+        #: Final converted result.
         self._buffer = ''  # type: str
 
-        #: bool: Flag if buffer is now :attr:`self._prefix <bpc_utils.BaseContext._prefix>`.
+        #: Flag to indicate whether buffer is now :attr:`self._prefix <bpc_utils.BaseContext._prefix>`.
         self._prefix_or_suffix = True  # type: bool
-        #: Optional[parso.tree.NodeOrLeaf]: Preceding node with the target expression, i.e. the *insertion point*.
+        #: Preceding node with the target expression, i.e. the *insertion point*.
         self._node_before_expr = None  # type: Optional[parso.tree.NodeOrLeaf]
 
         self._walk(node)  # traverse children

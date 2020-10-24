@@ -18,8 +18,10 @@ from .typing import Deque, Dict, Final, Iterable, Iterator, List, Set, Tuple
 
 # gzip support detection
 try:
-    import zlib  # pylint: disable=unused-import # noqa: F401
+    # isort: off
+    import zlib  # pylint: disable=unused-import  # noqa: F401
     import gzip
+    # isort: on
     gzip.GzipFile  # pylint: disable=pointless-statement
 except (ImportError, AttributeError):  # pragma: no cover
     has_gz_support = False

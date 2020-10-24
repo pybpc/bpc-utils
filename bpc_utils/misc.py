@@ -154,7 +154,7 @@ class MakeTextIO:
         if isinstance(self.obj, str):
             #: StringIO: the I/O object to manage in the context
             #: only if :attr:`self.obj <MakeTextIO.obj>` is :obj:`str`
-            self.sio = io.StringIO(self.obj, newline='')  # turn off newline translation # pylint: disable=W0201
+            self.sio = io.StringIO(self.obj, newline='')  # turn off newline translation  # pylint: disable=W0201
             return self.sio
         if self.obj.seekable():
             #: int: the original offset of :attr:`self.obj <MakeTextIO.obj>`,
