@@ -3,10 +3,10 @@
 import abc
 import unicodedata
 
-import parso
+import parso.tree
 
 from .misc import Config, UUID4Generator
-from .typing import Callable, Linesep, Tuple, TypeVar, final
+from .typing import Callable, Linesep, Optional, Tuple, TypeVar, final
 
 BaseContextType = TypeVar('BaseContextType', bound='BaseContext')
 
@@ -35,24 +35,24 @@ class BaseContext(abc.ABC):
         self._pep8 = config.pep8  # type: bool  # type: ignore[attr-defined]
 
         #: parso.tree.NodeOrLeaf: Root node given by the ``node`` parameter.
-        self._root = node
+        self._root = node  # type: parso.tree.NodeOrLeaf
         #: int: Current indentation level.
-        self._indent_level = indent_level
+        self._indent_level = indent_level  # type: int
 
         #: UUID4Generator: UUID generator.
         self._uuid_gen = UUID4Generator(dash=False)
 
         #: str: Code before insertion point.
-        self._prefix = ''
+        self._prefix = ''  # type: str
         #: str: Code after insertion point.
-        self._suffix = ''
+        self._suffix = ''  # type: str
         #: str: Final converted result.
-        self._buffer = ''
+        self._buffer = ''  # type: str
 
         #: bool: Flag if buffer is now :attr:`self._prefix <bpc_utils.BaseContext._prefix>`.
-        self._prefix_or_suffix = True
+        self._prefix_or_suffix = True  # type: bool
         #: Optional[parso.tree.NodeOrLeaf]: Preceding node with the target expression, i.e. the *insertion point*.
-        self._node_before_expr = None
+        self._node_before_expr = None  # type: Optional[parso.tree.NodeOrLeaf]
 
         self._walk(node)  # traverse children
 
