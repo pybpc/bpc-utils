@@ -5,6 +5,7 @@ import socket
 import sys
 
 import pytest
+
 from bpc_utils import Config, UUID4Generator, first_non_none, first_truthy
 from bpc_utils.misc import MakeTextIO
 from bpc_utils.typing import Tuple, Type

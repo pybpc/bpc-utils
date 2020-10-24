@@ -6,6 +6,7 @@ import tarfile
 from pathlib import Path
 
 import pytest
+
 from bpc_utils import BPCRecoveryError, archive_files, detect_files, recover_files
 from bpc_utils.fileprocessing import LOOKUP_TABLE, expand_glob_iter, is_python_filename
 from bpc_utils.misc import is_windows

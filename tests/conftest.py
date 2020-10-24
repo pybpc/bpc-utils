@@ -1,4 +1,5 @@
 import pytest
+
 from bpc_utils.typing import Generator
 
 from .testutils import MonkeyPatch

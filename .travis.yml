@@ -7,7 +7,9 @@ python:
   - "3.7"
   - "3.8"
 install:
-  - pip install -r ci/requirements.txt
+  - python -m pip install --upgrade pip setuptools wheel
+  - pip install .[test]
+  - 'if [ "${TRAVIS_PYTHON_VERSION}" = "3.8" ]; then pip install .[lint]; fi'
 script:
   - 'if [ "${TRAVIS_PYTHON_VERSION}" = "3.8" ]; then python ci/run_linters.py; fi'
   - |
@@ -18,4 +20,5 @@ script:
     pytest && \
     mv bpc_utils~ bpc_utils
 after_success:
+  - pip install codecov
   - codecov

@@ -18,7 +18,7 @@ linters = [
     },
     {
         'name': 'Pylint',
-        'command': ['./ci/pylint.sh'],
+        'command': [sys.executable, os.path.join('ci', 'run_pylint.py')],
     },
     {
         'name': 'Mypy',

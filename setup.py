@@ -35,6 +35,7 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3 :: Only',
         'Topic :: Software Development',
         'Topic :: Utilities',
@@ -49,4 +50,22 @@ setup(
         'typing;python_version<"3.5"',
         'typing_extensions',
     ],
+    extras_require={
+        'lint': [
+            'flake8',
+            'pylint',
+            'mypy',
+            'bandit',
+            'vermin>=0.10.3',
+            'colorlabels',
+        ],
+        'test': [
+            'pytest>=4.5.0',
+            'coverage',
+        ],
+        'docs': [
+            'Sphinx',
+            'sphinx-autodoc-typehints',
+        ],
+    },
 )

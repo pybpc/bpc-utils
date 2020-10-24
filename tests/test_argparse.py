@@ -1,6 +1,7 @@
 import re
 
 import pytest
+
 from bpc_utils import (Linesep, parse_boolean_state, parse_indentation, parse_linesep,
                        parse_positive_integer)
 from bpc_utils.typing import Optional, Type, Union

@@ -7,6 +7,7 @@ import textwrap
 from pathlib import Path
 
 import pytest
+
 from bpc_utils import Config, TaskLock, map_tasks
 from bpc_utils.multiprocessing import _mp_map_wrapper, parallel_available
 from bpc_utils.typing import Callable, Iterable, List, Mapping, Optional, T, Tuple
@@ -92,7 +93,7 @@ def test_lock(tmp_path: Path, monkeypatch: MonkeyPatch, capfd: CaptureFixture) -
 
     monkeypatch.chdir(tmp_path)
     shutil.copytree(os.path.dirname(sys.modules['bpc_utils'].__file__), 'bpc_utils')
-    test_filename = 'test-lock.py'
+    test_filename = 'test_lock.py'
 
     write_text_file(test_filename, code_no_lock)
     subprocess.check_call([sys.executable, '-u', test_filename])  # nosec

@@ -14,25 +14,11 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-bpc-utils = {editable = true,path = "."}
+bpc-utils = {editable = true, path = ".", extras = ["lint", "test", "docs"]}
 autopep8 = "*"
-ipython = "*"
-pylint = "*"
-flake8 = "*"
-mypy = "*"
-bandit = "*"
-vermin = ">=0.10.3"
-colorlabels = "*"
-coverage = "*"
-codecov = "*"
-tox = "*"
-sphinx = "*"
-sphinx-autodoc-typehints = "*"
 rstcheck = "*"
-pytest = ">=4.5.0"
-
-[packages]
-parso = ">=0.6.0"
+ipython = "*"
+tox = "*"
 
 [requires]
 python_version = "*"

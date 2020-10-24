@@ -4,9 +4,9 @@ import re
 import socket
 
 import pytest
-from bpc_utils import (
-    BPCSyntaxError, Linesep, detect_encoding, detect_indentation, detect_linesep,
-    get_parso_grammar_versions, parso_parse)
+
+from bpc_utils import (BPCSyntaxError, Linesep, detect_encoding, detect_indentation, detect_linesep,
+                       get_parso_grammar_versions, parso_parse)
 from bpc_utils.parsing import PARSO_GRAMMAR_VERSIONS
 from bpc_utils.typing import Optional, Tuple, Type, Union
 
