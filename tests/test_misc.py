@@ -8,7 +8,7 @@ import pytest
 
 from bpc_utils import Config, UUID4Generator, first_non_none, first_truthy
 from bpc_utils.misc import MakeTextIO
-from bpc_utils.typing import Tuple, Type
+from bpc_utils.typing import Generator, Set, T, Tuple, Type
 
 
 @pytest.mark.parametrize(
@@ -41,6 +41,22 @@ def test_first_truthy_error(args: Tuple[object], exc: Type[BaseException], msg: 
         first_truthy(*args)
 
 
+def test_first_truthy_short_circuit_usage() -> None:
+    evaluated = set()  # type: Set[object]
+
+    def log_evaluation(value: T) -> T:
+        evaluated.add(value)
+        return value
+
+    def value_generator() -> Generator[object, None, None]:
+        yield log_evaluation(0)
+        yield log_evaluation(1)
+        yield log_evaluation(2)  # pragma: no cover  # should not be evaluated
+
+    assert first_truthy(value_generator()) == 1  # type: ignore[comparison-overlap]  # nosec
+    assert evaluated == {0, 1}  # nosec
+
+
 @pytest.mark.parametrize(
     'args,result',
     [
@@ -71,6 +87,22 @@ def test_first_non_none(args: Tuple[object], result: object) -> None:
 def test_first_non_none_error(args: Tuple[object], exc: Type[BaseException], msg: str) -> None:
     with pytest.raises(exc, match=re.escape(msg)):
         first_non_none(*args)
+
+
+def test_first_non_none_short_circuit_usage() -> None:
+    evaluated = set()  # type: Set[object]
+
+    def log_evaluation(value: T) -> T:
+        evaluated.add(value)
+        return value
+
+    def value_generator() -> Generator[object, None, None]:
+        yield log_evaluation(None)
+        yield log_evaluation(0)
+        yield log_evaluation(1)  # pragma: no cover  # should not be evaluated
+
+    assert first_non_none(value_generator()) == 0  # type: ignore[comparison-overlap]  # nosec
+    assert evaluated == {None, 0}  # nosec
 
 
 @pytest.mark.parametrize('dash', [True, False])
