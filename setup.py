@@ -12,7 +12,7 @@ with open('README.md', 'r', encoding='utf-8') as f:
 module_name = 'bpc_utils'
 version = subprocess.check_output([sys.executable,  # nosec
                                    os.path.join('scripts', 'find_version.py')],
-                                  universal_newlines=True)
+                                  universal_newlines=True).strip()
 
 setup(
     name='bpc-utils',
