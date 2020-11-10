@@ -1,23 +1,28 @@
 """Miscellaneous utilities."""
 
 import collections.abc
-import contextlib
 import io
 import keyword
 import platform
 import types
 import uuid
 
-from .typing import (Dict, Generator, Iterable, Iterator, List, Optional, Set, T, TextIO, Type,
-                     Union, overload)
+from .typing import Dict, Iterable, Iterator, List, Optional, Set, T, TextIO, Type, Union, overload
 
 # backport contextlib.nullcontext for Python < 3.7
 try:
     from contextlib import nullcontext  # pylint: disable=unused-import  # novermin
 except ImportError:  # pragma: no cover
-    @contextlib.contextmanager  # type: ignore[no-redef]
-    def nullcontext(enter_result: T = None) -> Generator[T, None, None]:   # type: ignore[assignment]
-        yield enter_result
+    class nullcontext:  # type: ignore[no-redef]
+        def __init__(self, enter_result: T = None) -> None:  # type: ignore[assignment]
+            self.enter_result = enter_result  # type: T
+
+        def __enter__(self) -> T:
+            return self.enter_result
+
+        def __exit__(self, exc_type: Optional[Type[BaseException]], exc_value: Optional[BaseException],
+                     traceback: Optional[types.TracebackType]) -> None:
+            pass
 
 is_windows = platform.system() == 'Windows'
 
