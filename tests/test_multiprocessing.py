@@ -19,6 +19,16 @@ def square(x: int) -> int:
     return x ** 2
 
 
+def lock_user_multiple_times(x: int) -> int:
+    for i in range(100):
+        with TaskLock():
+            if i & 1:
+                x += 1
+            else:
+                x -= 1
+    return x
+
+
 @pytest.mark.parametrize(
     'args,result',
     [
@@ -106,3 +116,11 @@ def test_lock(tmp_path: Path, monkeypatch: MonkeyPatch, capfd: CaptureFixture) -
     captured = capfd.readouterr()
     assert not has_interleave(captured.out)  # nosec
     assert not captured.err  # nosec
+
+
+@pytest.mark.parametrize('parallel', [True, False])
+def test_lock_use_multiple_times(parallel: bool, monkeypatch: MonkeyPatch) -> None:
+    # test both under normal condition and when parallel execution is not available
+    if not parallel:
+        monkeypatch.setattr(sys.modules['bpc_utils.multiprocessing'], 'parallel_available', False)
+    assert map_tasks(lock_user_multiple_times, range(32)) == list(range(32))  # pylint: disable=W1638  # nosec
