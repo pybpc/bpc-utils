@@ -17,6 +17,8 @@ jobs:
         pip install .[lint,test]
     - name: Run linters
       run: python ci/run_linters.py
+      env:
+        COLORLABELS_TTY: 1
   test:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -42,12 +44,12 @@ jobs:
     - name: First round test (local code, with coverage)
       run: |
         python ci/path_checker.py
-        coverage run -m pytest
+        coverage run -m pytest --color=yes
     - name: Second round test (installed package, without coverage)
       run: |
         mv bpc_utils bpc_utils~
         python ci/path_checker.py strict
-        pytest
+        pytest --color=yes
         mv bpc_utils~ bpc_utils
     - name: Upload coverage report
       if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9' }}

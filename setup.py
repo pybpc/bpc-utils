@@ -57,7 +57,7 @@ setup(
             'mypy',
             'bandit',
             'vermin>=0.10.3',
-            'colorlabels',
+            'colorlabels>=0.7.0',
         ],
         'test': [
             'pytest>=4.5.0',
