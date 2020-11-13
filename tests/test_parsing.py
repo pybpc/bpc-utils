@@ -5,10 +5,14 @@ import socket
 
 import pytest
 
-from bpc_utils import (BPCSyntaxError, Linesep, detect_encoding, detect_indentation, detect_linesep,
+from bpc_utils import (BPCSyntaxError, detect_encoding, detect_indentation, detect_linesep,
                        get_parso_grammar_versions, parso_parse)
 from bpc_utils.parsing import PARSO_GRAMMAR_VERSIONS
-from bpc_utils.typing import Optional, Tuple, Type, Union
+from bpc_utils.typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from bpc_utils import Linesep
+    from bpc_utils.typing import Optional, Tuple, Type, Union
 
 
 class CodeType(enum.Enum):
@@ -59,7 +63,7 @@ def test_parso_grammar_versions() -> None:
         ('3.-0', ValueError, 'invalid minimum version'),
     ]
 )
-def test_get_parso_grammar_versions_error(minimum: Optional[str], exc: Type[BaseException], msg: str) -> None:
+def test_get_parso_grammar_versions_error(minimum: 'Optional[str]', exc: 'Type[BaseException]', msg: str) -> None:
     with pytest.raises(exc, match=re.escape(msg)):
         get_parso_grammar_versions(minimum)
 
@@ -86,7 +90,7 @@ def test_detect_encoding(code: bytes, result: str) -> None:
         ('hello', TypeError, "'code' should be bytes"),
     ]
 )
-def test_detect_encoding_error(code: bytes, exc: Type[BaseException], msg: str) -> None:
+def test_detect_encoding_error(code: bytes, exc: 'Type[BaseException]', msg: str) -> None:
     with pytest.raises(exc, match=re.escape(msg)):
         detect_encoding(code)
 
@@ -104,7 +108,7 @@ def test_detect_encoding_error(code: bytes, exc: Type[BaseException], msg: str) 
     ]
 )
 @pytest.mark.parametrize('code_type', CodeType)
-def test_detect_linesep(code_type: CodeType, code: str, result: Linesep) -> None:
+def test_detect_linesep(code_type: CodeType, code: str, result: 'Linesep') -> None:
     if code_type is CodeType.STR:
         assert detect_linesep(code) == result  # nosec
     elif code_type is CodeType.BYTES:
@@ -171,7 +175,7 @@ def test_mixed_linesep_and_indentation() -> None:
         (b'# coding: gbk\n\xd6\xd0\xce\xc4', None),
     ]
 )
-def test_parso_parse(code: Union[str, bytes], version: Optional[str]) -> None:
+def test_parso_parse(code: 'Union[str, bytes]', version: 'Optional[str]') -> None:
     parso_parse(code, version=version)
 
 
@@ -184,7 +188,7 @@ def test_parso_parse(code: Union[str, bytes], version: Optional[str]) -> None:
         ('(x := 1)', None, '', ValueError, 'The given version is not in the right format.'),
     ]
 )
-def test_parso_parse_error(code: Union[str, bytes], filename: Optional[str], version: Optional[str],
-                           exc: Type[BaseException], msg: str) -> None:
+def test_parso_parse_error(code: 'Union[str, bytes]', filename: 'Optional[str]', version: 'Optional[str]',
+                           exc: 'Type[BaseException]', msg: str) -> None:
     with pytest.raises(exc, match=re.escape(msg)):
         parso_parse(code, filename=filename, version=version)

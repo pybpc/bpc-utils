@@ -4,36 +4,39 @@ import collections.abc
 import io
 import keyword
 import platform
-import types
 import uuid
 
-from .typing import Dict, Iterable, Iterator, List, Optional, Set, T, TextIO, Type, Union, overload
+from .typing import TYPE_CHECKING, overload
+
+if TYPE_CHECKING:
+    from types import TracebackType  # isort: split
+    from .typing import Dict, Iterable, Iterator, List, Optional, Set, T, TextIO, Type, Union
 
 # backport contextlib.nullcontext for Python < 3.7
 try:
     from contextlib import nullcontext  # pylint: disable=unused-import  # novermin
 except ImportError:  # pragma: no cover
     class nullcontext:  # type: ignore[no-redef]
-        def __init__(self, enter_result: T = None) -> None:  # type: ignore[assignment]
+        def __init__(self, enter_result: 'T' = None) -> None:  # type: ignore[assignment]
             self.enter_result = enter_result  # type: T
 
-        def __enter__(self) -> T:
+        def __enter__(self) -> 'T':
             return self.enter_result
 
-        def __exit__(self, exc_type: Optional[Type[BaseException]], exc_value: Optional[BaseException],
-                     traceback: Optional[types.TracebackType]) -> None:
+        def __exit__(self, exc_type: 'Optional[Type[BaseException]]', exc_value: 'Optional[BaseException]',
+                     traceback: 'Optional[TracebackType]') -> None:
             pass
 
 is_windows = platform.system() == 'Windows'
 
 
 @overload
-def first_truthy(*args: T) -> Optional[T]:
+def first_truthy(*args: 'T') -> 'Optional[T]':
     ...  # pragma: no cover
 
 
 @overload
-def first_truthy(args: Iterable[T]) -> Optional[T]:  # noqa: F811
+def first_truthy(args: 'Iterable[T]') -> 'Optional[T]':  # noqa: F811
     ...  # pragma: no cover
 
 
@@ -61,12 +64,12 @@ def first_truthy(*args):  # type: ignore[no-untyped-def]  # noqa: F811
 
 
 @overload
-def first_non_none(*args: T) -> Optional[T]:
+def first_non_none(*args: 'T') -> 'Optional[T]':
     ...  # pragma: no cover
 
 
 @overload
-def first_non_none(args: Iterable[T]) -> Optional[T]:  # noqa: F811
+def first_non_none(args: 'Iterable[T]') -> 'Optional[T]':  # noqa: F811
     ...  # pragma: no cover
 
 
@@ -134,7 +137,7 @@ class MakeTextIO:
 
     """
 
-    def __init__(self, obj: Union[str, TextIO]) -> None:
+    def __init__(self, obj: 'Union[str, TextIO]') -> None:
         """Initialize context.
 
         Args:
@@ -143,7 +146,7 @@ class MakeTextIO:
         """
         self.obj = obj
 
-    def __enter__(self) -> TextIO:
+    def __enter__(self) -> 'TextIO':
         """Enter context.
 
         * If :attr:`self.obj <MakeTextIO.obj>` is :obj:`str`, a
@@ -170,8 +173,8 @@ class MakeTextIO:
             self.obj.seek(0)
         return self.obj
 
-    def __exit__(self, exc_type: Optional[Type[BaseException]], exc_value: Optional[BaseException],
-                 traceback: Optional[types.TracebackType]) -> None:
+    def __exit__(self, exc_type: 'Optional[Type[BaseException]]', exc_value: 'Optional[BaseException]',
+                 traceback: 'Optional[TracebackType]') -> None:
         """Exit context.
 
         * If :attr:`self.obj <MakeTextIO.obj>` is :obj:`str`, the
@@ -202,7 +205,7 @@ class Config(collections.abc.MutableMapping):
     def __contains__(self, key: object) -> bool:
         return key in self.__dict__
 
-    def __iter__(self) -> Iterator[str]:
+    def __iter__(self) -> 'Iterator[str]':
         return iter(self.__dict__)
 
     def __len__(self) -> int:

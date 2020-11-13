@@ -1,9 +1,12 @@
 """Utility functions for argument parsing."""
 
-from .typing import Dict, Final, Linesep, Optional, Union
+from .typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .typing import Dict, Final, Linesep, Optional, Union
 
 
-def parse_positive_integer(s: Optional[Union[str, int]]) -> Optional[int]:
+def parse_positive_integer(s: 'Optional[Union[str, int]]') -> 'Optional[int]':
     """Parse a positive integer from a string representation.
 
     Args:
@@ -44,7 +47,7 @@ _boolean_state_lookup = {
 }  # type: Final[Dict[str, bool]]
 
 
-def parse_boolean_state(s: Optional[str]) -> Optional[bool]:
+def parse_boolean_state(s: 'Optional[str]') -> 'Optional[bool]':
     """Parse a boolean state from a string representation.
 
     * These values are regarded as :data:`True`: ``'1'``, ``'yes'``, ``'y'``, ``'true'``, ``'on'``
@@ -83,7 +86,7 @@ _linesep_lookup = {
 }  # type: Final[Dict[str, Linesep]]
 
 
-def parse_linesep(s: Optional[str]) -> Optional[Linesep]:
+def parse_linesep(s: 'Optional[str]') -> 'Optional[Linesep]':
     r"""Parse linesep from a string representation.
 
     * These values are regarded as ``'\n'``: ``'\n'``, ``'lf'``
@@ -114,7 +117,7 @@ def parse_linesep(s: Optional[str]) -> Optional[Linesep]:
         raise ValueError('invalid linesep value {!r}'.format(s)) from None
 
 
-def parse_indentation(s: Optional[Union[str, int]]) -> Optional[str]:
+def parse_indentation(s: 'Optional[Union[str, int]]') -> 'Optional[str]':
     r"""Parse indentation from a string representation.
 
     * If an integer or a string of positive integer ``n`` is specified, then indentation is ``n`` spaces.

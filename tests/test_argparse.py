@@ -2,9 +2,12 @@ import re
 
 import pytest
 
-from bpc_utils import (Linesep, parse_boolean_state, parse_indentation, parse_linesep,
-                       parse_positive_integer)
-from bpc_utils.typing import Optional, Type, Union
+from bpc_utils import parse_boolean_state, parse_indentation, parse_linesep, parse_positive_integer
+from bpc_utils.typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from bpc_utils import Linesep
+    from bpc_utils.typing import Optional, Type, Union
 
 
 @pytest.mark.parametrize(
@@ -18,7 +21,7 @@ from bpc_utils.typing import Optional, Type, Union
         (2, 2),
     ]
 )
-def test_parse_positive_integer(s: Optional[Union[str, int]], result: Optional[int]) -> None:
+def test_parse_positive_integer(s: 'Optional[Union[str, int]]', result: 'Optional[int]') -> None:
     assert parse_positive_integer(s) == result  # nosec
 
 
@@ -34,7 +37,7 @@ def test_parse_positive_integer(s: Optional[Union[str, int]], result: Optional[i
         (-1, ValueError, "expect integer value to be positive, got -1"),
     ]
 )
-def test_parse_positive_integer_error(s: Optional[Union[str, int]], exc: Type[BaseException], msg: str) -> None:
+def test_parse_positive_integer_error(s: 'Optional[Union[str, int]]', exc: 'Type[BaseException]', msg: str) -> None:
     with pytest.raises(exc, match=re.escape(msg)):
         parse_positive_integer(s)
 
@@ -55,7 +58,7 @@ def test_parse_positive_integer_error(s: Optional[Union[str, int]], exc: Type[Ba
         ('Off', False),
     ]
 )
-def test_parse_boolean_state(s: Optional[str], result: Optional[bool]) -> None:
+def test_parse_boolean_state(s: 'Optional[str]', result: 'Optional[bool]') -> None:
     assert parse_boolean_state(s) == result  # nosec
 
 
@@ -66,7 +69,7 @@ def test_parse_boolean_state(s: Optional[str], result: Optional[bool]) -> None:
         ('X', ValueError, "invalid boolean state value 'X'"),
     ]
 )
-def test_parse_boolean_state_error(s: Optional[str], exc: Type[BaseException], msg: str) -> None:
+def test_parse_boolean_state_error(s: 'Optional[str]', exc: 'Type[BaseException]', msg: str) -> None:
     with pytest.raises(exc, match=re.escape(msg)):
         parse_boolean_state(s)
 
@@ -84,7 +87,7 @@ def test_parse_boolean_state_error(s: Optional[str], exc: Type[BaseException], m
         ('cr', '\r'),
     ]
 )
-def test_parse_linesep(s: Optional[str], result: Optional[Linesep]) -> None:
+def test_parse_linesep(s: 'Optional[str]', result: 'Optional[Linesep]') -> None:
     assert parse_linesep(s) == result  # nosec
 
 
@@ -94,7 +97,7 @@ def test_parse_linesep(s: Optional[str], result: Optional[Linesep]) -> None:
         ('X', ValueError, "invalid linesep value 'X'"),
     ]
 )
-def test_parse_linesep_error(s: Optional[str], exc: Type[BaseException], msg: str) -> None:
+def test_parse_linesep_error(s: 'Optional[str]', exc: 'Type[BaseException]', msg: str) -> None:
     with pytest.raises(exc, match=re.escape(msg)):
         parse_linesep(s)
 
@@ -121,7 +124,7 @@ def test_parse_linesep_error(s: Optional[str], exc: Type[BaseException], msg: st
         (' ' * 8, ' ' * 8),
     ]
 )
-def test_parse_indentation(s: Optional[Union[str, int]], result: Optional[str]) -> None:
+def test_parse_indentation(s: 'Optional[Union[str, int]]', result: 'Optional[str]') -> None:
     assert parse_indentation(s) == result  # nosec
 
 
@@ -139,6 +142,6 @@ def test_parse_indentation(s: Optional[Union[str, int]], result: Optional[str]) 
         (1.1, TypeError, "expect str or int, got 1.1"),
     ]
 )
-def test_parse_indentation_error(s: Optional[Union[str, int]], exc: Type[BaseException], msg: str) -> None:
+def test_parse_indentation_error(s: 'Optional[Union[str, int]]', exc: 'Type[BaseException]', msg: str) -> None:
     with pytest.raises(exc, match=re.escape(msg)):
         parse_indentation(s)

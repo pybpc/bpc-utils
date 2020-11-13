@@ -1,10 +1,14 @@
 import ast
 
-import parso
 import pytest
 
-from bpc_utils import BaseContext, Config, Linesep, UUID4Generator, parso_parse
-from bpc_utils.typing import Tuple
+from bpc_utils import BaseContext, Config, UUID4Generator, parso_parse
+from bpc_utils.typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import parso  # isort: split
+    from bpc_utils import Linesep  # pylint: disable=ungrouped-imports
+    from bpc_utils.typing import Tuple  # pylint: disable=ungrouped-imports
 
 
 class MagicContext(BaseContext):
@@ -13,10 +17,10 @@ class MagicContext(BaseContext):
     def _concat(self) -> None:
         self._buffer = self._prefix + ' \u0200 ' + self._suffix
 
-    def has_expr(self, node: parso.tree.NodeOrLeaf) -> bool:
+    def has_expr(self, node: 'parso.tree.NodeOrLeaf') -> bool:
         return 'magic' in node.get_code()
 
-    def _process_number(self, node: parso.python.tree.Number) -> None:  # pylint: disable=no-self-use
+    def _process_number(self, node: 'parso.python.tree.Number') -> None:  # pylint: disable=no-self-use
         """Process number nodes.
 
         Args:
@@ -26,7 +30,7 @@ class MagicContext(BaseContext):
         node.value = repr(ast.literal_eval(node.value) + 666)
         self += node.get_code()
 
-    def _process_string(self, node: parso.python.tree.String) -> None:  # pylint: disable=no-self-use
+    def _process_string(self, node: 'parso.python.tree.String') -> None:  # pylint: disable=no-self-use
         """Process string nodes.
 
         Args:
@@ -81,7 +85,7 @@ def test_BaseContext() -> None:
         ('# coding: gbk\n \n# comment\nprint(666)\n', '\n', ('# coding: gbk\n', ' \n# comment\nprint(666)\n')),
     ]
 )
-def test_BaseContext_split_comments(code: str, linesep: Linesep, result: Tuple[str, str]) -> None:
+def test_BaseContext_split_comments(code: str, linesep: 'Linesep', result: 'Tuple[str, str]') -> None:
     assert BaseContext.split_comments(code, linesep) == result  # nosec
 
 
@@ -101,7 +105,7 @@ def test_BaseContext_split_comments(code: str, linesep: Linesep, result: Tuple[s
         ('', '', 2, '\n', 2),
     ]
 )
-def test_BaseContext_missing_newlines(prefix: str, suffix: str, expected: int, linesep: Linesep, result: int) -> None:
+def test_BaseContext_missing_newlines(prefix: str, suffix: str, expected: int, linesep: 'Linesep', result: int) -> None:
     assert BaseContext.missing_newlines(prefix, suffix, expected, linesep) == result  # nosec
 
 
@@ -116,7 +120,7 @@ def test_BaseContext_missing_newlines(prefix: str, suffix: str, expected: int, l
         ('', ('', '')),
     ]
 )
-def test_BaseContext_extract_whitespaces(code: str, result: Tuple[str, str]) -> None:
+def test_BaseContext_extract_whitespaces(code: str, result: 'Tuple[str, str]') -> None:
     assert BaseContext.extract_whitespaces(code) == result  # nosec
 
 

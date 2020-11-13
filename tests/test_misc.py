@@ -8,7 +8,10 @@ import pytest
 
 from bpc_utils import Config, UUID4Generator, first_non_none, first_truthy
 from bpc_utils.misc import MakeTextIO
-from bpc_utils.typing import Generator, Set, T, Tuple, Type
+from bpc_utils.typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from bpc_utils.typing import Generator, Set, T, Tuple, Type
 
 
 @pytest.mark.parametrize(
@@ -25,7 +28,7 @@ from bpc_utils.typing import Generator, Set, T, Tuple, Type
         ((0, ()), None),
     ]
 )
-def test_first_truthy(args: Tuple[object], result: object) -> None:
+def test_first_truthy(args: 'Tuple[object]', result: object) -> None:
     assert first_truthy(*args) == result  # nosec
 
 
@@ -36,7 +39,7 @@ def test_first_truthy(args: Tuple[object], result: object) -> None:
         ((1,), TypeError, 'is not iterable'),
     ]
 )
-def test_first_truthy_error(args: Tuple[object], exc: Type[BaseException], msg: str) -> None:
+def test_first_truthy_error(args: 'Tuple[object]', exc: 'Type[BaseException]', msg: str) -> None:
     with pytest.raises(exc, match=re.escape(msg)):
         first_truthy(*args)
 
@@ -44,11 +47,11 @@ def test_first_truthy_error(args: Tuple[object], exc: Type[BaseException], msg: 
 def test_first_truthy_short_circuit_usage() -> None:
     evaluated = set()  # type: Set[object]
 
-    def log_evaluation(value: T) -> T:
+    def log_evaluation(value: 'T') -> 'T':
         evaluated.add(value)
         return value
 
-    def value_generator() -> Generator[object, None, None]:
+    def value_generator() -> 'Generator[object, None, None]':
         yield log_evaluation(0)
         yield log_evaluation(1)
         yield log_evaluation(2)  # pragma: no cover  # should not be evaluated
@@ -73,7 +76,7 @@ def test_first_truthy_short_circuit_usage() -> None:
         ((None, None), None),
     ]
 )
-def test_first_non_none(args: Tuple[object], result: object) -> None:
+def test_first_non_none(args: 'Tuple[object]', result: object) -> None:
     assert first_non_none(*args) == result  # nosec
 
 
@@ -84,7 +87,7 @@ def test_first_non_none(args: Tuple[object], result: object) -> None:
         ((1,), TypeError, 'is not iterable'),
     ]
 )
-def test_first_non_none_error(args: Tuple[object], exc: Type[BaseException], msg: str) -> None:
+def test_first_non_none_error(args: 'Tuple[object]', exc: 'Type[BaseException]', msg: str) -> None:
     with pytest.raises(exc, match=re.escape(msg)):
         first_non_none(*args)
 
@@ -92,11 +95,11 @@ def test_first_non_none_error(args: Tuple[object], exc: Type[BaseException], msg
 def test_first_non_none_short_circuit_usage() -> None:
     evaluated = set()  # type: Set[object]
 
-    def log_evaluation(value: T) -> T:
+    def log_evaluation(value: 'T') -> 'T':
         evaluated.add(value)
         return value
 
-    def value_generator() -> Generator[object, None, None]:
+    def value_generator() -> 'Generator[object, None, None]':
         yield log_evaluation(None)
         yield log_evaluation(0)
         yield log_evaluation(1)  # pragma: no cover  # should not be evaluated

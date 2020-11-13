@@ -10,7 +10,10 @@ import tokenize
 import parso
 
 from .misc import MakeTextIO, first_non_none
-from .typing import Dict, Linesep, List, Literal, Optional, TextIO, Tuple, Union, cast
+from .typing import TYPE_CHECKING, cast
+
+if TYPE_CHECKING:
+    from .typing import Dict, Linesep, List, Literal, Optional, TextIO, Tuple, Union
 
 PARSO_GRAMMAR_VERSIONS = []  # type: List[Tuple[int, int]]
 for grammar_file in glob.iglob(os.path.join(parso.__path__[0], 'python', 'grammar*.txt')):  # type: ignore[attr-defined]
@@ -19,7 +22,7 @@ for grammar_file in glob.iglob(os.path.join(parso.__path__[0], 'python', 'gramma
 PARSO_GRAMMAR_VERSIONS = sorted(PARSO_GRAMMAR_VERSIONS)
 
 
-def get_parso_grammar_versions(minimum: Optional[str] = None) -> List[str]:
+def get_parso_grammar_versions(minimum: 'Optional[str]' = None) -> 'List[str]':
     """Get Python versions that parso supports to parse grammar.
 
     Args:
@@ -67,7 +70,7 @@ def detect_encoding(code: bytes) -> str:
         return tokenize.detect_encoding(file.readline)[0]
 
 
-def detect_linesep(code: Union[str, bytes, TextIO, parso.tree.NodeOrLeaf]) -> Linesep:
+def detect_linesep(code: 'Union[str, bytes, TextIO, parso.tree.NodeOrLeaf]') -> 'Linesep':
     r"""Detect linesep of Python source code.
 
     Args:
@@ -93,7 +96,7 @@ def detect_linesep(code: Union[str, bytes, TextIO, parso.tree.NodeOrLeaf]) -> Li
         'LF': 0,
     }  # type: Dict[Literal['CR', 'CRLF', 'LF'], int]
 
-    with MakeTextIO(cast(Union[str, TextIO], code)) as file:
+    with MakeTextIO(cast('Union[str, TextIO]', code)) as file:
         for line in file:
             if line.endswith('\r'):
                 pool['CR'] += 1
@@ -103,10 +106,10 @@ def detect_linesep(code: Union[str, bytes, TextIO, parso.tree.NodeOrLeaf]) -> Li
                 pool['LF'] += 1
 
     # when there is a tie, prefer LF to CRLF, prefer CRLF to CR
-    return cast(Linesep, max((pool['LF'], 3, '\n'), (pool['CRLF'], 2, '\r\n'), (pool['CR'], 1, '\r'))[2])
+    return cast('Linesep', max((pool['LF'], 3, '\n'), (pool['CRLF'], 2, '\r\n'), (pool['CR'], 1, '\r'))[2])
 
 
-def detect_indentation(code: Union[str, bytes, TextIO, parso.tree.NodeOrLeaf]) -> str:
+def detect_indentation(code: 'Union[str, bytes, TextIO, parso.tree.NodeOrLeaf]') -> str:
     """Detect indentation of Python source code.
 
     Args:
@@ -133,7 +136,7 @@ def detect_indentation(code: Union[str, bytes, TextIO, parso.tree.NodeOrLeaf]) -
     }  # type: Dict[Literal['space', 'tab'], int]
     min_spaces = None  # type: Optional[int]
 
-    with MakeTextIO(cast(Union[str, TextIO], code)) as file:
+    with MakeTextIO(cast('Union[str, TextIO]', code)) as file:
         for token_info in tokenize.generate_tokens(file.readline):
             if token_info.type == token.INDENT:
                 if '\t' in token_info.string and ' ' in token_info.string:
@@ -154,8 +157,8 @@ def detect_indentation(code: Union[str, bytes, TextIO, parso.tree.NodeOrLeaf]) -
     return ' ' * 4  # same number of spaces and tabs, prefer 4 spaces for PEP 8
 
 
-def parso_parse(code: Union[str, bytes], filename: Optional[str] = None, *,
-                version: Optional[str] = None) -> parso.python.tree.Module:
+def parso_parse(code: 'Union[str, bytes]', filename: 'Optional[str]' = None, *,
+                version: 'Optional[str]' = None) -> 'parso.python.tree.Module':
     """Parse Python source code with parso.
 
     Args:

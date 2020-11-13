@@ -54,6 +54,9 @@ intersphinx_mapping = {
 # type hints will be taken care of by sphinx_autodoc_typehints instead of sphinx.ext.autodoc.typehints
 autodoc_typehints = 'none'
 
+# tell sphinx_autodoc_typehints to set typing.TYPE_CHECKING to True
+set_type_checking_flag = True
+
 # autodoc_member_order = 'bysource'
 autodoc_member_order = 'groupwise'
 

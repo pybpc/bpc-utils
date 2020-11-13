@@ -14,7 +14,10 @@ import tempfile
 import time
 
 from .misc import UUID4Generator, is_windows
-from .typing import Deque, Dict, Final, Iterable, Iterator, List, Set, Tuple
+from .typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .typing import Deque, Dict, Final, Iterable, Iterator, List, Set, Tuple
 
 # gzip support detection
 try:
@@ -47,7 +50,7 @@ def is_python_filename(filename: str) -> bool:
     return os.path.splitext(filename)[1] in {'.py', '.pyw'}
 
 
-def expand_glob_iter(pattern: str) -> Iterator[str]:
+def expand_glob_iter(pattern: str) -> 'Iterator[str]':
     """Wrapper function to perform glob expansion.
 
     Args:
@@ -62,7 +65,7 @@ def expand_glob_iter(pattern: str) -> Iterator[str]:
     return glob.iglob(pattern, recursive=True)  # pragma: no cover  # novermin
 
 
-def detect_files(files: Iterable[str]) -> List[str]:
+def detect_files(files: 'Iterable[str]') -> 'List[str]':
     """Get a list of Python files to be processed according to user input.
 
     This will perform *glob* expansion on Windows, make all paths absolute,
@@ -116,7 +119,7 @@ def detect_files(files: Iterable[str]) -> List[str]:
     return list(file_dict.values())
 
 
-def archive_files(files: Iterable[str], archive_dir: str) -> str:
+def archive_files(files: 'Iterable[str]', archive_dir: str) -> str:
     """Archive the list of files into a *tar* file.
 
     Args:

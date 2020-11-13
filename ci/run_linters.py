@@ -30,7 +30,16 @@ linters = [
     },
     {
         'name': 'Vermin',
-        'command': ['vermin', '--backport', 'typing', '-q', '-t=3.4-', '.'],
+        'command': [
+            'vermin',
+            '--backport', 'typing',
+            '--feature', 'fstring-self-doc',
+            '--exclude', 'typing.TYPE_CHECKING',
+            '--hidden',
+            '-q',
+            '-t=3.4-',
+            '.',
+        ],
     },
 ]  # type: List[Linter]
 

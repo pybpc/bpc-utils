@@ -1,10 +1,13 @@
 """Parallel execution support for BPC."""
 
 import os
-import types
 
 from .misc import nullcontext
-from .typing import Callable, ContextManager, Iterable, List, Mapping, Optional, T, Tuple
+from .typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from types import ModuleType  # isort: split
+    from .typing import Callable, ContextManager, Iterable, List, Mapping, Optional, T, Tuple
 
 # multiprocessing support detection and CPU_CNT retrieval
 try:        # try first
@@ -19,13 +22,13 @@ else:       # CPU number if multiprocessing supported
     else:  # pragma: no cover
         CPU_CNT = os.cpu_count() or 1
 finally:    # alias and aftermath
-    mp = multiprocessing  # type: Optional[types.ModuleType]
+    mp = multiprocessing  # type: Optional[ModuleType]
     del multiprocessing
 
 parallel_available = mp is not None and CPU_CNT > 1
 
 
-def _mp_map_wrapper(args: Tuple[Callable[..., T], Iterable[object], Mapping[str, object]]) -> T:
+def _mp_map_wrapper(args: 'Tuple[Callable[..., T], Iterable[object], Mapping[str, object]]') -> 'T':
     """Map wrapper function for :mod:`multiprocessing`.
 
     Args:
@@ -39,7 +42,7 @@ def _mp_map_wrapper(args: Tuple[Callable[..., T], Iterable[object], Mapping[str,
     return func(*posargs, **kwargs)
 
 
-def _mp_init_lock(lock: ContextManager[None]) -> None:  # pragma: no cover
+def _mp_init_lock(lock: 'ContextManager[None]') -> None:  # pragma: no cover
     """Initialize lock for :mod:`multiprocessing`.
 
     Args:
@@ -50,9 +53,9 @@ def _mp_init_lock(lock: ContextManager[None]) -> None:  # pragma: no cover
     task_lock = lock
 
 
-def map_tasks(func: Callable[..., T], iterable: Iterable[object], posargs: Optional[Iterable[object]] = None,
-              kwargs: Optional[Mapping[str, object]] = None, *,
-              processes: Optional[int] = None, chunksize: Optional[int] = None) -> List[T]:
+def map_tasks(func: 'Callable[..., T]', iterable: 'Iterable[object]', posargs: 'Optional[Iterable[object]]' = None,
+              kwargs: 'Optional[Mapping[str, object]]' = None, *,
+              processes: 'Optional[int]' = None, chunksize: 'Optional[int]' = None) -> 'List[T]':
     """Execute tasks in parallel if :mod:`multiprocessing` is available, otherwise execute them sequentially.
 
     Args:
@@ -90,7 +93,7 @@ def map_tasks(func: Callable[..., T], iterable: Iterable[object], posargs: Optio
 task_lock = nullcontext()  # type: ContextManager[None]
 
 
-def TaskLock() -> ContextManager[None]:
+def TaskLock() -> 'ContextManager[None]':
     """Function that returns a lock for possibly concurrent tasks.
 
     Returns:

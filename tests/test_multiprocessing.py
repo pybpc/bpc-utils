@@ -4,15 +4,19 @@ import shutil
 import subprocess  # nosec
 import sys
 import textwrap
-from pathlib import Path
 
 import pytest
 
 from bpc_utils import Config, TaskLock, map_tasks
 from bpc_utils.multiprocessing import _mp_map_wrapper, parallel_available
-from bpc_utils.typing import Callable, Iterable, List, Mapping, Optional, T, Tuple
+from bpc_utils.typing import TYPE_CHECKING
 
-from .testutils import CaptureFixture, MonkeyPatch, write_text_file
+from .testutils import write_text_file
+
+if TYPE_CHECKING:
+    from pathlib import Path  # isort: split
+    from bpc_utils.typing import Callable, Iterable, List, Mapping, Optional, T, Tuple  # isort: split
+    from .testutils import CaptureFixture, MonkeyPatch
 
 
 def square(x: int) -> int:
@@ -38,7 +42,7 @@ def lock_user_multiple_times(x: int) -> int:
         ((int, ('0x10',), Config(base=16)), 16),
     ]
 )
-def test__mp_map_wrapper(args: Tuple[Callable[..., T], Iterable[object], Mapping[str, object]], result: T) -> None:
+def test__mp_map_wrapper(args: 'Tuple[Callable[..., T], Iterable[object], Mapping[str, object]]', result: 'T') -> None:
     assert _mp_map_wrapper(args) == result  # nosec
 
 
@@ -55,9 +59,9 @@ def test__mp_map_wrapper(args: Tuple[Callable[..., T], Iterable[object], Mapping
 @pytest.mark.parametrize('processes', [None, 1, 2])
 @pytest.mark.parametrize('chunksize', [None, 2])
 @pytest.mark.parametrize('parallel', [True, False])
-def test_map_tasks(func: Callable[..., T], iterable: Iterable[object], posargs: Optional[Iterable[object]],
-                   kwargs: Optional[Mapping[str, object]], processes: Optional[int], chunksize: Optional[int],
-                   parallel: bool, result: List[T], monkeypatch: MonkeyPatch) -> None:
+def test_map_tasks(func: 'Callable[..., T]', iterable: 'Iterable[object]', posargs: 'Optional[Iterable[object]]',
+                   kwargs: 'Optional[Mapping[str, object]]', processes: 'Optional[int]', chunksize: 'Optional[int]',
+                   parallel: bool, result: 'List[T]', monkeypatch: 'MonkeyPatch') -> None:
     # test both under normal condition and when parallel execution is not available
     if not parallel:
         monkeypatch.setattr(sys.modules['bpc_utils.multiprocessing'], 'parallel_available', False)
@@ -65,7 +69,7 @@ def test_map_tasks(func: Callable[..., T], iterable: Iterable[object], posargs: 
                      processes=processes, chunksize=chunksize) == result
 
 
-def test_lock(tmp_path: Path, monkeypatch: MonkeyPatch, capfd: CaptureFixture) -> None:
+def test_lock(tmp_path: 'Path', monkeypatch: 'MonkeyPatch', capfd: 'CaptureFixture') -> None:
     with TaskLock():
         pass
 
@@ -119,7 +123,7 @@ def test_lock(tmp_path: Path, monkeypatch: MonkeyPatch, capfd: CaptureFixture) -
 
 
 @pytest.mark.parametrize('parallel', [True, False])
-def test_lock_use_multiple_times(parallel: bool, monkeypatch: MonkeyPatch) -> None:
+def test_lock_use_multiple_times(parallel: bool, monkeypatch: 'MonkeyPatch') -> None:
     # test both under normal condition and when parallel execution is not available
     if not parallel:
         monkeypatch.setattr(sys.modules['bpc_utils.multiprocessing'], 'parallel_available', False)

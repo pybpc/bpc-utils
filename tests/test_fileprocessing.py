@@ -10,9 +10,13 @@ import pytest
 from bpc_utils import BPCRecoveryError, archive_files, detect_files, recover_files
 from bpc_utils.fileprocessing import LOOKUP_TABLE, expand_glob_iter, is_python_filename
 from bpc_utils.misc import is_windows
-from bpc_utils.typing import List, Tuple
+from bpc_utils.typing import TYPE_CHECKING
 
-from .testutils import MonkeyPatch, TempPathFactory, read_text_file, write_text_file
+from .testutils import read_text_file, write_text_file
+
+if TYPE_CHECKING:
+    from bpc_utils.typing import List, Tuple  # isort: split
+    from .testutils import MonkeyPatch, TempPathFactory
 
 
 def native_path(path: str) -> str:
@@ -21,7 +25,7 @@ def native_path(path: str) -> str:
 
 
 @pytest.fixture(scope='class')
-def setup_files_for_tests(tmp_path_factory: TempPathFactory, monkeypatch_class: MonkeyPatch) -> None:
+def setup_files_for_tests(tmp_path_factory: 'TempPathFactory', monkeypatch_class: 'MonkeyPatch') -> None:
     tmp_path = tmp_path_factory.mktemp('bpc-utils-tests-')
     monkeypatch_class.chdir(tmp_path)
     write_text_file('README.md', 'rrr')
@@ -99,7 +103,7 @@ class TestFileProcessingReadOnly:
         expand_glob_iter_test_cases.append(('./**/*.pyw', ['./c.pyw', './dir/e.pyw']))
 
     @pytest.mark.parametrize('pattern,result', expand_glob_iter_test_cases)
-    def test_expand_glob_iter(self, pattern: str, result: List[str]) -> None:  # pylint: disable=no-self-use
+    def test_expand_glob_iter(self, pattern: str, result: 'List[str]') -> None:  # pylint: disable=no-self-use
         assert sorted(expand_glob_iter(pattern)) == sorted(map(native_path, result))  # nosec
 
     detect_files_test_cases = [
@@ -117,7 +121,7 @@ class TestFileProcessingReadOnly:
         detect_files_test_cases.append((['*.py'], []))  # glob expansion should not be performed on Unix-like platforms
 
     @pytest.mark.parametrize('files,result', detect_files_test_cases)
-    def test_detect_files(self, files: List[str], result: List[str]) -> None:  # pylint: disable=no-self-use
+    def test_detect_files(self, files: 'List[str]', result: 'List[str]') -> None:  # pylint: disable=no-self-use
         assert sorted(detect_files(files)) == sorted(map(os.path.abspath, result))  # type: ignore[arg-type]  # nosec
 
 
@@ -162,7 +166,7 @@ def test_recover_files_both_rr_rs() -> None:
         recover_files(os.devnull, rr=True, rs=True)
 
 
-def test_recover_files_rs_errors(tmp_path: Path, monkeypatch: MonkeyPatch) -> None:
+def test_recover_files_rs_errors(tmp_path: Path, monkeypatch: 'MonkeyPatch') -> None:
     monkeypatch.chdir(tmp_path)
     with pytest.raises(BPCRecoveryError, match=re.escape("no archive files found in '.'")):
         recover_files('.', rs=True)

@@ -3,10 +3,13 @@
 import abc
 import unicodedata
 
-import parso.tree
+from .misc import UUID4Generator
+from .typing import TYPE_CHECKING, TypeVar, final
 
-from .misc import Config, UUID4Generator
-from .typing import Callable, Final, Linesep, Optional, Tuple, TypeVar, final
+if TYPE_CHECKING:
+    import parso.tree  # isort: split
+    from .misc import Config
+    from .typing import Callable, Final, Linesep, Optional, Tuple
 
 BaseContextType = TypeVar('BaseContextType', bound='BaseContext')
 
@@ -14,7 +17,7 @@ BaseContextType = TypeVar('BaseContextType', bound='BaseContext')
 class BaseContext(abc.ABC):
     """Abstract base class for general conversion context."""
 
-    def __init__(self, node: parso.tree.NodeOrLeaf, config: Config, *,
+    def __init__(self, node: 'parso.tree.NodeOrLeaf', config: 'Config', *,
                  indent_level: int = 0, raw: bool = False) -> None:
         """Initialize BaseContext.
 
@@ -94,7 +97,7 @@ class BaseContext(abc.ABC):
         return self._buffer
 
     @final
-    def _walk(self, node: parso.tree.NodeOrLeaf) -> None:
+    def _walk(self, node: 'parso.tree.NodeOrLeaf') -> None:
         """Start traversing the AST module.
 
         The method traverses through all *children* of ``node``. It first checks
@@ -123,7 +126,7 @@ class BaseContext(abc.ABC):
         self += node.get_code()
 
     @final
-    def _process(self, node: parso.tree.NodeOrLeaf) -> None:
+    def _process(self, node: 'parso.tree.NodeOrLeaf') -> None:
         """Recursively process parso AST.
 
         All processing methods for a specific ``node`` type are defined as
@@ -156,7 +159,7 @@ class BaseContext(abc.ABC):
         raise NotImplementedError  # pragma: no cover
 
     @abc.abstractmethod
-    def has_expr(self, node: parso.tree.NodeOrLeaf) -> bool:
+    def has_expr(self, node: 'parso.tree.NodeOrLeaf') -> bool:
         """Check if node has the target expression.
 
         Args:
@@ -170,7 +173,7 @@ class BaseContext(abc.ABC):
 
     @final
     @staticmethod
-    def split_comments(code: str, linesep: Linesep) -> Tuple[str, str]:
+    def split_comments(code: str, linesep: 'Linesep') -> 'Tuple[str, str]':
         """Separates prefixing comments from code.
 
         This method separates *prefixing* comments and *suffixing* code. It is
@@ -208,7 +211,7 @@ class BaseContext(abc.ABC):
 
     @final
     @staticmethod
-    def missing_newlines(prefix: str, suffix: str, expected: int, linesep: Linesep) -> int:
+    def missing_newlines(prefix: str, suffix: str, expected: int, linesep: 'Linesep') -> int:
         """Count missing blank lines for code insertion given surrounding code.
 
         Args:
@@ -244,7 +247,7 @@ class BaseContext(abc.ABC):
 
     @final
     @staticmethod
-    def extract_whitespaces(code: str) -> Tuple[str, str]:
+    def extract_whitespaces(code: str) -> 'Tuple[str, str]':
         """Extract preceding and succeeding whitespaces from the code given.
 
         Args:
