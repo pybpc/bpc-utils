@@ -16,7 +16,7 @@ Linesep = Literal['\n', '\r\n', '\r']
 
 # If running Sphinx build, set :data:`typing.TYPE_CHECKING` to :data:`True`.
 # This is a workaround because module import happens before sphinx-autodoc-typehints gains control.
-if re.fullmatch(r'(?ai)sphinx-build(?:\.exe)?', os.path.basename(sys.argv[0])):
+if re.fullmatch(r'(?ai)sphinx-build(?:\.exe)?', os.path.basename(sys.argv[0])):  # pragma: no cover
     import typing
     import typing_extensions
     typing.TYPE_CHECKING = True  # novermin
