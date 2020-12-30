@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     ]
 )
 def test_parse_positive_integer(s: 'Optional[Union[str, int]]', result: 'Optional[int]') -> None:
-    assert parse_positive_integer(s) == result  # nosec
+    assert parse_positive_integer(s) == result
 
 
 @pytest.mark.parametrize(
@@ -59,7 +59,7 @@ def test_parse_positive_integer_error(s: 'Optional[Union[str, int]]', exc: 'Type
     ]
 )
 def test_parse_boolean_state(s: 'Optional[str]', result: 'Optional[bool]') -> None:
-    assert parse_boolean_state(s) == result  # nosec
+    assert parse_boolean_state(s) == result
 
 
 @pytest.mark.parametrize(
@@ -88,7 +88,7 @@ def test_parse_boolean_state_error(s: 'Optional[str]', exc: 'Type[BaseException]
     ]
 )
 def test_parse_linesep(s: 'Optional[str]', result: 'Optional[Linesep]') -> None:
-    assert parse_linesep(s) == result  # nosec
+    assert parse_linesep(s) == result
 
 
 @pytest.mark.parametrize(
@@ -125,7 +125,7 @@ def test_parse_linesep_error(s: 'Optional[str]', exc: 'Type[BaseException]', msg
     ]
 )
 def test_parse_indentation(s: 'Optional[Union[str, int]]', result: 'Optional[str]') -> None:
-    assert parse_indentation(s) == result  # nosec
+    assert parse_indentation(s) == result
 
 
 @pytest.mark.parametrize(

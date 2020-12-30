@@ -26,20 +26,11 @@ linters = [
     },
     {
         'name': 'Bandit',
-        'command': ['bandit', '-r', '.'],
+        'command': ['bandit', '-c', 'bandit.yml', '-r', '.'],
     },
     {
         'name': 'Vermin',
-        'command': [
-            'vermin',
-            '--backport', 'typing',
-            '--feature', 'fstring-self-doc',
-            '--exclude', 'typing.TYPE_CHECKING',
-            '--hidden',
-            '-q',
-            '-t=3.4-',
-            '.',
-        ],
+        'command': ['vermin', '.'],
     },
 ]  # type: List[Linter]
 

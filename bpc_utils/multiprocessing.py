@@ -85,7 +85,11 @@ def map_tasks(func: 'Callable[..., T]', iterable: 'Iterable[object]', posargs: '
     processes = processes or CPU_CNT
     lock = mp.Lock()  # type: ignore[union-attr]
     with mp.Pool(processes=processes, initializer=_mp_init_lock, initargs=(lock,)) as pool:  # type: ignore[union-attr]
-        result = pool.map(_mp_map_wrapper, [(func, (item,) + tuple(posargs), kwargs) for item in iterable], chunksize)
+        result = pool.map(
+            _mp_map_wrapper,
+            [(func, (item,) + tuple(posargs), kwargs) for item in iterable],
+            chunksize
+        )  # type: List[T]
     task_lock = nullcontext()
     return result
 

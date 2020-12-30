@@ -24,27 +24,27 @@ class CodeType(enum.Enum):
 
 
 def test_parso_grammar_versions() -> None:
-    assert isinstance(PARSO_GRAMMAR_VERSIONS, list)  # nosec
-    assert isinstance(PARSO_GRAMMAR_VERSIONS[0], tuple)  # nosec
-    assert isinstance(PARSO_GRAMMAR_VERSIONS[0][0], int)  # nosec
-    assert isinstance(PARSO_GRAMMAR_VERSIONS[0][1], int)  # nosec
+    assert isinstance(PARSO_GRAMMAR_VERSIONS, list)
+    assert isinstance(PARSO_GRAMMAR_VERSIONS[0], tuple)
+    assert isinstance(PARSO_GRAMMAR_VERSIONS[0][0], int)
+    assert isinstance(PARSO_GRAMMAR_VERSIONS[0][1], int)
 
     versions1 = get_parso_grammar_versions()
-    assert len(versions1) > 1  # nosec
-    assert all(isinstance(x, str) for x in versions1)  # nosec
-    assert all(x.count('.') == 1 for x in versions1)  # nosec
+    assert len(versions1) > 1
+    assert all(isinstance(x, str) for x in versions1)
+    assert all(x.count('.') == 1 for x in versions1)
 
     versions2 = get_parso_grammar_versions(minimum=versions1[1])
-    assert len(versions1) - len(versions2) == 1  # nosec
-    assert all(isinstance(x, str) for x in versions2)  # nosec
-    assert all(x.count('.') == 1 for x in versions2)  # nosec
+    assert len(versions1) - len(versions2) == 1
+    assert all(isinstance(x, str) for x in versions2)
+    assert all(x.count('.') == 1 for x in versions2)
 
     versions3 = get_parso_grammar_versions(minimum='0.0')
-    assert versions1 == versions3  # nosec
+    assert versions1 == versions3
 
     versions4 = get_parso_grammar_versions(minimum='3.10')
-    assert all(isinstance(x, str) for x in versions4)  # nosec
-    assert all(x.count('.') == 1 for x in versions4)  # nosec
+    assert all(isinstance(x, str) for x in versions4)
+    assert all(x.count('.') == 1 for x in versions4)
 
 
 @pytest.mark.parametrize(
@@ -69,7 +69,7 @@ def test_get_parso_grammar_versions_error(minimum: 'Optional[str]', exc: 'Type[B
 
 
 def test_BPCSyntaxError() -> None:
-    assert issubclass(BPCSyntaxError, SyntaxError)  # nosec
+    assert issubclass(BPCSyntaxError, SyntaxError)
 
 
 @pytest.mark.parametrize(
@@ -81,7 +81,7 @@ def test_BPCSyntaxError() -> None:
     ]
 )
 def test_detect_encoding(code: bytes, result: str) -> None:
-    assert detect_encoding(code) == result  # nosec
+    assert detect_encoding(code) == result
 
 
 @pytest.mark.parametrize(
@@ -110,14 +110,14 @@ def test_detect_encoding_error(code: bytes, exc: 'Type[BaseException]', msg: str
 @pytest.mark.parametrize('code_type', CodeType)
 def test_detect_linesep(code_type: CodeType, code: str, result: 'Linesep') -> None:
     if code_type is CodeType.STR:
-        assert detect_linesep(code) == result  # nosec
+        assert detect_linesep(code) == result
     elif code_type is CodeType.BYTES:
-        assert detect_linesep(code.encode()) == result  # nosec
+        assert detect_linesep(code.encode()) == result
     elif code_type is CodeType.TEXT_IO:
         with io.StringIO(code, newline='') as file:
-            assert detect_linesep(file) == result  # nosec
+            assert detect_linesep(file) == result
     elif code_type is CodeType.PARSO_NODE:
-        assert detect_linesep(parso_parse(code)) == result  # nosec
+        assert detect_linesep(parso_parse(code)) == result
     else:  # pragma: no cover
         raise ValueError('unknown code type')
 
@@ -127,7 +127,7 @@ def test_detect_linesep_unseekable_file() -> None:
         s.connect(('httpbin.org', 80))
         s.send(b'HEAD / HTTP/1.1\r\nHost: httpbin.org\r\nConnection: close\r\n\r\n')
         with s.makefile(newline='') as file:
-            assert detect_linesep(file) == '\r\n'  # nosec
+            assert detect_linesep(file) == '\r\n'
 
 
 @pytest.mark.parametrize(
@@ -145,25 +145,25 @@ def test_detect_linesep_unseekable_file() -> None:
 @pytest.mark.parametrize('code_type', CodeType)
 def test_detect_indentation(code_type: CodeType, code: str, result: str) -> None:
     if code_type is CodeType.STR:
-        assert detect_indentation(code) == result  # nosec
+        assert detect_indentation(code) == result
     elif code_type is CodeType.BYTES:
-        assert detect_indentation(code.encode()) == result  # nosec
+        assert detect_indentation(code.encode()) == result
     elif code_type is CodeType.TEXT_IO:
         with io.StringIO(code, newline='') as file:
-            assert detect_indentation(file) == result  # nosec
+            assert detect_indentation(file) == result
     elif code_type is CodeType.PARSO_NODE:
-        assert detect_indentation(parso_parse(code)) == result  # nosec
+        assert detect_indentation(parso_parse(code)) == result
     else:  # pragma: no cover
         raise ValueError('unknown code type')
 
 
 def test_mixed_linesep_and_indentation() -> None:
     test_case = ('for x in [1]:\n    pass\rfor x in [1]:\r  pass', '\r', '  ')  # type: Tuple[str, Linesep, str]
-    assert detect_linesep(test_case[0]) == test_case[1]  # nosec
-    assert detect_indentation(test_case[0]) == test_case[2]  # nosec
+    assert detect_linesep(test_case[0]) == test_case[1]
+    assert detect_indentation(test_case[0]) == test_case[2]
     with io.StringIO(test_case[0], newline='') as file:
-        assert detect_linesep(file) == test_case[1]  # nosec
-        assert detect_indentation(file) == test_case[2]  # nosec
+        assert detect_linesep(file) == test_case[1]
+        assert detect_indentation(file) == test_case[2]
 
 
 @pytest.mark.parametrize(

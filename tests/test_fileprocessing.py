@@ -69,15 +69,15 @@ def setup_files_for_tests(tmp_path_factory: 'TempPathFactory', monkeypatch_class
     ]
 )
 def test_is_python_filename(filename: str, result: bool) -> None:
-    assert is_python_filename(filename) == result  # nosec
+    assert is_python_filename(filename) == result
 
 
 def test_expand_glob_iter_is_generator() -> None:
-    assert inspect.isgenerator(expand_glob_iter('*'))  # nosec
+    assert inspect.isgenerator(expand_glob_iter('*'))
 
 
 def test_BPCRecoveryError() -> None:
-    assert issubclass(BPCRecoveryError, RuntimeError)  # nosec
+    assert issubclass(BPCRecoveryError, RuntimeError)
 
 
 @pytest.mark.usefixtures('setup_files_for_tests')
@@ -104,7 +104,7 @@ class TestFileProcessingReadOnly:
 
     @pytest.mark.parametrize('pattern,result', expand_glob_iter_test_cases)
     def test_expand_glob_iter(self, pattern: str, result: 'List[str]') -> None:  # pylint: disable=no-self-use
-        assert sorted(expand_glob_iter(pattern)) == sorted(map(native_path, result))  # nosec
+        assert sorted(expand_glob_iter(pattern)) == sorted(map(native_path, result))
 
     detect_files_test_cases = [
         (['a.py'], ['a.py']),
@@ -122,7 +122,7 @@ class TestFileProcessingReadOnly:
 
     @pytest.mark.parametrize('files,result', detect_files_test_cases)
     def test_detect_files(self, files: 'List[str]', result: 'List[str]') -> None:  # pylint: disable=no-self-use
-        assert sorted(detect_files(files)) == sorted(map(os.path.abspath, result))  # type: ignore[arg-type]  # nosec
+        assert sorted(detect_files(files)) == sorted(map(os.path.abspath, result))  # type: ignore[arg-type]
 
 
 @pytest.mark.parametrize(
@@ -141,24 +141,24 @@ def test_archive_and_restore(rr: bool, rs: bool) -> None:
     archive_file = archive_files(file_list, archive_dir)
     with tarfile.open(archive_file, 'r') as tarf:
         items = tarf.getnames()
-        assert len(items) == 4  # nosec
-        assert LOOKUP_TABLE in items  # nosec
-        assert sum(x.endswith('.py') for x in items) == 3  # nosec
+        assert len(items) == 4
+        assert LOOKUP_TABLE in items
+        assert sum(x.endswith('.py') for x in items) == 3
     write_text_file('a.py', '[redacted]')
     write_text_file(os.path.join('dir', 'e.pyw'), '[redacted]')
-    assert not (rr and rs)  # nosec
+    assert not (rr and rs)
     recover_files(archive_dir if rs else archive_file, rr=rr, rs=rs)
-    assert read_text_file('a.py') == 'aaa'  # nosec
-    assert read_text_file(os.path.join('dir', 'e.pyw')) == 'eee'  # nosec
+    assert read_text_file('a.py') == 'aaa'
+    assert read_text_file(os.path.join('dir', 'e.pyw')) == 'eee'
     if rs:
-        assert not os.path.exists(archive_dir)  # nosec
-        assert not os.path.exists(archive_file)  # nosec
+        assert not os.path.exists(archive_dir)
+        assert not os.path.exists(archive_file)
     elif rr:
-        assert not os.path.exists(archive_file)  # nosec
-        assert os.path.isdir(archive_dir)  # nosec
+        assert not os.path.exists(archive_file)
+        assert os.path.isdir(archive_dir)
     else:
-        assert os.path.isdir(archive_dir)  # nosec
-        assert os.path.isfile(archive_file)  # nosec
+        assert os.path.isdir(archive_dir)
+        assert os.path.isfile(archive_file)
 
 
 def test_recover_files_both_rr_rs() -> None:

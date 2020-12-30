@@ -176,7 +176,7 @@ def parso_parse(code: 'Union[str, bytes]', filename: 'Optional[str]' = None, *,
     grammar = parso.load_grammar(version=version if version is not None else get_parso_grammar_versions()[-1])
     if isinstance(code, bytes):
         code = code.decode(detect_encoding(code))
-    module = grammar.parse(code, error_recovery=True)
+    module = grammar.parse(code, error_recovery=True)  # type: parso.python.tree.Module
     errors = grammar.iter_errors(module)
     if errors:
         error_messages = '\n'.join('[L%dC%d] %s' % (error.start_pos + (error.message,)) for error in errors)

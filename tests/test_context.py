@@ -52,26 +52,26 @@ def test_BaseContext() -> None:
     )
 
     context = MagicContext(node, config)
-    assert context.config == config  # nosec
-    assert context._indentation == '\t'  # pylint: disable=protected-access  # nosec
-    assert context._linesep == '\n'  # pylint: disable=protected-access  # nosec
-    assert context._pep8 is True  # pylint: disable=protected-access  # nosec
-    assert context._root is node  # pylint: disable=protected-access  # nosec
-    assert context._indent_level == 0  # pylint: disable=protected-access  # nosec
-    assert isinstance(context._uuid_gen, UUID4Generator)  # pylint: disable=protected-access  # nosec
-    assert context.string == converted_result + ' \u0200 '  # nosec
-    assert str(context) == converted_result + ' \u0200'  # nosec
+    assert context.config == config
+    assert context._indentation == '\t'  # pylint: disable=protected-access
+    assert context._linesep == '\n'  # pylint: disable=protected-access
+    assert context._pep8 is True  # pylint: disable=protected-access
+    assert context._root is node  # pylint: disable=protected-access
+    assert context._indent_level == 0  # pylint: disable=protected-access
+    assert isinstance(context._uuid_gen, UUID4Generator)  # pylint: disable=protected-access
+    assert context.string == converted_result + ' \u0200 '
+    assert str(context) == converted_result + ' \u0200'
 
     context = MagicContext(parso_parse(test_code), config, raw=True)
-    assert context.string == converted_result  # nosec
+    assert context.string == converted_result
 
     # "magic" should go into suffix
     context = MagicContext(parso_parse('magic'), config)
-    assert context.string == ' \u0200 magic'  # nosec
+    assert context.string == ' \u0200 magic'
 
     # test passing a leaf node to BaseContext
     context = MagicContext(parso_parse('123').children[0], config)
-    assert context.string == '123 \u0200 '  # nosec
+    assert context.string == '123 \u0200 '
 
 
 @pytest.mark.parametrize(
@@ -86,7 +86,7 @@ def test_BaseContext() -> None:
     ]
 )
 def test_BaseContext_split_comments(code: str, linesep: 'Linesep', result: 'Tuple[str, str]') -> None:
-    assert BaseContext.split_comments(code, linesep) == result  # nosec
+    assert BaseContext.split_comments(code, linesep) == result
 
 
 @pytest.mark.parametrize(
@@ -106,7 +106,7 @@ def test_BaseContext_split_comments(code: str, linesep: 'Linesep', result: 'Tupl
     ]
 )
 def test_BaseContext_missing_newlines(prefix: str, suffix: str, expected: int, linesep: 'Linesep', result: int) -> None:
-    assert BaseContext.missing_newlines(prefix, suffix, expected, linesep) == result  # nosec
+    assert BaseContext.missing_newlines(prefix, suffix, expected, linesep) == result
 
 
 @pytest.mark.parametrize(
@@ -121,7 +121,7 @@ def test_BaseContext_missing_newlines(prefix: str, suffix: str, expected: int, l
     ]
 )
 def test_BaseContext_extract_whitespaces(code: str, result: 'Tuple[str, str]') -> None:
-    assert BaseContext.extract_whitespaces(code) == result  # nosec
+    assert BaseContext.extract_whitespaces(code) == result
 
 
 @pytest.mark.parametrize(
@@ -136,7 +136,7 @@ def test_BaseContext_extract_whitespaces(code: str, result: 'Tuple[str, str]') -
     ]
 )
 def test_BaseContext_normalize(name: str, result: str) -> None:
-    assert BaseContext.normalize(name) == result  # nosec
+    assert BaseContext.normalize(name) == result
 
 
 @pytest.mark.parametrize('cls_name', ['Foo', '_Foo', '__Foo'])
@@ -150,7 +150,7 @@ def test_BaseContext_normalize(name: str, result: str) -> None:
     ]
 )
 def test_BaseContext_mangle_var_name(cls_name: str, var_name: str, result: str) -> None:
-    assert BaseContext.mangle(cls_name, var_name) == result  # nosec
+    assert BaseContext.mangle(cls_name, var_name) == result
 
 
 @pytest.mark.parametrize('cls_name', ['\u0044\u0327_', '_\u0044\u0327_', '__\u0044\u0327_'])
@@ -164,7 +164,7 @@ def test_BaseContext_mangle_var_name(cls_name: str, var_name: str, result: str) 
     ]
 )
 def test_BaseContext_mangle_class_name(cls_name: str, var_name: str, result: str) -> None:
-    assert BaseContext.mangle(cls_name, var_name) == result  # nosec
+    assert BaseContext.mangle(cls_name, var_name) == result
 
 
 @pytest.mark.parametrize('cls_name', ['Foo', '_Foo', '__Foo', '_', '__'])
@@ -177,7 +177,7 @@ def test_BaseContext_mangle_class_name(cls_name: str, var_name: str, result: str
     ]
 )
 def test_BaseContext_mangle_normalize_only_var(cls_name: str, var_name: str, result: str) -> None:
-    assert BaseContext.mangle(cls_name, var_name) == result  # nosec
+    assert BaseContext.mangle(cls_name, var_name) == result
 
 
 @pytest.mark.parametrize('cls_name', ['_', '__', '___'])
@@ -189,16 +189,16 @@ def test_BaseContext_mangle_normalize_only_var(cls_name: str, var_name: str, res
     ]
 )
 def test_BaseContext_mangle_normalize_only_class(cls_name: str, var_name: str, result: str) -> None:
-    assert BaseContext.mangle(cls_name, var_name) == result  # nosec
+    assert BaseContext.mangle(cls_name, var_name) == result
 
 
 @pytest.mark.parametrize('cls_name', ['Foo', '_Foo', '__Foo', '_', '__'])
 @pytest.mark.parametrize('var_name', ['x', '_x', '__x__', '__x___'])
 def test_BaseContext_mangle_should_not_alter_var(cls_name: str, var_name: str) -> None:
-    assert BaseContext.mangle(cls_name, var_name) == var_name  # nosec
+    assert BaseContext.mangle(cls_name, var_name) == var_name
 
 
 @pytest.mark.parametrize('cls_name', ['_', '__', '___'])
 @pytest.mark.parametrize('var_name', ['__x', '__x_'])
 def test_BaseContext_mangle_should_not_alter_class(cls_name: str, var_name: str) -> None:
-    assert BaseContext.mangle(cls_name, var_name) == var_name  # nosec
+    assert BaseContext.mangle(cls_name, var_name) == var_name

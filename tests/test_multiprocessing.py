@@ -43,7 +43,7 @@ def lock_user_multiple_times(x: int) -> int:
     ]
 )
 def test__mp_map_wrapper(args: 'Tuple[Callable[..., T], Iterable[object], Mapping[str, object]]', result: 'T') -> None:
-    assert _mp_map_wrapper(args) == result  # nosec
+    assert _mp_map_wrapper(args) == result
 
 
 @pytest.mark.parametrize(
@@ -65,11 +65,11 @@ def test_map_tasks(func: 'Callable[..., T]', iterable: 'Iterable[object]', posar
     # test both under normal condition and when parallel execution is not available
     if not parallel:
         monkeypatch.setattr(sys.modules['bpc_utils.multiprocessing'], 'parallel_available', False)
-    assert map_tasks(func, iterable, posargs=posargs, kwargs=kwargs,  # nosec
+    assert map_tasks(func, iterable, posargs=posargs, kwargs=kwargs,
                      processes=processes, chunksize=chunksize) == result
 
 
-def test_lock(tmp_path: 'Path', monkeypatch: 'MonkeyPatch', capfd: 'CaptureFixture') -> None:
+def test_lock(tmp_path: 'Path', monkeypatch: 'MonkeyPatch', capfd: 'CaptureFixture[str]') -> None:
     with TaskLock():
         pass
 
@@ -112,14 +112,14 @@ def test_lock(tmp_path: 'Path', monkeypatch: 'MonkeyPatch', capfd: 'CaptureFixtu
     write_text_file(test_filename, code_no_lock)
     subprocess.check_call([sys.executable, '-u', test_filename])  # nosec
     captured = capfd.readouterr()
-    assert has_interleave(captured.out) == parallel_available  # nosec
-    assert not captured.err  # nosec
+    assert has_interleave(captured.out) == parallel_available
+    assert not captured.err
 
     write_text_file(test_filename, code_with_lock)
     subprocess.check_call([sys.executable, '-u', test_filename])  # nosec
     captured = capfd.readouterr()
-    assert not has_interleave(captured.out)  # nosec
-    assert not captured.err  # nosec
+    assert not has_interleave(captured.out)
+    assert not captured.err
 
 
 @pytest.mark.parametrize('parallel', [True, False])
@@ -127,4 +127,4 @@ def test_lock_use_multiple_times(parallel: bool, monkeypatch: 'MonkeyPatch') -> 
     # test both under normal condition and when parallel execution is not available
     if not parallel:
         monkeypatch.setattr(sys.modules['bpc_utils.multiprocessing'], 'parallel_available', False)
-    assert map_tasks(lock_user_multiple_times, range(32)) == list(range(32))  # pylint: disable=W1638  # nosec
+    assert map_tasks(lock_user_multiple_times, range(32)) == list(range(32))  # pylint: disable=W1638

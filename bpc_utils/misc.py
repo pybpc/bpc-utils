@@ -1,12 +1,11 @@
 """Miscellaneous utilities."""
 
-import collections.abc
 import io
 import keyword
 import platform
 import uuid
 
-from .typing import TYPE_CHECKING, overload
+from .typing import TYPE_CHECKING, MutableMapping, overload
 
 if TYPE_CHECKING:
     from types import TracebackType  # isort: split
@@ -190,7 +189,7 @@ class MakeTextIO:
             self.obj.seek(self.pos)
 
 
-class Config(collections.abc.MutableMapping):
+class Config(MutableMapping[str, object]):
     """Configuration namespace.
 
     This class is inspired from :class:`argparse.Namespace` for storing

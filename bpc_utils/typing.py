@@ -19,9 +19,14 @@ Linesep = Literal['\n', '\r\n', '\r']
 if re.fullmatch(r'(?ai)sphinx-build(?:\.exe)?', os.path.basename(sys.argv[0])):  # pragma: no cover
     import typing
     import typing_extensions
-    typing.TYPE_CHECKING = True  # novermin
+    typing.TYPE_CHECKING = True
     typing_extensions.TYPE_CHECKING = True
 
 from typing_extensions import TYPE_CHECKING  # noqa: E402  # pylint: disable=wrong-import-position
+
+if sys.version_info >= (3, 9):  # pragma: no cover
+    from collections.abc import MutableMapping
+else:  # pragma: no cover
+    from typing import MutableMapping  # pylint: disable=ungrouped-imports
 
 __all__ = ['Linesep']

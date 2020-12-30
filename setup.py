@@ -55,9 +55,10 @@ setup(
             'flake8',
             'pylint',
             'mypy',
-            'bandit',
-            'vermin>=0.10.3',
+            'bandit>=1.6.3',
+            'vermin>=1.1.0',
             'colorlabels>=0.7.0',
+            'parso>=0.8.0',
         ],
         'test': [
             'pytest>=4.5.0',
