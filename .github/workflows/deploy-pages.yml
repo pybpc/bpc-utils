@@ -3,6 +3,8 @@ name: GitHub Pages
 on:
   push:
     branches: [master, ]
+  schedule:
+    - cron: '0 2 * * 6'
 
 jobs:
   deploy-pages:
@@ -19,10 +21,9 @@ jobs:
           export PIPENV_VENV_IN_PROJECT=1
 
           brew install pipenv
-          pipenv install --dev --python $(brew --prefix python@3.9)/bin/python3.9
+          pipenv --python $(brew --prefix python@3.9)/bin/python3.9
           pipenv run pip install -U pip setuptools wheel
-          pipenv run pip install -r docs/requirements.txt
-          pipenv run pip install .
+          pipenv run pip install .[docs]
           pipenv run make -C docs html
 
           # disable Jekyll
