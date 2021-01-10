@@ -1,0 +1,433 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>bpc_utils.context &#8212; bpc-utils 0.9.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for bpc_utils.context</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;BPC conversion context.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">import</span> <span class="nn">unicodedata</span>
+
+<span class="kn">from</span> <span class="nn">.misc</span> <span class="kn">import</span> <span class="n">UUID4Generator</span>
+<span class="kn">from</span> <span class="nn">.typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">final</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">parso.tree</span>  <span class="c1"># isort: split</span>
+    <span class="kn">from</span> <span class="nn">.misc</span> <span class="kn">import</span> <span class="n">Config</span>
+    <span class="kn">from</span> <span class="nn">.typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Final</span><span class="p">,</span> <span class="n">Linesep</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="n">BaseContextType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;BaseContextType&#39;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s1">&#39;BaseContext&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="BaseContext"><a class="viewcode-back" href="../../index.html#bpc_utils.BaseContext">[docs]</a><span class="k">class</span> <span class="nc">BaseContext</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Abstract base class for general conversion context.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="s1">&#39;parso.tree.NodeOrLeaf&#39;</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="s1">&#39;Config&#39;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+                 <span class="n">indent_level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">raw</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize BaseContext.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            node: parso AST</span>
+<span class="sd">            config (:class:`~bpc_utils.Config`): conversion configurations</span>
+<span class="sd">            indent_level: current indentation level</span>
+<span class="sd">            raw: raw processing flag</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#: Internal configurations.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>  <span class="c1"># type: Final[Config]</span>
+        <span class="c1">#: Indentation sequence.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_indentation</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">indentation</span>  <span class="c1"># type: Final[str]  # type: ignore[attr-defined]</span>
+        <span class="c1">#: Final[:data:`~bpc_utils.Linesep`]: Line seperator.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_linesep</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">linesep</span>  <span class="c1"># type: Final[Linesep]  # type: ignore[attr-defined]</span>
+        <span class="c1">#: :pep:`8` compliant conversion flag.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pep8</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">pep8</span>  <span class="c1"># type: Final[bool]  # type: ignore[attr-defined]</span>
+
+        <span class="c1">#: Root node given by the ``node`` parameter.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_root</span> <span class="o">=</span> <span class="n">node</span>  <span class="c1"># type: Final[parso.tree.NodeOrLeaf]</span>
+        <span class="c1">#: Current indentation level.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_indent_level</span> <span class="o">=</span> <span class="n">indent_level</span>  <span class="c1"># type: Final[int]</span>
+
+        <span class="c1">#: UUID generator.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_uuid_gen</span> <span class="o">=</span> <span class="n">UUID4Generator</span><span class="p">(</span><span class="n">dash</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># type: Final[UUID4Generator]</span>
+
+        <span class="c1">#: Code before insertion point.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prefix</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>  <span class="c1"># type: str</span>
+        <span class="c1">#: Code after insertion point.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_suffix</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>  <span class="c1"># type: str</span>
+        <span class="c1">#: Final converted result.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>  <span class="c1"># type: str</span>
+
+        <span class="c1">#: Flag to indicate whether buffer is now :attr:`self._prefix &lt;bpc_utils.BaseContext._prefix&gt;`.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prefix_or_suffix</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># type: bool</span>
+        <span class="c1">#: Preceding node with the target expression, i.e. the *insertion point*.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_node_before_expr</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: Optional[parso.tree.NodeOrLeaf]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_walk</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>  <span class="c1"># traverse children</span>
+
+        <span class="k">if</span> <span class="n">raw</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefix</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_suffix</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_concat</span><span class="p">()</span>  <span class="c1"># generate final result</span>
+
+<div class="viewcode-block" id="BaseContext.__iadd__"><a class="viewcode-back" href="../../index.html#bpc_utils.BaseContext.__iadd__">[docs]</a>    <span class="nd">@final</span>
+    <span class="k">def</span> <span class="fm">__iadd__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">BaseContextType</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseContextType</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Support of the ``+=`` operator.</span>
+
+<span class="sd">        If :attr:`self._prefix_or_suffix &lt;bpc_utils.BaseContext._prefix_or_suffix&gt;` is :data:`True`,</span>
+<span class="sd">        then the ``code`` will be appended to :attr:`self._prefix &lt;bpc_utils.BaseContext._prefix&gt;`;</span>
+<span class="sd">        else it will be appended to :attr:`self._suffix &lt;bpc_utils.BaseContext._suffix&gt;`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            code: code string</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            BaseContext: self</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefix_or_suffix</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_prefix</span> <span class="o">+=</span> <span class="n">code</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_suffix</span> <span class="o">+=</span> <span class="n">code</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="BaseContext.__str__"><a class="viewcode-back" href="../../index.html#bpc_utils.BaseContext.__str__">[docs]</a>    <span class="nd">@final</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns a *stripped* version of :attr:`self._buffer &lt;bpc_utils.BaseContext._buffer&gt;`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
+
+    <span class="nd">@final</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">string</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns conversion buffer (:attr:`self._buffer &lt;bpc_utils.BaseContext._buffer&gt;`).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span>
+
+<div class="viewcode-block" id="BaseContext._walk"><a class="viewcode-back" href="../../index.html#bpc_utils.BaseContext._walk">[docs]</a>    <span class="nd">@final</span>
+    <span class="k">def</span> <span class="nf">_walk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="s1">&#39;parso.tree.NodeOrLeaf&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Start traversing the AST module.</span>
+
+<span class="sd">        The method traverses through all *children* of ``node``. It first checks</span>
+<span class="sd">        if such child has the target expression. If so, it will toggle</span>
+<span class="sd">        :attr:`self._prefix_or_suffix &lt;bpc_utils.BaseContext._prefix_or_suffix&gt;`</span>
+<span class="sd">        (set to :data:`False`) and save the last previous child as</span>
+<span class="sd">        :attr:`self._node_before_expr &lt;bpc_utils.BaseContext._node_before_expr&gt;`.</span>
+<span class="sd">        Then it processes the child with :meth:`self._process &lt;bpc_utils.BaseContext._process&gt;`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            node: parso AST</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># process node</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s1">&#39;children&#39;</span><span class="p">):</span>
+            <span class="n">last_node</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>  <span class="c1"># type: ignore[attr-defined]</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefix_or_suffix</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_expr</span><span class="p">(</span><span class="n">child</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_prefix_or_suffix</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_node_before_expr</span> <span class="o">=</span> <span class="n">last_node</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+                <span class="n">last_node</span> <span class="o">=</span> <span class="n">child</span>
+            <span class="k">return</span>
+
+        <span class="c1"># preserve leaf node as is by default</span>
+        <span class="bp">self</span> <span class="o">+=</span> <span class="n">node</span><span class="o">.</span><span class="n">get_code</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="BaseContext._process"><a class="viewcode-back" href="../../index.html#bpc_utils.BaseContext._process">[docs]</a>    <span class="nd">@final</span>
+    <span class="k">def</span> <span class="nf">_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="s1">&#39;parso.tree.NodeOrLeaf&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Recursively process parso AST.</span>
+
+<span class="sd">        All processing methods for a specific ``node`` type are defined as</span>
+<span class="sd">        ``_process_{type}``. This method first checks if such processing</span>
+<span class="sd">        method exists. If so, it will call such method on the ``node``;</span>
+<span class="sd">        otherwise it will traverse through all *children* of ``node``, and perform</span>
+<span class="sd">        the same logic on each child.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            node: parso AST</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">func_name</span> <span class="o">=</span> <span class="s1">&#39;_process_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">node</span><span class="o">.</span><span class="n">type</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func_name</span><span class="p">):</span>
+            <span class="n">func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func_name</span><span class="p">)</span>  <span class="c1"># type: Callable[[parso.tree.NodeOrLeaf], None]</span>
+            <span class="n">func</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s1">&#39;children&#39;</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>  <span class="c1"># type: ignore[attr-defined]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># preserve leaf node as is by default</span>
+        <span class="bp">self</span> <span class="o">+=</span> <span class="n">node</span><span class="o">.</span><span class="n">get_code</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="BaseContext._concat"><a class="viewcode-back" href="../../index.html#bpc_utils.BaseContext._concat">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_concat</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Concatenate final string.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>  <span class="c1"># pragma: no cover</span></div>
+
+<div class="viewcode-block" id="BaseContext.has_expr"><a class="viewcode-back" href="../../index.html#bpc_utils.BaseContext.has_expr">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">has_expr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="s1">&#39;parso.tree.NodeOrLeaf&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Check if node has the target expression.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            node: parso AST</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            whether ``node`` has the target expression</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>  <span class="c1"># pragma: no cover</span></div>
+
+<div class="viewcode-block" id="BaseContext.split_comments"><a class="viewcode-back" href="../../index.html#bpc_utils.BaseContext.split_comments">[docs]</a>    <span class="nd">@final</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">split_comments</span><span class="p">(</span><span class="n">code</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">linesep</span><span class="p">:</span> <span class="s1">&#39;Linesep&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Tuple[str, str]&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Separates prefixing comments from code.</span>
+
+<span class="sd">        This method separates *prefixing* comments and *suffixing* code. It is</span>
+<span class="sd">        rather useful when inserting code might break `shebang`_ and encoding</span>
+<span class="sd">        cookies (:pep:`263`), etc.</span>
+
+<span class="sd">        .. _shebang: https://en.wikipedia.org/wiki/Shebang_(Unix)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            code: the code to split comments</span>
+<span class="sd">            linesep (:data:`~bpc_utils.Linesep`): line seperator</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            a tuple of *prefix comments* and *suffix code*</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">suffix</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">prefix_or_suffix</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">code</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">linesep</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">prefix_or_suffix</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">):</span>
+                    <span class="n">prefix</span> <span class="o">+=</span> <span class="n">line</span> <span class="o">+</span> <span class="n">linesep</span>
+                    <span class="k">continue</span>
+                <span class="n">prefix_or_suffix</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">suffix</span> <span class="o">+=</span> <span class="n">line</span> <span class="o">+</span> <span class="n">linesep</span>
+
+        <span class="k">if</span> <span class="n">prefix_or_suffix</span><span class="p">:</span>
+            <span class="n">prefix</span> <span class="o">=</span> <span class="n">prefix</span><span class="p">[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">linesep</span><span class="p">)]</span>  <span class="c1"># 3.9+ str.removesuffix</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">suffix</span> <span class="o">=</span> <span class="n">suffix</span><span class="p">[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">linesep</span><span class="p">)]</span>
+
+        <span class="k">return</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">suffix</span></div>
+
+<div class="viewcode-block" id="BaseContext.missing_newlines"><a class="viewcode-back" href="../../index.html#bpc_utils.BaseContext.missing_newlines">[docs]</a>    <span class="nd">@final</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">missing_newlines</span><span class="p">(</span><span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">suffix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">expected</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">linesep</span><span class="p">:</span> <span class="s1">&#39;Linesep&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Count missing blank lines for code insertion given surrounding code.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            prefix: preceding source code</span>
+<span class="sd">            suffix: succeeding source code</span>
+<span class="sd">            expected: number of expected blank lines</span>
+<span class="sd">            linesep (:data:`~bpc_utils.Linesep`): line seperator</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            number of blank lines to add</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">current</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># count trailing newlines in `prefix`</span>
+        <span class="k">if</span> <span class="n">prefix</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">prefix</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">linesep</span><span class="p">)):</span>  <span class="c1"># pragma: no branch</span>
+                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                    <span class="k">break</span>
+                <span class="n">current</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">current</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># keep a trailing newline in `prefix`</span>
+                <span class="n">current</span> <span class="o">-=</span> <span class="mi">1</span>
+
+        <span class="c1"># count leading newlines in `suffix`</span>
+        <span class="k">if</span> <span class="n">suffix</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">suffix</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">linesep</span><span class="p">):</span>  <span class="c1"># pragma: no branch</span>
+                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                    <span class="k">break</span>
+                <span class="n">current</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="n">missing</span> <span class="o">=</span> <span class="n">expected</span> <span class="o">-</span> <span class="n">current</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">missing</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseContext.extract_whitespaces"><a class="viewcode-back" href="../../index.html#bpc_utils.BaseContext.extract_whitespaces">[docs]</a>    <span class="nd">@final</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">extract_whitespaces</span><span class="p">(</span><span class="n">code</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Tuple[str, str]&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Extract preceding and succeeding whitespaces from the code given.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            code: the code to extract whitespaces</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            a tuple of *preceding* and *succeeding* whitespaces in ``code``</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># get preceding whitespaces</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">code</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">char</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s1">&#39; </span><span class="se">\t\n\r\f</span><span class="s1">&#39;</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">prefix</span> <span class="o">+=</span> <span class="n">char</span>
+
+        <span class="c1"># get succeeding whitespaces</span>
+        <span class="n">suffix</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">code</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">char</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s1">&#39; </span><span class="se">\t\n\r\f</span><span class="s1">&#39;</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">suffix</span> <span class="o">+=</span> <span class="n">char</span>
+
+        <span class="k">return</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">suffix</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="BaseContext.normalize"><a class="viewcode-back" href="../../index.html#bpc_utils.BaseContext.normalize">[docs]</a>    <span class="nd">@final</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Normalize variable names.</span>
+
+<span class="sd">        This method normalizes variable names as described in `Python documentation about identifiers`_</span>
+<span class="sd">        and :pep:`3131`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: variable name as it appears in the source code</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            normalized variable name</span>
+
+<span class="sd">        .. _Python documentation about identifiers:</span>
+<span class="sd">            https://docs.python.org/3/reference/lexical_analysis.html#identifiers</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">unicodedata</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="s1">&#39;NFKC&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseContext.mangle"><a class="viewcode-back" href="../../index.html#bpc_utils.BaseContext.mangle">[docs]</a>    <span class="nd">@final</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">mangle</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cls_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">var_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Mangle variable names.</span>
+
+<span class="sd">        This method mangles variable names as described in `Python documentation about mangling`_</span>
+<span class="sd">        and further normalizes the mangled variable name through :meth:`~bpc_utils.BaseContext.normalize`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cls_name: class name</span>
+<span class="sd">            var_name: variable name</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            mangled and normalized variable name</span>
+
+<span class="sd">        .. _Python documentation about mangling: https://docs.python.org/3/reference/expressions.html#atom-identifiers</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># should only perform mangling if variable name begins with two or more underscores</span>
+        <span class="c1"># and does not end in two or more underscores</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">var_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">var_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">):</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">var_name</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># perform mangling, remove leading underscores from the class name when inserting</span>
+            <span class="n">class_name_stripped</span> <span class="o">=</span> <span class="n">cls_name</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">class_name_stripped</span><span class="p">:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;_</span><span class="si">%(cls)s%(var)s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">{</span><span class="s1">&#39;cls&#39;</span><span class="p">:</span> <span class="n">class_name_stripped</span><span class="p">,</span> <span class="s1">&#39;var&#39;</span><span class="p">:</span> <span class="n">var_name</span><span class="p">}</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># if the class name consists only of underscores, do not mangle</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">var_name</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div></div>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;BaseContext&#39;</span><span class="p">]</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">bpc-utils</a></h1>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=pybpc&repo=bpc-utils&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Python Backport Compiler Project.
+      
+    </div>
+
+    
+    <a href="https://github.com/pybpc/bpc-utils" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

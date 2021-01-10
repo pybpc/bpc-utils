@@ -1,0 +1,263 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>bpc_utils.argparse &#8212; bpc-utils 0.9.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for bpc_utils.argparse</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Utility functions for argument parsing.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">.typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">.typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Final</span><span class="p">,</span> <span class="n">Linesep</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+
+<div class="viewcode-block" id="parse_positive_integer"><a class="viewcode-back" href="../../index.html#bpc_utils.parse_positive_integer">[docs]</a><span class="k">def</span> <span class="nf">parse_positive_integer</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="s1">&#39;Optional[Union[str, int]]&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Optional[int]&#39;</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Parse a positive integer from a string representation.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        s: string representation of a positive integer, or just an integer</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        the parsed integer result, return :data:`None` if input is :data:`None` or empty string</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        TypeError: if ``s`` is not :obj:`str` or :obj:`int`</span>
+<span class="sd">        ValueError: if ``s`` is an invalid positive integer value</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">s</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>  <span class="c1"># pylint: disable=compare-to-empty-string</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;expect str or int, got </span><span class="si">{!r}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;expect an integer value, got </span><span class="si">{!r}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s</span><span class="p">))</span> <span class="kn">from</span> <span class="bp">None</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;expect integer value to be positive, got </span><span class="si">{!r}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">value</span></div>
+
+
+<span class="n">_boolean_state_lookup</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;1&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s1">&#39;yes&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s1">&#39;true&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s1">&#39;on&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s1">&#39;0&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s1">&#39;no&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s1">&#39;n&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s1">&#39;false&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s1">&#39;off&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">}</span>  <span class="c1"># type: Final[Dict[str, bool]]</span>
+
+
+<div class="viewcode-block" id="parse_boolean_state"><a class="viewcode-back" href="../../index.html#bpc_utils.parse_boolean_state">[docs]</a><span class="k">def</span> <span class="nf">parse_boolean_state</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="s1">&#39;Optional[str]&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Optional[bool]&#39;</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Parse a boolean state from a string representation.</span>
+
+<span class="sd">    * These values are regarded as :data:`True`: ``&#39;1&#39;``, ``&#39;yes&#39;``, ``&#39;y&#39;``, ``&#39;true&#39;``, ``&#39;on&#39;``</span>
+<span class="sd">    * These values are regarded as :data:`False`: ``&#39;0&#39;``, ``&#39;no&#39;``, ``&#39;n&#39;``, ``&#39;false&#39;``, ``&#39;off&#39;``</span>
+
+<span class="sd">    Value matching is case **insensitive**.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        s: string representation of a boolean state</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        the parsed boolean result, return :data:`None` if input is :data:`None`</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: if ``s`` is an invalid boolean state value</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        See :data:`~bpc_utils.argparse._boolean_state_lookup` for default lookup mapping values.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_boolean_state_lookup</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;invalid boolean state value </span><span class="si">{!r}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s</span><span class="p">))</span> <span class="kn">from</span> <span class="bp">None</span></div>
+
+
+<span class="n">_linesep_lookup</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;lf&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;crlf&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;cr&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">,</span>
+<span class="p">}</span>  <span class="c1"># type: Final[Dict[str, Linesep]]</span>
+
+
+<div class="viewcode-block" id="parse_linesep"><a class="viewcode-back" href="../../index.html#bpc_utils.parse_linesep">[docs]</a><span class="k">def</span> <span class="nf">parse_linesep</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="s1">&#39;Optional[str]&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Optional[Linesep]&#39;</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Parse linesep from a string representation.</span>
+
+<span class="sd">    * These values are regarded as ``&#39;\n&#39;``: ``&#39;\n&#39;``, ``&#39;lf&#39;``</span>
+<span class="sd">    * These values are regarded as ``&#39;\r\n&#39;``: ``&#39;\r\n&#39;``, ``&#39;crlf&#39;``</span>
+<span class="sd">    * These values are regarded as ``&#39;\r&#39;``: ``&#39;\r&#39;``, ``&#39;cr&#39;``</span>
+
+<span class="sd">    Value matching is **case insensitive**.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        s: string representation of linesep</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Optional[:data:`~bpc_utils.Linesep`]: the parsed linesep result,</span>
+<span class="sd">        return :data:`None` if input is :data:`None` or empty string</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: if ``s`` is an invalid linesep value</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        See :data:`~bpc_utils.argparse._linesep_lookup` for default lookup mapping values.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">s</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_linesep_lookup</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;invalid linesep value </span><span class="si">{!r}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s</span><span class="p">))</span> <span class="kn">from</span> <span class="bp">None</span></div>
+
+
+<div class="viewcode-block" id="parse_indentation"><a class="viewcode-back" href="../../index.html#bpc_utils.parse_indentation">[docs]</a><span class="k">def</span> <span class="nf">parse_indentation</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="s1">&#39;Optional[Union[str, int]]&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Optional[str]&#39;</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Parse indentation from a string representation.</span>
+
+<span class="sd">    * If an integer or a string of positive integer ``n`` is specified, then indentation is ``n`` spaces.</span>
+<span class="sd">    * If ``&#39;t&#39;`` or ``&#39;tab&#39;`` is specified, then indentation is tab.</span>
+<span class="sd">    * If ``&#39;\t&#39;``  (the tab character itself) or a string consisting only of the space character (U+0020)</span>
+<span class="sd">      is specified, it is returned directly.</span>
+
+<span class="sd">    Value matching is **case insensitive**.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        s: string representation of indentation</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        the parsed indentation result, return :data:`None` if input is :data:`None` or empty string</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        TypeError: if ``s`` is not :obj:`str` or :obj:`int`</span>
+<span class="sd">        ValueError: if ``s`` is an invalid indentation value</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">s</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>  <span class="c1"># pylint: disable=compare-to-empty-string</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;expect str or int, got </span><span class="si">{!r}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="s1">&#39;tab&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">}:</span>
+            <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span>
+        <span class="k">if</span> <span class="n">s</span> <span class="o">==</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">s</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span>
+        <span class="k">return</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="n">n</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;invalid indentation value </span><span class="si">{!r}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s</span><span class="p">))</span> <span class="kn">from</span> <span class="bp">None</span></div>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;parse_positive_integer&#39;</span><span class="p">,</span> <span class="s1">&#39;parse_boolean_state&#39;</span><span class="p">,</span> <span class="s1">&#39;parse_linesep&#39;</span><span class="p">,</span> <span class="s1">&#39;parse_indentation&#39;</span><span class="p">]</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">bpc-utils</a></h1>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=pybpc&repo=bpc-utils&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Python Backport Compiler Project.
+      
+    </div>
+
+    
+    <a href="https://github.com/pybpc/bpc-utils" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

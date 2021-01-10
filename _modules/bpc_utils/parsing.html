@@ -1,0 +1,293 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>bpc_utils.parsing &#8212; bpc-utils 0.9.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for bpc_utils.parsing</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Functions for parsing Python source code.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">token</span>
+<span class="kn">import</span> <span class="nn">tokenize</span>
+
+<span class="kn">import</span> <span class="nn">parso</span>
+
+<span class="kn">from</span> <span class="nn">.misc</span> <span class="kn">import</span> <span class="n">MakeTextIO</span><span class="p">,</span> <span class="n">first_non_none</span>
+<span class="kn">from</span> <span class="nn">.typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">cast</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">.typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Linesep</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="n">PARSO_GRAMMAR_VERSIONS</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># type: List[Tuple[int, int]]</span>
+<span class="k">for</span> <span class="n">grammar_file</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parso</span><span class="o">.</span><span class="n">__path__</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;python&#39;</span><span class="p">,</span> <span class="s1">&#39;grammar*.txt&#39;</span><span class="p">)):</span>  <span class="c1"># type: ignore[attr-defined]</span>
+    <span class="n">grammar_version</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">grammar_file</span><span class="p">)[</span><span class="mi">7</span><span class="p">:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span>
+    <span class="n">PARSO_GRAMMAR_VERSIONS</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">grammar_version</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">grammar_version</span><span class="p">[</span><span class="mi">1</span><span class="p">:])))</span>
+<span class="n">PARSO_GRAMMAR_VERSIONS</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">PARSO_GRAMMAR_VERSIONS</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="get_parso_grammar_versions"><a class="viewcode-back" href="../../index.html#bpc_utils.get_parso_grammar_versions">[docs]</a><span class="k">def</span> <span class="nf">get_parso_grammar_versions</span><span class="p">(</span><span class="n">minimum</span><span class="p">:</span> <span class="s1">&#39;Optional[str]&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;List[str]&#39;</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Get Python versions that parso supports to parse grammar.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        minimum: filter result by this minimum version</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        a list of Python versions that parso supports to parse grammar</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        TypeError: if ``minimum`` is not :obj:`str`</span>
+<span class="sd">        ValueError: if ``minimum`` is invalid</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">minimum</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">minimum_tuple</span> <span class="o">=</span> <span class="p">()</span>  <span class="c1"># type: Tuple[int, ...]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">minimum</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;minimum version should be a string&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)&#39;</span><span class="p">,</span> <span class="n">minimum</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;invalid minimum version&#39;</span><span class="p">)</span>
+        <span class="n">minimum_tuple</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">minimum</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">PARSO_GRAMMAR_VERSIONS</span> <span class="k">if</span> <span class="n">v</span> <span class="o">&gt;=</span> <span class="n">minimum_tuple</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="BPCSyntaxError"><a class="viewcode-back" href="../../index.html#bpc_utils.BPCSyntaxError">[docs]</a><span class="k">class</span> <span class="nc">BPCSyntaxError</span><span class="p">(</span><span class="ne">SyntaxError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Syntax error detected when parsing code.&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="detect_encoding"><a class="viewcode-back" href="../../index.html#bpc_utils.detect_encoding">[docs]</a><span class="k">def</span> <span class="nf">detect_encoding</span><span class="p">(</span><span class="n">code</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Detect encoding of Python source code as specified in :pep:`263`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        code: the code to detect encoding</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        the detected encoding, or the default encoding (``utf-8``)</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        TypeError: if ``code`` is not a :obj:`bytes` string</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;&#39;code&#39; should be bytes&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">code</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">tokenize</span><span class="o">.</span><span class="n">detect_encoding</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">readline</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="detect_linesep"><a class="viewcode-back" href="../../index.html#bpc_utils.detect_linesep">[docs]</a><span class="k">def</span> <span class="nf">detect_linesep</span><span class="p">(</span><span class="n">code</span><span class="p">:</span> <span class="s1">&#39;Union[str, bytes, TextIO, parso.tree.NodeOrLeaf]&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Linesep&#39;</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Detect linesep of Python source code.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        code: the code to detect linesep</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        :data:`~bpc_utils.Linesep`: the detected linesep (one of ``&#39;\n&#39;``, ``&#39;\r\n&#39;`` and ``&#39;\r&#39;``)</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        In case of mixed linesep, try voting by the number of occurrences of each linesep value.</span>
+
+<span class="sd">        When there is a tie, prefer ``LF`` to ``CRLF``, prefer ``CRLF`` to ``CR``.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">parso</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">NodeOrLeaf</span><span class="p">):</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="n">code</span><span class="o">.</span><span class="n">get_code</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="n">code</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">detect_encoding</span><span class="p">(</span><span class="n">code</span><span class="p">))</span>
+
+    <span class="n">pool</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;CR&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;CRLF&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;LF&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="p">}</span>  <span class="c1"># type: Dict[Literal[&#39;CR&#39;, &#39;CRLF&#39;, &#39;LF&#39;], int]</span>
+
+    <span class="k">with</span> <span class="n">MakeTextIO</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="s1">&#39;Union[str, TextIO]&#39;</span><span class="p">,</span> <span class="n">code</span><span class="p">))</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">):</span>
+                <span class="n">pool</span><span class="p">[</span><span class="s1">&#39;CR&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">):</span>
+                <span class="n">pool</span><span class="p">[</span><span class="s1">&#39;CRLF&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">):</span>
+                <span class="n">pool</span><span class="p">[</span><span class="s1">&#39;LF&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="c1"># when there is a tie, prefer LF to CRLF, prefer CRLF to CR</span>
+    <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s1">&#39;Linesep&#39;</span><span class="p">,</span> <span class="nb">max</span><span class="p">((</span><span class="n">pool</span><span class="p">[</span><span class="s1">&#39;LF&#39;</span><span class="p">],</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">),</span> <span class="p">(</span><span class="n">pool</span><span class="p">[</span><span class="s1">&#39;CRLF&#39;</span><span class="p">],</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">),</span> <span class="p">(</span><span class="n">pool</span><span class="p">[</span><span class="s1">&#39;CR&#39;</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">))[</span><span class="mi">2</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="detect_indentation"><a class="viewcode-back" href="../../index.html#bpc_utils.detect_indentation">[docs]</a><span class="k">def</span> <span class="nf">detect_indentation</span><span class="p">(</span><span class="n">code</span><span class="p">:</span> <span class="s1">&#39;Union[str, bytes, TextIO, parso.tree.NodeOrLeaf]&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Detect indentation of Python source code.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        code: the code to detect indentation</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        the detected indentation sequence</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        In case of mixed indentation, try voting by the number of occurrences of</span>
+<span class="sd">        each indentation value (*spaces* and *tabs*).</span>
+
+<span class="sd">        When there is a tie between *spaces* and *tabs*, prefer **4 spaces** for :pep:`8`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">parso</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">NodeOrLeaf</span><span class="p">):</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="n">code</span><span class="o">.</span><span class="n">get_code</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="n">code</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">detect_encoding</span><span class="p">(</span><span class="n">code</span><span class="p">))</span>
+
+    <span class="n">pool</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;space&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;tab&#39;</span><span class="p">:</span> <span class="mi">0</span>
+    <span class="p">}</span>  <span class="c1"># type: Dict[Literal[&#39;space&#39;, &#39;tab&#39;], int]</span>
+    <span class="n">min_spaces</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: Optional[int]</span>
+
+    <span class="k">with</span> <span class="n">MakeTextIO</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="s1">&#39;Union[str, TextIO]&#39;</span><span class="p">,</span> <span class="n">code</span><span class="p">))</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">token_info</span> <span class="ow">in</span> <span class="n">tokenize</span><span class="o">.</span><span class="n">generate_tokens</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">readline</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">token_info</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">token</span><span class="o">.</span><span class="n">INDENT</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="ow">in</span> <span class="n">token_info</span><span class="o">.</span><span class="n">string</span> <span class="ow">and</span> <span class="s1">&#39; &#39;</span> <span class="ow">in</span> <span class="n">token_info</span><span class="o">.</span><span class="n">string</span><span class="p">:</span>
+                    <span class="k">continue</span>  <span class="c1"># skip indentation with mixed spaces and tabs</span>
+                <span class="k">if</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="ow">in</span> <span class="n">token_info</span><span class="o">.</span><span class="n">string</span><span class="p">:</span>
+                    <span class="n">pool</span><span class="p">[</span><span class="s1">&#39;tab&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">pool</span><span class="p">[</span><span class="s1">&#39;space&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">if</span> <span class="n">min_spaces</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">min_spaces</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">token_info</span><span class="o">.</span><span class="n">string</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">min_spaces</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">min_spaces</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">token_info</span><span class="o">.</span><span class="n">string</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">pool</span><span class="p">[</span><span class="s1">&#39;space&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">pool</span><span class="p">[</span><span class="s1">&#39;tab&#39;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">min_spaces</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">pool</span><span class="p">[</span><span class="s1">&#39;space&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">pool</span><span class="p">[</span><span class="s1">&#39;tab&#39;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span>
+    <span class="k">return</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="mi">4</span>  <span class="c1"># same number of spaces and tabs, prefer 4 spaces for PEP 8</span></div>
+
+
+<div class="viewcode-block" id="parso_parse"><a class="viewcode-back" href="../../index.html#bpc_utils.parso_parse">[docs]</a><span class="k">def</span> <span class="nf">parso_parse</span><span class="p">(</span><span class="n">code</span><span class="p">:</span> <span class="s1">&#39;Union[str, bytes]&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="s1">&#39;Optional[str]&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+                <span class="n">version</span><span class="p">:</span> <span class="s1">&#39;Optional[str]&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;parso.python.tree.Module&#39;</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Parse Python source code with parso.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        code: the code to be parsed</span>
+<span class="sd">        filename: an optional source file name to provide a context in case of error</span>
+<span class="sd">        version: parse the code as this version (uses the latest version by default)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        parso AST</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        :exc:`BPCSyntaxError`: when source code contains syntax errors</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">grammar</span> <span class="o">=</span> <span class="n">parso</span><span class="o">.</span><span class="n">load_grammar</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="n">version</span> <span class="k">if</span> <span class="n">version</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">get_parso_grammar_versions</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="n">code</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">detect_encoding</span><span class="p">(</span><span class="n">code</span><span class="p">))</span>
+    <span class="n">module</span> <span class="o">=</span> <span class="n">grammar</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">error_recovery</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># type: parso.python.tree.Module</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="n">grammar</span><span class="o">.</span><span class="n">iter_errors</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+        <span class="n">error_messages</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;[L</span><span class="si">%d</span><span class="s1">C</span><span class="si">%d</span><span class="s1">] </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">start_pos</span> <span class="o">+</span> <span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">message</span><span class="p">,))</span> <span class="k">for</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">BPCSyntaxError</span><span class="p">(</span><span class="s1">&#39;source file </span><span class="si">%r</span><span class="s1"> contains the following syntax errors:</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span>
+                             <span class="n">first_non_none</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;&lt;unknown&gt;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">error_messages</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">module</span></div>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;get_parso_grammar_versions&#39;</span><span class="p">,</span> <span class="s1">&#39;BPCSyntaxError&#39;</span><span class="p">,</span> <span class="s1">&#39;detect_encoding&#39;</span><span class="p">,</span> <span class="s1">&#39;detect_linesep&#39;</span><span class="p">,</span> <span class="s1">&#39;detect_indentation&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;parso_parse&#39;</span><span class="p">]</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">bpc-utils</a></h1>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=pybpc&repo=bpc-utils&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Python Backport Compiler Project.
+      
+    </div>
+
+    
+    <a href="https://github.com/pybpc/bpc-utils" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>
