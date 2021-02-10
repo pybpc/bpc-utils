@@ -95,6 +95,7 @@
 
 <span class="sd">    Raises:</span>
 <span class="sd">        TypeError: if ``code`` is not a :obj:`bytes` string</span>
+<span class="sd">        SyntaxError: if both a BOM and a cookie are present, but disagree</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
@@ -150,6 +151,10 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        the detected indentation sequence</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        :exc:`~tokenize.TokenError`: when failed to tokenize the source code under certain cases,</span>
+<span class="sd">            see documentation of :exc:`~tokenize.TokenError` for more details</span>
 
 <span class="sd">    Notes:</span>
 <span class="sd">        In case of mixed indentation, try voting by the number of occurrences of</span>

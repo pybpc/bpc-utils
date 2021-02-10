@@ -447,7 +447,10 @@ internal attributes and/or configuration variables.</p>
 <dd class="field-odd"><p>the detected encoding, or the default encoding (<code class="docutils literal notranslate"><span class="pre">utf-8</span></code>)</p>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><strong>TypeError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">code</span></code> is not a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bytes</span></code></a> string</p>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><strong>TypeError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">code</span></code> is not a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bytes</span></code></a> string</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#SyntaxError" title="(in Python v3.9)"><strong>SyntaxError</strong></a> – if both a BOM and a cookie are present, but disagree</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -488,6 +491,10 @@ resolve symbolic links and remove duplicates.</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>the detected indentation sequence</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/tokenize.html#tokenize.TokenError" title="(in Python v3.9)"><strong>TokenError</strong></a> – when failed to tokenize the source code under certain cases,
+    see documentation of <a class="reference external" href="https://docs.python.org/3/library/tokenize.html#tokenize.TokenError" title="(in Python v3.9)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TokenError</span></code></a> for more details</p>
 </dd>
 </dl>
 <div class="admonition-notes admonition">
