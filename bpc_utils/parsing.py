@@ -178,15 +178,18 @@ def parso_parse(code: 'Union[str, bytes]', filename: 'Optional[str]' = None, *,
         :exc:`BPCSyntaxError`: when source code contains syntax errors
 
     """
+    filename = first_non_none(filename, '<unknown>')
     grammar = parso.load_grammar(version=version if version is not None else get_parso_grammar_versions()[-1])
     if isinstance(code, bytes):
-        code = code.decode(detect_encoding(code))
+        try:
+            code = code.decode(detect_encoding(code))
+        except SyntaxError as e:
+            raise BPCSyntaxError('failed to detect encoding for source file %r: %s' % (filename, e)) from None
     module = grammar.parse(code, error_recovery=True)  # type: parso.python.tree.Module
     errors = grammar.iter_errors(module)
     if errors:
         error_messages = '\n'.join('[L%dC%d] %s' % (error.start_pos + (error.message,)) for error in errors)
-        raise BPCSyntaxError('source file %r contains the following syntax errors:\n' %
-                             first_non_none(filename, '<unknown>') + error_messages)
+        raise BPCSyntaxError('source file %r contains the following syntax errors:\n%s' % (filename, error_messages))
     return module
 
 

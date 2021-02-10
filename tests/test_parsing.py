@@ -192,6 +192,8 @@ def test_parso_parse(code: 'Union[str, bytes]', version: 'Optional[str]') -> Non
         ('(x := 1)', 'temp', '3.7', BPCSyntaxError, "source file 'temp' contains the following syntax errors"),
         ('(x := 1)', '', '3.7', BPCSyntaxError, "source file '' contains the following syntax errors"),
         ('(x := 1)', None, '', ValueError, 'The given version is not in the right format.'),
+        (b'\xef\xbb\xbf# coding: gbk\nhello', None, None, BPCSyntaxError,
+            "failed to detect encoding for source file '<unknown>': encoding problem"),
     ]
 )
 def test_parso_parse_error(code: 'Union[str, bytes]', filename: 'Optional[str]', version: 'Optional[str]',
