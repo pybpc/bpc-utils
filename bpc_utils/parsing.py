@@ -62,6 +62,7 @@ def detect_encoding(code: bytes) -> str:
 
     Raises:
         TypeError: if ``code`` is not a :obj:`bytes` string
+        SyntaxError: if both a BOM and a cookie are present, but disagree
 
     """
     if not isinstance(code, bytes):
@@ -117,6 +118,10 @@ def detect_indentation(code: 'Union[str, bytes, TextIO, parso.tree.NodeOrLeaf]')
 
     Returns:
         the detected indentation sequence
+
+    Raises:
+        :exc:`~tokenize.TokenError`: when failed to tokenize the source code under certain cases,
+            see documentation of :exc:`~tokenize.TokenError` for more details
 
     Notes:
         In case of mixed indentation, try voting by the number of occurrences of

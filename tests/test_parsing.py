@@ -77,8 +77,12 @@ def test_BPCSyntaxError() -> None:
     [
         (b'# coding: gbk\n\xd6\xd0\xce\xc4', 'gbk'),
         (b'\xef\xbb\xbfhello', 'utf-8-sig'),
+        (b'\xef\xbb\xbf# coding: utf-8\nhello', 'utf-8-sig'),
+        (b'\xef\xbb\xbf# coding: utf-8-sig\nhello', 'utf-8-sig'),
         (b'hello', 'utf-8'),
         (b'*', 'utf-8'),
+        (b'[1', 'utf-8'),
+        (b'"""2', 'utf-8'),
     ]
 )
 def test_detect_encoding(code: bytes, result: str) -> None:
@@ -89,6 +93,7 @@ def test_detect_encoding(code: bytes, result: str) -> None:
     'code,exc,msg',
     [
         ('hello', TypeError, "'code' should be bytes"),
+        (b'\xef\xbb\xbf# coding: gbk\nhello', SyntaxError, 'encoding problem'),
     ]
 )
 def test_detect_encoding_error(code: bytes, exc: 'Type[BaseException]', msg: str) -> None:
@@ -156,10 +161,6 @@ def test_detect_indentation(code_type: CodeType, code: str, result: str) -> None
         assert detect_indentation(parso_parse(code)) == result
     else:  # pragma: no cover
         raise ValueError('unknown code type')
-
-
-def test_detect_indentation_invalid_code() -> None:
-    assert detect_indentation('*') == '    '
 
 
 def test_mixed_linesep_and_indentation() -> None:
