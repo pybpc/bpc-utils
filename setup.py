@@ -46,7 +46,8 @@ setup(
     package_data={module_name: ['py.typed']},
     python_requires='>=3.4',
     install_requires=[
-        'parso>=0.6.0',
+        'parso>=0.6.0;python_version<"3.6"',
+        'parso>=0.8.1;python_version>="3.6"',
         'typing;python_version<"3.5"',
         'typing_extensions',
     ],

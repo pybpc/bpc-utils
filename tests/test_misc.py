@@ -7,11 +7,15 @@ import sys
 import pytest
 
 from bpc_utils import Config, UUID4Generator, first_non_none, first_truthy
-from bpc_utils.misc import MakeTextIO
+from bpc_utils.misc import MakeTextIO, current_time_with_tzinfo
 from bpc_utils.typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from bpc_utils.typing import Generator, Set, T, Tuple, Type
+
+
+def test_current_time_with_tzinfo() -> None:
+    assert current_time_with_tzinfo().tzinfo is not None
 
 
 @pytest.mark.parametrize(

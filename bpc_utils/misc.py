@@ -1,5 +1,6 @@
 """Miscellaneous utilities."""
 
+import datetime
 import io
 import keyword
 import platform
@@ -27,6 +28,16 @@ except ImportError:  # pragma: no cover
             pass
 
 is_windows = platform.system() == 'Windows'
+
+
+def current_time_with_tzinfo() -> 'datetime.datetime':
+    """Get the current time with local time zone information.
+
+    Returns:
+        datetime object representing current time with local time zone information
+
+    """
+    return datetime.datetime.now(datetime.timezone.utc).astimezone()
 
 
 @overload
