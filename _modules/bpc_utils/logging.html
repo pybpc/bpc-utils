@@ -1,0 +1,196 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>bpc_utils.logging &#8212; bpc-utils 0.9.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for bpc_utils.logging</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Logging system for BPC.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">.misc</span> <span class="kn">import</span> <span class="n">current_time_with_tzinfo</span>
+<span class="kn">from</span> <span class="nn">.typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">.typing</span> <span class="kn">import</span> <span class="n">Dict</span>
+
+
+<div class="viewcode-block" id="BPCLogHandler"><a class="viewcode-back" href="../../index.html#bpc_utils.BPCLogHandler">[docs]</a><span class="k">class</span> <span class="nc">BPCLogHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Handler used to format BPC logging records.&quot;&quot;&quot;</span>
+
+    <span class="n">format_templates</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;DEBUG&#39;</span><span class="p">:</span> <span class="s1">&#39;[</span><span class="si">%(levelname)s</span><span class="s1">] </span><span class="si">%(asctime)s</span><span class="s1"> </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;INFO&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;WARNING&#39;</span><span class="p">:</span> <span class="s1">&#39;Warning: </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;ERROR&#39;</span><span class="p">:</span> <span class="s1">&#39;Error: </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;CRITICAL&#39;</span><span class="p">:</span> <span class="s1">&#39;Error: </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">,</span>
+    <span class="p">}</span>  <span class="c1"># type: Dict[str, str]</span>
+
+    <span class="c1"># An extension of the standard `%(asctime)s` to include local time zone.</span>
+    <span class="n">time_format</span> <span class="o">=</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S.</span><span class="si">%f</span><span class="s1">%z&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize BPCLogHandler.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+    <span class="c1"># Let `BPCLogHandler` instances equal to each other.</span>
+    <span class="c1"># This is to prevent `logger.addHandler(BPCLogHandler())` from adding multiple handlers when called multiple times.</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(())</span>
+
+<div class="viewcode-block" id="BPCLogHandler.format"><a class="viewcode-back" href="../../index.html#bpc_utils.BPCLogHandler.format">[docs]</a>    <span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">:</span> <span class="s1">&#39;logging.LogRecord&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Format the specified record based on log level.</span>
+
+<span class="sd">        The record will be formatted based on its log level</span>
+<span class="sd">        in the following flavour:</span>
+
+<span class="sd">        +--------------+-----------------------------------------------+</span>
+<span class="sd">        | ``DEBUG``    | ``[%(levelname)s] %(asctime)s %(message)s``   |</span>
+<span class="sd">        +--------------+-----------------------------------------------+</span>
+<span class="sd">        | ``INFO``     | ``%(message)s``                               |</span>
+<span class="sd">        +--------------+-----------------------------------------------+</span>
+<span class="sd">        | ``WARNING``  | ``Warning: %(message)s``                      |</span>
+<span class="sd">        +--------------+-----------------------------------------------+</span>
+<span class="sd">        | ``ERROR``    | ``Error: %(message)s``                        |</span>
+<span class="sd">        +--------------+-----------------------------------------------+</span>
+<span class="sd">        | ``CRITICAL`` | ``Error: %(message)s``                        |</span>
+<span class="sd">        +--------------+-----------------------------------------------+</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            record: the log record</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            the formatted log string</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">level</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">levelname</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="c1"># Only the 5 predefined log levels are supported</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_templates</span><span class="p">[</span><span class="n">level</span><span class="p">]</span> <span class="o">%</span> <span class="p">{</span>
+            <span class="s1">&#39;levelname&#39;</span><span class="p">:</span> <span class="n">level</span><span class="p">,</span>
+            <span class="s1">&#39;asctime&#39;</span><span class="p">:</span> <span class="n">current_time_with_tzinfo</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_format</span><span class="p">),</span>
+            <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="n">record</span><span class="o">.</span><span class="n">getMessage</span><span class="p">(),</span>
+        <span class="p">}</span></div></div>
+
+
+<div class="viewcode-block" id="getLogger"><a class="viewcode-back" href="../../index.html#bpc_utils.getLogger">[docs]</a><span class="k">def</span> <span class="nf">getLogger</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;logging.Logger&#39;</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Create a BPC logger.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name: name for the logger</span>
+<span class="sd">        level: log level for the logger</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        the created logger</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="c1"># We cannot create a single global `BPCLogHandler` instance on start</span>
+    <span class="c1"># because pytest cannot capture output from that.</span>
+    <span class="c1"># See: https://stackoverflow.com/questions/38594296/how-to-use-logging-pytest-fixture-and-capsys</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">BPCLogHandler</span><span class="p">())</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">logger</span></div>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;getLogger&#39;</span><span class="p">]</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">bpc-utils</a></h1>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=pybpc&repo=bpc-utils&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Python Backport Compiler Project.
+      
+    </div>
+
+    
+    <a href="https://github.com/pybpc/bpc-utils" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

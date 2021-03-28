@@ -65,11 +65,18 @@ Internal utilities
 
 .. autofunction:: bpc_utils.fileprocessing.expand_glob_iter
 
+.. autoclass:: bpc_utils.logging.BPCLogHandler
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 .. data:: bpc_utils.misc.is_windows
 
    :type: bool
 
    Whether the current operating system is Windows.
+
+.. autofunction:: bpc_utils.misc.current_time_with_tzinfo
 
 .. autoclass:: bpc_utils.misc.MakeTextIO
    :members:
