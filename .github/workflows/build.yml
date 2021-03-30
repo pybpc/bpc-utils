@@ -55,7 +55,9 @@ jobs:
       run: |
         python ci/path_checker.py
         coverage run -m pytest --color=yes
-        pytest --color=yes --doctest-only bpc_utils tests
+    - name: Run doctest if on latest Python
+      if: ${{ matrix.python-version == '3.9' }}
+      run: pytest --color=yes --doctest-only bpc_utils tests
     - name: Second round test (installed package, without coverage)
       run: |
         mv bpc_utils bpc_utils~

@@ -16,7 +16,7 @@ script:
   - |
     python ci/path_checker.py && \
     coverage run -m pytest --color=yes && \
-    pytest --color=yes --doctest-only bpc_utils tests && \
+    if [ "${TRAVIS_PYTHON_VERSION}" = "3.9" ]; then pytest --color=yes --doctest-only bpc_utils tests; fi && \
     mv bpc_utils bpc_utils~ && \
     python ci/path_checker.py strict && \
     pytest --color=yes && \
