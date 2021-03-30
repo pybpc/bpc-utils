@@ -17,4 +17,4 @@ __all__ = ['__version__', 'parse_positive_integer', 'parse_boolean_state', 'pars
            'BaseContext', 'detect_files', 'archive_files', 'recover_files', 'BPCRecoveryError', 'first_truthy',
            'first_non_none', 'UUID4Generator', 'Config', 'map_tasks', 'TaskLock', 'get_parso_grammar_versions',
            'BPCSyntaxError', 'detect_encoding', 'detect_linesep', 'detect_indentation', 'parso_parse', 'Linesep',
-           'getLogger']
+           'getLogger', 'Placeholder', 'StringInterpolation', 'BPCInternalError']

@@ -3,10 +3,12 @@ import io
 import re
 import socket
 import sys
+import textwrap
 
 import pytest
 
-from bpc_utils import Config, UUID4Generator, first_non_none, first_truthy
+from bpc_utils import (BPCInternalError, Config, Placeholder, StringInterpolation, UUID4Generator,
+                       first_non_none, first_truthy)
 from bpc_utils.misc import MakeTextIO, current_time_with_tzinfo
 from bpc_utils.typing import TYPE_CHECKING
 
@@ -202,3 +204,160 @@ def test_Config() -> None:
     if sys.version_info[:2] >= (3, 6):  # dict preserves insertion order  # pragma: no cover
         assert repr(Config(**{'z': 1, 'return': 2, '8': 3})) == "Config(z=1, **{'8': 3, 'return': 2})"
         assert repr(Config(**{'return': 0, '8': 3})) == "Config(**{'8': 3, 'return': 0})"
+
+
+def test_string_interpolation() -> None:
+    assert Placeholder('p1').name == 'p1'
+
+    with pytest.raises(TypeError, match='placeholder name must be str'):
+        Placeholder(1)  # type: ignore[arg-type]
+
+    assert Placeholder('p1') == Placeholder('p1')
+    assert Placeholder('p1') != Placeholder('p2')
+    assert Placeholder('p1') != 'p1'
+    assert Placeholder('p1')
+
+    assert repr(Placeholder('p1')) == "Placeholder('p1')"
+
+    assert hash(Placeholder('p1')) == hash(Placeholder('p1'))
+
+    assert StringInterpolation() == StringInterpolation()
+    assert StringInterpolation('') == StringInterpolation()
+    assert not StringInterpolation()
+    assert StringInterpolation() == ''  # pylint: disable=compare-to-empty-string
+
+    assert StringInterpolation('x') == StringInterpolation('x')
+    assert StringInterpolation('x') != StringInterpolation('y')
+    assert StringInterpolation('x') == 'x'
+    assert StringInterpolation('x') != 'y'
+    assert StringInterpolation('x')
+
+    assert StringInterpolation(Placeholder('y')) == StringInterpolation(Placeholder('y'))
+    assert StringInterpolation(Placeholder('y')) == Placeholder('y')
+    assert StringInterpolation(Placeholder('y')) != Placeholder('z')
+    assert StringInterpolation(Placeholder('y'))
+    assert StringInterpolation(Placeholder('y')) != StringInterpolation(Placeholder('y'), 'z')
+    assert StringInterpolation(Placeholder('y')) != StringInterpolation(Placeholder('z'))
+    assert StringInterpolation(Placeholder('y')) != StringInterpolation('y')
+
+    assert StringInterpolation(Placeholder('y'), 'z', 'x')
+    assert StringInterpolation(Placeholder('y'), 'z', 'x') == StringInterpolation(Placeholder('y'), 'zx')
+    assert StringInterpolation(Placeholder('y'), 'z', 'x') != StringInterpolation('yz', Placeholder('x'))
+
+    assert repr(StringInterpolation()) == 'StringInterpolation()'
+    assert repr(StringInterpolation('')) == 'StringInterpolation()'
+    assert repr(StringInterpolation('x')) == "StringInterpolation('x')"
+    assert repr(StringInterpolation(Placeholder('y'))) == "StringInterpolation(Placeholder('y'))"
+    assert repr(StringInterpolation(Placeholder('y'), '')) == "StringInterpolation(Placeholder('y'))"
+    assert repr(StringInterpolation(Placeholder('y'), 'z', 'x')) == "StringInterpolation(Placeholder('y'), 'zx')"
+
+    assert hash(StringInterpolation()) == hash('')
+    assert hash(StringInterpolation('x')) == hash('x')
+    assert hash(StringInterpolation(Placeholder('y'))) == hash(Placeholder('y'))
+    assert (hash(StringInterpolation(Placeholder('y'), 'z', 'x'))
+            == hash(StringInterpolation(Placeholder('y'), 'z', 'x')))
+
+    assert Placeholder('p1') + '' == StringInterpolation(Placeholder('p1'))
+    assert Placeholder('p1') + 'suffix' == StringInterpolation(Placeholder('p1'), 'suffix')
+    assert Placeholder('p1') + Placeholder('p2') == StringInterpolation(Placeholder('p1'), Placeholder('p2'))
+    assert (Placeholder('p1') + StringInterpolation('infix', Placeholder('p2'))
+            == StringInterpolation(Placeholder('p1'), 'infix', Placeholder('p2')))
+
+    assert '' + Placeholder('p1') == StringInterpolation(Placeholder('p1'))
+    assert 'prefix' + Placeholder('p1') == StringInterpolation('prefix', Placeholder('p1'))
+    assert (StringInterpolation(Placeholder('p1'), 'infix') + Placeholder('p2')
+            == StringInterpolation(Placeholder('p1'), 'infix', Placeholder('p2')))
+
+    assert (StringInterpolation('prefix', Placeholder('p1')) + 'suffix'
+            == StringInterpolation('prefix', Placeholder('p1'), 'suffix'))
+    assert ('prefix' + StringInterpolation(Placeholder('p1'), 'suffix')
+            == StringInterpolation('prefix', Placeholder('p1'), 'suffix'))
+
+    assert StringInterpolation() + StringInterpolation() == StringInterpolation()
+    assert StringInterpolation() + StringInterpolation('x') == StringInterpolation('x')
+    assert StringInterpolation(Placeholder('x')) + StringInterpolation() == StringInterpolation(Placeholder('x'))
+    assert (StringInterpolation(Placeholder('x')) + StringInterpolation('y')
+            == StringInterpolation(Placeholder('x'), 'y'))
+    assert (StringInterpolation(Placeholder('x')) + StringInterpolation(Placeholder('y'))
+            == StringInterpolation(Placeholder('x'), Placeholder('y')))
+    assert (StringInterpolation(Placeholder('x')) + StringInterpolation(Placeholder('y'), 'z')
+            == StringInterpolation(Placeholder('x'), Placeholder('y'), 'z'))
+
+    with pytest.raises(TypeError):
+        Placeholder('x') + 1  # pylint: disable=expression-not-assigned
+    with pytest.raises(TypeError):
+        1 + Placeholder('x')  # pylint: disable=expression-not-assigned
+    with pytest.raises(TypeError):
+        StringInterpolation() + 1  # pylint: disable=expression-not-assigned
+    with pytest.raises(TypeError):
+        1 + StringInterpolation()  # pylint: disable=expression-not-assigned
+
+    assert StringInterpolation.from_components(
+        ('prefix', 'infix', 'suffix'),
+        (Placeholder('data1'), Placeholder('data2'))
+    ) == StringInterpolation('prefix', Placeholder('data1'), 'infix', Placeholder('data2'), 'suffix')
+    assert StringInterpolation.from_components(
+        (x for x in ('prefix', 'infix', 'suffix')),
+        (x for x in (Placeholder('data1'), Placeholder('data2')))
+    ) == StringInterpolation('prefix', Placeholder('data1'), 'infix', Placeholder('data2'), 'suffix')
+    with pytest.raises(TypeError, match='literals must be a non-string iterable'):
+        StringInterpolation.from_components('a', ())
+    with pytest.raises(ValueError, match='the number of literals must be exactly one more '
+                                         'than the number of placeholders'):
+        StringInterpolation.from_components((), ())
+    with pytest.raises(TypeError, match='literals contain non-string value: 1'):
+        StringInterpolation.from_components((1,), ())  # type: ignore[arg-type]
+    with pytest.raises(TypeError, match='placeholders contain non-Placeholder value: 2'):
+        StringInterpolation.from_components(('a', 'b'), (2,))  # type: ignore[arg-type]
+
+    assert list(StringInterpolation(
+        'prefix', Placeholder('data'), 'suffix'
+    ).iter_components()) == ['prefix', Placeholder('data'), 'suffix']
+    assert list(StringInterpolation(
+        'prefix', Placeholder('data')
+    ).iter_components()) == ['prefix', Placeholder('data'), '']
+    assert list(StringInterpolation().iter_components()) == ['']
+
+    si1 = StringInterpolation('s1', Placeholder('q1'), 's2', Placeholder('q2'), 's3', Placeholder('q3'))
+    si2 = si1 % {'q1': '%s %(q2)s %(q3)s %', 'q2': '{q3}'}
+    si3 = si2 % {'q3': 66, 'extra': 'unused'}
+    assert si2 == StringInterpolation('s1%s %(q2)s %(q3)s %s2{q3}s3', Placeholder('q3'))
+    assert si3 == StringInterpolation('s1%s %(q2)s %(q3)s %s2{q3}s366')
+    assert si3.result == 's1%s %(q2)s %(q3)s %s2{q3}s366'
+    with pytest.raises(ValueError, match="string interpolation not complete, "
+                                         "the following placeholders have not been substituted: 'q3'"):
+        si2.result  # pylint: disable=pointless-statement
+    with pytest.raises(ValueError, match="string interpolation not complete, "
+                                         "the following placeholders have not been substituted: 'q1', 'q2', 'q3'"):
+        si1.result  # pylint: disable=pointless-statement
+    assert si3 % {'even': 'more'} == si3
+
+    assert (StringInterpolation(
+                Placeholder('x'), ' and ', Placeholder('x')
+            ) % {'x': 'banana'}).result == 'banana and banana'
+
+
+@pytest.mark.parametrize(
+    'message,context,exc,excmsg',
+    [
+        ('Stack overflow!\nStack overflow again!', 'bpc-utils', BPCInternalError, textwrap.dedent('''\
+            An internal bug happened in bpc-utils:
+
+            Stack overflow!
+            Stack overflow again!
+
+            Please report this error to project maintainers.''')),
+        (666, 'bpc-utils', BPCInternalError, textwrap.dedent('''\
+            An internal bug happened in bpc-utils:
+
+            666
+
+            Please report this error to project maintainers.''')),
+        ('\t', 'bpc-utils', ValueError, 'message should not be empty'),
+        ('Stack overflow!', 666, TypeError, 'context should be str'),
+        ('Stack overflow!', ' ', ValueError, 'context should not be empty'),
+    ]
+)
+def test_BPCInternalError(message: object, context: str, exc: 'Type[BaseException]', excmsg: str) -> None:
+    with pytest.raises(exc, match=re.escape(excmsg)):
+        raise BPCInternalError(message, context)

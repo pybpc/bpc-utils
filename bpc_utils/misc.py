@@ -1,16 +1,20 @@
 """Miscellaneous utilities."""
 
 import datetime
+import functools
 import io
 import keyword
+import operator
 import platform
+import textwrap
 import uuid
 
 from .typing import TYPE_CHECKING, MutableMapping, overload
 
 if TYPE_CHECKING:
     from types import TracebackType  # isort: split
-    from .typing import Dict, Iterable, Iterator, List, Optional, Set, T, TextIO, Type, Union
+    from .typing import (Dict, Generator, Iterable, Iterator, List, Mapping, Optional, Set, T,
+                         TextIO, Tuple, Type, Union)
 
 # backport contextlib.nullcontext for Python < 3.7
 try:
@@ -247,4 +251,290 @@ class Config(MutableMapping[str, object]):
         return '%s(%s)' % (type_name, ', '.join(arg_strings))
 
 
-__all__ = ['first_truthy', 'first_non_none', 'UUID4Generator', 'Config']
+class Placeholder:
+    """Placeholder for string interpolation.
+
+    :class:`Placeholder` objects can be concatenated with :obj:`str`, other :class:`Placeholder` objects
+    and :class:`StringInterpolation` objects via the '+' operator.
+
+    :class:`Placeholder` objects should be regarded as immutable. Please do not modify the ``name``
+    attribute. Build new objects instead.
+
+    """
+
+    def __init__(self, name: str) -> None:
+        """Initialize Placeholder.
+
+        Args:
+            name: name of the placeholder
+
+        Raises:
+            TypeError: if ``name`` is not :obj:`str`
+
+        """
+        if not isinstance(name, str):
+            raise TypeError('placeholder name must be str')
+        self.name = name
+
+    def __eq__(self, other: object) -> bool:
+        return type(self) is type(other) and self.name == other.name  # type: ignore[attr-defined]
+
+    def __hash__(self) -> int:
+        return hash((self.name,))
+
+    def __repr__(self) -> str:
+        return '{}({!r})'.format(type(self).__name__, self.name)
+
+    def __add__(self, other: object) -> 'StringInterpolation':
+        if isinstance(other, str):
+            return StringInterpolation.from_components(('', other), (self,))
+        if isinstance(other, Placeholder):
+            return StringInterpolation.from_components(('', '', ''), (self, other))
+        if isinstance(other, StringInterpolation):
+            return StringInterpolation.from_components(('',) + other.literals, (self,) + other.placeholders)
+        return NotImplemented
+
+    def __radd__(self, other: object) -> 'StringInterpolation':
+        if isinstance(other, str):
+            return StringInterpolation.from_components((other, ''), (self,))
+        return NotImplemented
+
+
+class StringInterpolation:
+    """A string with placeholders to be filled in.
+
+    This looks like an object-oriented format string, but making sure that string literals are
+    always interpreted literally (so no need to manually do escaping). The boundaries between string
+    literals and placeholders are very clear. Filling in a placeholder will never inject a new
+    placeholder, protecting string integrity for multiple-round interpolation.
+
+    >>> s1 = '%(injected)s'
+    >>> s2 = 'hello'
+    >>> s = StringInterpolation('prefix ', Placeholder('q1'), ' infix ', Placeholder('q2'), ' suffix')
+    >>> (s % {'q1': s1} % {'q2': s2}).result
+    'prefix %(injected)s infix hello suffix'
+
+    (This can be regarded as an improved version of :meth:`string.Template.safe_substitute`.)
+
+    Multiple-round interpolation is tricky to do with a traditional format string. In order to do things
+    correctly and avoid format string injection vulnerabilities, you need to perform escapes very carefully.
+
+    >>> fs = 'prefix %(q1)s infix %(q2)s suffix'
+    >>> fs % {'q1': s1} % {'q2': s2}
+    Traceback (most recent call last):
+        ...
+    KeyError: 'q2'
+    >>> fs = 'prefix %(q1)s infix %%(q2)s suffix'
+    >>> fs % {'q1': s1} % {'q2': s2}
+    Traceback (most recent call last):
+        ...
+    KeyError: 'injected'
+    >>> fs % {'q1': s1.replace('%', '%%')} % {'q2': s2}
+    'prefix %(injected)s infix hello suffix'
+
+    :class:`StringInterpolation` objects can be concatenated with :obj:`str`, :class:`Placeholder` objects
+    and other :class:`StringInterpolation` objects via the '+' operator.
+
+    :class:`StringInterpolation` objects should be regarded as immutable. Please do not modify the
+    ``literals`` and ``placeholders`` attributes. Build new objects instead.
+
+    """
+
+    def __init__(self, *args: 'Union[str, Placeholder, StringInterpolation]') -> None:
+        """Initialize StringInterpolation. ``args`` will be concatenated to construct a
+        :class:`StringInterpolation` object.
+
+        >>> StringInterpolation('prefix', Placeholder('data'), 'suffix')
+        StringInterpolation('prefix', Placeholder('data'), 'suffix')
+
+        Args:
+            args: the components to construct a :class:`StringInterpolation` object
+
+        """
+        if not args:
+            self.literals = ('',)  # type: Tuple[str, ...]
+            self.placeholders = ()  # type: Tuple[Placeholder, ...]
+            return
+        obj = functools.reduce(operator.add, args, StringInterpolation())
+        self.literals = obj.literals
+        self.placeholders = obj.placeholders
+
+    @staticmethod
+    def from_components(literals: 'Iterable[str]', placeholders: 'Iterable[Placeholder]') -> 'StringInterpolation':
+        """Construct a :class:`StringInterpolation` object from ``literals`` and ``placeholders`` components.
+        This method is more efficient than the :func:`StringInterpolation` constructor, but it is mainly
+        intended for internal use.
+
+        >>> StringInterpolation.from_components(
+        ...     ('prefix', 'infix', 'suffix'),
+        ...     (Placeholder('data1'), Placeholder('data2'))
+        ... )
+        StringInterpolation('prefix', Placeholder('data1'), 'infix', Placeholder('data2'), 'suffix')
+
+        Args:
+            literals: the literal components in order
+            placeholders: the :class:`Placeholder` components in order
+
+        Returns:
+            the constructed :class:`StringInterpolation` object
+
+        Raises:
+            TypeError: if ``literals`` is :obj:`str`; if ``literals`` contains non-:obj:`str` values;
+                if ``placeholders`` contains non-:class:`Placeholder` values
+            ValueError: if the length of ``literals`` is not exactly one more than the length of ``placeholders``
+
+        """
+        obj = StringInterpolation()
+
+        if isinstance(literals, str):
+            raise TypeError('literals must be a non-string iterable')
+
+        obj.literals = tuple(literals)
+        obj.placeholders = tuple(placeholders)
+
+        if len(obj.literals) - len(obj.placeholders) != 1:
+            raise ValueError('the number of literals must be exactly one more than the number of placeholders')
+        for literal in obj.literals:
+            if not isinstance(literal, str):
+                raise TypeError('literals contain non-string value: {!r}'.format(literal))
+        for placeholder in obj.placeholders:
+            if not isinstance(placeholder, Placeholder):
+                raise TypeError('placeholders contain non-Placeholder value: {!r}'.format(placeholder))
+
+        return obj
+
+    def iter_components(self) -> 'Generator[Union[str, Placeholder], None, None]':
+        """Generator to iterate all components of this :class:`StringInterpolation` object in order.
+
+        >>> list(StringInterpolation('prefix', Placeholder('data'), 'suffix').iter_components())
+        ['prefix', Placeholder('data'), 'suffix']
+
+        Returns:
+            generator containing the components of this :class:`StringInterpolation` object in order
+
+        """
+        for literal, placeholder in zip(self.literals, self.placeholders):
+            yield literal
+            yield placeholder
+        yield self.literals[-1]
+
+    def __repr__(self) -> str:
+        return '{}({})'.format(type(self).__name__, ', '.join(repr(c) for c in self.iter_components() if c))
+
+    def __eq__(self, other: object) -> bool:
+        if (type(self) is type(other) and self.literals == other.literals   # type: ignore[attr-defined]
+                and self.placeholders == other.placeholders):  # type: ignore[attr-defined]
+            return True
+        if isinstance(other, str) and self.literals == (other,):
+            return True
+        if isinstance(other, Placeholder) and self.placeholders == (other,) and self.literals == ('', ''):
+            return True
+        return False
+
+    def __hash__(self) -> int:
+        if len(self.literals) == 1:
+            return hash(self.literals[0])
+        if self.literals == ('', ''):
+            return hash(self.placeholders[0])
+        return hash((self.literals, self.placeholders))
+
+    def __bool__(self) -> bool:
+        return len(self.literals) > 1 or bool(self.literals[0])
+
+    def __add__(self, other: object) -> 'StringInterpolation':
+        if isinstance(other, str):
+            return StringInterpolation.from_components(self.literals[:-1] + (self.literals[-1] + other,),
+                                                       self.placeholders)
+        if isinstance(other, Placeholder):
+            return StringInterpolation.from_components(self.literals + ('',), self.placeholders + (other,))
+        if isinstance(other, StringInterpolation):
+            return StringInterpolation.from_components(
+                self.literals[:-1] + (self.literals[-1] + other.literals[0],) + other.literals[1:],
+                self.placeholders + other.placeholders
+            )
+        return NotImplemented
+
+    def __radd__(self, other: object) -> 'StringInterpolation':
+        if isinstance(other, str):
+            return StringInterpolation.from_components((other + self.literals[0],) + self.literals[1:],
+                                                       self.placeholders)
+        return NotImplemented
+
+    def __mod__(self, substitutions: 'Mapping[str, object]') -> 'StringInterpolation':
+        """Substitute the placeholders in this :class:`StringInterpolation` object with string values (if possible)
+        according to the ``substitutions`` mapping.
+
+        >>> StringInterpolation('prefix ', Placeholder('data'), ' suffix') % {'data': 'hello'}
+        StringInterpolation('prefix hello suffix')
+
+        Args:
+            substitutions: a mapping from placeholder names to the values to be filled in; all values
+                are converted into :obj:`str`
+
+        Returns:
+            a new :class:`StringInterpolation` object with as many placeholders substituted as possible
+
+        """
+        result = StringInterpolation()
+        for component in self.iter_components():
+            if isinstance(component, Placeholder) and component.name in substitutions:
+                result += str(substitutions[component.name])
+            else:
+                result += component
+        return result
+
+    @property
+    def result(self) -> str:
+        """Returns the fully-substituted string interpolation result.
+
+        >>> StringInterpolation('prefix hello suffix').result
+        'prefix hello suffix'
+
+        Returns:
+            the fully-substituted string interpolation result
+
+        Raises:
+            ValueError: if there are still unsubstituted placeholders in this :class:`StringInterpolation` object
+
+        """
+        if self.placeholders:
+            raise ValueError(
+                'string interpolation not complete, the following placeholders have not been substituted: '
+                + ', '.join(map(repr, sorted(set(placeholder.name for placeholder in self.placeholders))))
+            )
+        return self.literals[0]
+
+
+class BPCInternalError(RuntimeError):
+    """Internal bug happened in BPC tools."""
+
+    def __init__(self, message: object, context: str):
+        """Initialize BPCInternalError.
+
+        Args:
+            message: the error message
+            context: describe the context/location/component where the bug happened
+
+        Raises:
+            TypeError: if ``context`` is not :obj:`str`
+            ValueError: if ``message`` (when converted to :obj:`str`) or ``context`` is empty or
+                only contains whitespace characters
+
+        """
+        msg_string = str(message)
+        if not msg_string.strip():
+            raise ValueError('message should not be empty')
+        if not isinstance(context, str):
+            raise TypeError('context should be str')
+        if not context.strip():
+            raise ValueError('context should not be empty')
+        super().__init__(textwrap.dedent('''\
+            An internal bug happened in {}:
+
+            {}
+
+            Please report this error to project maintainers.''').format(context, msg_string))
+
+
+__all__ = ['first_truthy', 'first_non_none', 'UUID4Generator', 'Config', 'Placeholder', 'StringInterpolation',
+           'BPCInternalError']
