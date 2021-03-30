@@ -40,6 +40,29 @@ work in progress.</p>
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bpc_utils" title="Permalink to this headline">¶</a></h2>
 <p>Utility library for the Python bpc backport compiler.</p>
 <dl class="py exception">
+<dt id="bpc_utils.BPCInternalError">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">bpc_utils.</span></code><code class="sig-name descname"><span class="pre">BPCInternalError</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#BPCInternalError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.BPCInternalError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></a></p>
+<p>Internal bug happened in BPC tools.</p>
+<p>Initialize BPCInternalError.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a>) – the error message</p></li>
+<li><p><strong>context</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – describe the context/location/component where the bug happened</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><strong>TypeError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">context</span></code> is not <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><strong>ValueError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">message</span></code> (when converted to <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) or <code class="docutils literal notranslate"><span class="pre">context</span></code> is empty or
+    only contains whitespace characters</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py exception">
 <dt id="bpc_utils.BPCRecoveryError">
 <em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">bpc_utils.</span></code><code class="sig-name descname"><span class="pre">BPCRecoveryError</span></code><a class="reference internal" href="_modules/bpc_utils/fileprocessing.html#BPCRecoveryError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.BPCRecoveryError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></a></p>
@@ -369,6 +392,174 @@ cookies (<span class="target" id="index-1"></span><a class="pep reference extern
 <p>Configuration namespace.</p>
 <p>This class is inspired from <a class="reference external" href="https://docs.python.org/3/library/argparse.html#argparse.Namespace" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">argparse.Namespace</span></code></a> for storing
 internal attributes and/or configuration variables.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="bpc_utils.Placeholder">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">bpc_utils.</span></code><code class="sig-name descname"><span class="pre">Placeholder</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#Placeholder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.Placeholder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Placeholder for string interpolation.</p>
+<p><a class="reference internal" href="#bpc_utils.Placeholder" title="bpc_utils.Placeholder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Placeholder</span></code></a> objects can be concatenated with <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, other <a class="reference internal" href="#bpc_utils.Placeholder" title="bpc_utils.Placeholder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Placeholder</span></code></a> objects
+and <a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a> objects via the ‘+’ operator.</p>
+<p><a class="reference internal" href="#bpc_utils.Placeholder" title="bpc_utils.Placeholder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Placeholder</span></code></a> objects should be regarded as immutable. Please do not modify the <code class="docutils literal notranslate"><span class="pre">name</span></code>
+attribute. Build new objects instead.</p>
+<p>Initialize Placeholder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – name of the placeholder</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><strong>TypeError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">name</span></code> is not <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="bpc_utils.StringInterpolation">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">bpc_utils.</span></code><code class="sig-name descname"><span class="pre">StringInterpolation</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#StringInterpolation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.StringInterpolation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A string with placeholders to be filled in.</p>
+<p>This looks like an object-oriented format string, but making sure that string literals are
+always interpreted literally (so no need to manually do escaping). The boundaries between string
+literals and placeholders are very clear. Filling in a placeholder will never inject a new
+placeholder, protecting string integrity for multiple-round interpolation.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%(injected)s</span><span class="s1">&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s2</span> <span class="o">=</span> <span class="s1">&#39;hello&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">StringInterpolation</span><span class="p">(</span><span class="s1">&#39;prefix &#39;</span><span class="p">,</span> <span class="n">Placeholder</span><span class="p">(</span><span class="s1">&#39;q1&#39;</span><span class="p">),</span> <span class="s1">&#39; infix &#39;</span><span class="p">,</span> <span class="n">Placeholder</span><span class="p">(</span><span class="s1">&#39;q2&#39;</span><span class="p">),</span> <span class="s1">&#39; suffix&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">s</span> <span class="o">%</span> <span class="p">{</span><span class="s1">&#39;q1&#39;</span><span class="p">:</span> <span class="n">s1</span><span class="p">}</span> <span class="o">%</span> <span class="p">{</span><span class="s1">&#39;q2&#39;</span><span class="p">:</span> <span class="n">s2</span><span class="p">})</span><span class="o">.</span><span class="n">result</span>
+<span class="go">&#39;prefix %(injected)s infix hello suffix&#39;</span>
+</pre></div>
+</div>
+<p>(This can be regarded as an improved version of <a class="reference external" href="https://docs.python.org/3/library/string.html#string.Template.safe_substitute" title="(in Python v3.9)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">string.Template.safe_substitute()</span></code></a>.)</p>
+<p>Multiple-round interpolation is tricky to do with a traditional format string. In order to do things
+correctly and avoid format string injection vulnerabilities, you need to perform escapes very carefully.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span> <span class="o">=</span> <span class="s1">&#39;prefix </span><span class="si">%(q1)s</span><span class="s1"> infix </span><span class="si">%(q2)s</span><span class="s1"> suffix&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span> <span class="o">%</span> <span class="p">{</span><span class="s1">&#39;q1&#39;</span><span class="p">:</span> <span class="n">s1</span><span class="p">}</span> <span class="o">%</span> <span class="p">{</span><span class="s1">&#39;q2&#39;</span><span class="p">:</span> <span class="n">s2</span><span class="p">}</span>
+<span class="gt">Traceback (most recent call last):</span>
+    <span class="o">...</span>
+<span class="gr">KeyError</span>: <span class="n">&#39;q2&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span> <span class="o">=</span> <span class="s1">&#39;prefix </span><span class="si">%(q1)s</span><span class="s1"> infix </span><span class="si">%%</span><span class="s1">(q2)s suffix&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span> <span class="o">%</span> <span class="p">{</span><span class="s1">&#39;q1&#39;</span><span class="p">:</span> <span class="n">s1</span><span class="p">}</span> <span class="o">%</span> <span class="p">{</span><span class="s1">&#39;q2&#39;</span><span class="p">:</span> <span class="n">s2</span><span class="p">}</span>
+<span class="gt">Traceback (most recent call last):</span>
+    <span class="o">...</span>
+<span class="gr">KeyError</span>: <span class="n">&#39;injected&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span> <span class="o">%</span> <span class="p">{</span><span class="s1">&#39;q1&#39;</span><span class="p">:</span> <span class="n">s1</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;%&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%%</span><span class="s1">&#39;</span><span class="p">)}</span> <span class="o">%</span> <span class="p">{</span><span class="s1">&#39;q2&#39;</span><span class="p">:</span> <span class="n">s2</span><span class="p">}</span>
+<span class="go">&#39;prefix %(injected)s infix hello suffix&#39;</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a> objects can be concatenated with <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference internal" href="#bpc_utils.Placeholder" title="bpc_utils.Placeholder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Placeholder</span></code></a> objects
+and other <a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a> objects via the ‘+’ operator.</p>
+<p><a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a> objects should be regarded as immutable. Please do not modify the
+<code class="docutils literal notranslate"><span class="pre">literals</span></code> and <code class="docutils literal notranslate"><span class="pre">placeholders</span></code> attributes. Build new objects instead.</p>
+<p>Initialize StringInterpolation. <code class="docutils literal notranslate"><span class="pre">args</span></code> will be concatenated to construct a
+<a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a> object.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">StringInterpolation</span><span class="p">(</span><span class="s1">&#39;prefix&#39;</span><span class="p">,</span> <span class="n">Placeholder</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">),</span> <span class="s1">&#39;suffix&#39;</span><span class="p">)</span>
+<span class="go">StringInterpolation(&#39;prefix&#39;, Placeholder(&#39;data&#39;), &#39;suffix&#39;)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>args</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Placeholder</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code>]) – the components to construct a <a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a> object</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="bpc_utils.StringInterpolation.__mod__">
+<code class="sig-name descname"><span class="pre">__mod__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">substitutions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#StringInterpolation.__mod__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.StringInterpolation.__mod__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Substitute the placeholders in this <a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a> object with string values (if possible)
+according to the <code class="docutils literal notranslate"><span class="pre">substitutions</span></code> mapping.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">StringInterpolation</span><span class="p">(</span><span class="s1">&#39;prefix &#39;</span><span class="p">,</span> <span class="n">Placeholder</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">),</span> <span class="s1">&#39; suffix&#39;</span><span class="p">)</span> <span class="o">%</span> <span class="p">{</span><span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="s1">&#39;hello&#39;</span><span class="p">}</span>
+<span class="go">StringInterpolation(&#39;prefix hello suffix&#39;)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>substitutions</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a>]) – a mapping from placeholder names to the values to be filled in; all values
+are converted into <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a new <a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a> object with as many placeholders substituted as possible</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bpc_utils.StringInterpolation.from_components">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">from_components</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">literals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">placeholders</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#StringInterpolation.from_components"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.StringInterpolation.from_components" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct a <a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a> object from <code class="docutils literal notranslate"><span class="pre">literals</span></code> and <code class="docutils literal notranslate"><span class="pre">placeholders</span></code> components.
+This method is more efficient than the <a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-func docutils literal notranslate"><span class="pre">StringInterpolation()</span></code></a> constructor, but it is mainly
+intended for internal use.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">StringInterpolation</span><span class="o">.</span><span class="n">from_components</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="p">(</span><span class="s1">&#39;prefix&#39;</span><span class="p">,</span> <span class="s1">&#39;infix&#39;</span><span class="p">,</span> <span class="s1">&#39;suffix&#39;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="p">(</span><span class="n">Placeholder</span><span class="p">(</span><span class="s1">&#39;data1&#39;</span><span class="p">),</span> <span class="n">Placeholder</span><span class="p">(</span><span class="s1">&#39;data2&#39;</span><span class="p">))</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">StringInterpolation(&#39;prefix&#39;, Placeholder(&#39;data1&#39;), &#39;infix&#39;, Placeholder(&#39;data2&#39;), &#39;suffix&#39;)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>literals</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – the literal components in order</p></li>
+<li><p><strong>placeholders</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Placeholder</span></code>]) – the <a class="reference internal" href="#bpc_utils.Placeholder" title="bpc_utils.Placeholder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Placeholder</span></code></a> components in order</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the constructed <a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a> object</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><strong>TypeError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">literals</span></code> is <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>; if <code class="docutils literal notranslate"><span class="pre">literals</span></code> contains non-<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> values;
+    if <code class="docutils literal notranslate"><span class="pre">placeholders</span></code> contains non-<a class="reference internal" href="#bpc_utils.Placeholder" title="bpc_utils.Placeholder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Placeholder</span></code></a> values</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><strong>ValueError</strong></a> – if the length of <code class="docutils literal notranslate"><span class="pre">literals</span></code> is not exactly one more than the length of <code class="docutils literal notranslate"><span class="pre">placeholders</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bpc_utils.StringInterpolation.iter_components">
+<code class="sig-name descname"><span class="pre">iter_components</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#StringInterpolation.iter_components"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.StringInterpolation.iter_components" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generator to iterate all components of this <a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a> object in order.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">StringInterpolation</span><span class="p">(</span><span class="s1">&#39;prefix&#39;</span><span class="p">,</span> <span class="n">Placeholder</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">),</span> <span class="s1">&#39;suffix&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">iter_components</span><span class="p">())</span>
+<span class="go">[&#39;prefix&#39;, Placeholder(&#39;data&#39;), &#39;suffix&#39;]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generator" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Placeholder</span></code>], <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>generator containing the components of this <a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a> object in order</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bpc_utils.StringInterpolation.result">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">result</span></code><a class="headerlink" href="#bpc_utils.StringInterpolation.result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the fully-substituted string interpolation result.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">StringInterpolation</span><span class="p">(</span><span class="s1">&#39;prefix hello suffix&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">result</span>
+<span class="go">&#39;prefix hello suffix&#39;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the fully-substituted string interpolation result</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><strong>ValueError</strong></a> – if there are still unsubstituted placeholders in this <a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a> object</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
