@@ -243,6 +243,16 @@
 <span class="sd">    This class is inspired from :class:`argparse.Namespace` for storing</span>
 <span class="sd">    internal attributes and/or configuration variables.</span>
 
+<span class="sd">    &gt;&gt;&gt; config = Config(foo=&#39;var&#39;, bar=True)</span>
+<span class="sd">    &gt;&gt;&gt; config.foo</span>
+<span class="sd">    &#39;var&#39;</span>
+<span class="sd">    &gt;&gt;&gt; config[&#39;bar&#39;]</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; config.bar = &#39;boo&#39;</span>
+<span class="sd">    &gt;&gt;&gt; del config[&#39;foo&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; config</span>
+<span class="sd">    Config(bar=&#39;boo&#39;)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
