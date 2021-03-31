@@ -210,6 +210,16 @@ class Config(MutableMapping[str, object]):
     This class is inspired from :class:`argparse.Namespace` for storing
     internal attributes and/or configuration variables.
 
+    >>> config = Config(foo='var', bar=True)
+    >>> config.foo
+    'var'
+    >>> config['bar']
+    True
+    >>> config.bar = 'boo'
+    >>> del config['foo']
+    >>> config
+    Config(bar='boo')
+
     """
 
     def __init__(self, **kwargs: object) -> None:
