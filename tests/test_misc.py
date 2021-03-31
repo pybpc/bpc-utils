@@ -209,7 +209,7 @@ def test_Config() -> None:
 def test_string_interpolation() -> None:
     assert Placeholder('p1').name == 'p1'
 
-    with pytest.raises(TypeError, match='placeholder name must be str'):
+    with pytest.raises(TypeError, match=re.escape('placeholder name must be str')):
         Placeholder(1)  # type: ignore[arg-type]
 
     assert Placeholder('p1') == Placeholder('p1')
@@ -300,14 +300,14 @@ def test_string_interpolation() -> None:
         (x for x in ('prefix', 'infix', 'suffix')),
         (x for x in (Placeholder('data1'), Placeholder('data2')))
     ) == StringInterpolation('prefix', Placeholder('data1'), 'infix', Placeholder('data2'), 'suffix')
-    with pytest.raises(TypeError, match='literals must be a non-string iterable'):
+    with pytest.raises(TypeError, match=re.escape('literals must be a non-string iterable')):
         StringInterpolation.from_components('a', ())
-    with pytest.raises(ValueError, match='the number of literals must be exactly one more '
-                                         'than the number of placeholders'):
+    with pytest.raises(ValueError, match=re.escape('the number of literals must be exactly one more '
+                                                   'than the number of placeholders')):
         StringInterpolation.from_components((), ())
-    with pytest.raises(TypeError, match='literals contain non-string value: 1'):
+    with pytest.raises(TypeError, match=re.escape('literals contain non-string value: 1')):
         StringInterpolation.from_components((1,), ())  # type: ignore[arg-type]
-    with pytest.raises(TypeError, match='placeholders contain non-Placeholder value: 2'):
+    with pytest.raises(TypeError, match=re.escape('placeholders contain non-Placeholder value: 2')):
         StringInterpolation.from_components(('a', 'b'), (2,))  # type: ignore[arg-type]
 
     assert list(StringInterpolation(
@@ -323,18 +323,26 @@ def test_string_interpolation() -> None:
     si3 = si2 % {'q3': 66, 'extra': 'unused'}
     assert si2 == StringInterpolation('s1%s %(q2)s %(q3)s %s2{q3}s3', Placeholder('q3'))
     assert si3 == StringInterpolation('s1%s %(q2)s %(q3)s %s2{q3}s366')
-    assert si3.result == 's1%s %(q2)s %(q3)s %s2{q3}s366'
-    with pytest.raises(ValueError, match="string interpolation not complete, "
-                                         "the following placeholders have not been substituted: 'q3'"):
-        si2.result  # pylint: disable=pointless-statement
-    with pytest.raises(ValueError, match="string interpolation not complete, "
-                                         "the following placeholders have not been substituted: 'q1', 'q2', 'q3'"):
-        si1.result  # pylint: disable=pointless-statement
+    assert str(si3) == 's1%s %(q2)s %(q3)s %s2{q3}s366'
+    with pytest.raises(ValueError, match=re.escape("cannot convert this StringInterpolation object to str because "
+                                                   "it contains the following unsubstituted placeholders: 'q3'; "
+                                                   "consider using repr() if you want a string representation of "
+                                                   "this object")):
+        str(si2)
+    with pytest.raises(ValueError, match=re.escape("cannot convert this StringInterpolation object to str because "
+                                                   "it contains the following unsubstituted placeholders: "
+                                                   "'q1', 'q2', 'q3'; consider using repr() if you want a string "
+                                                   "representation of this object")):
+        str(si1)
     assert si3 % {'even': 'more'} == si3
 
-    assert (StringInterpolation(
-                Placeholder('x'), ' and ', Placeholder('x')
-            ) % {'x': 'banana'}).result == 'banana and banana'
+    assert str(
+        StringInterpolation(Placeholder('x'), ' and ', Placeholder('x')) % {'x': 'banana'}
+    ) == 'banana and banana'
+
+    with pytest.raises(TypeError, match=re.escape('Placeholder objects cannot be converted to str, consider using '
+                                                  'repr() if you want a string representation')):
+        str(Placeholder('x'))
 
 
 @pytest.mark.parametrize(

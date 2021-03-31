@@ -4,8 +4,8 @@
 import os
 import re
 import sys
-from typing import (Callable, Dict, Generator, Iterable, Iterator, List, Mapping, Optional, Set,
-                    TextIO, Tuple, TypeVar, Union, cast)
+from typing import (Callable, Dict, Generator, Iterable, Iterator, List, Mapping, NoReturn,
+                    Optional, Set, TextIO, Tuple, TypeVar, Union, cast)
 
 from typing_extensions import ContextManager, Deque, Final, Literal, Type, final, overload
 

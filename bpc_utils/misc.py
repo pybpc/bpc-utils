@@ -13,8 +13,8 @@ from .typing import TYPE_CHECKING, MutableMapping, overload
 
 if TYPE_CHECKING:
     from types import TracebackType  # isort: split
-    from .typing import (Dict, Generator, Iterable, Iterator, List, Mapping, Optional, Set, T,
-                         TextIO, Tuple, Type, Union)
+    from .typing import (Dict, Generator, Iterable, Iterator, List, Mapping, NoReturn, Optional,
+                         Set, T, TextIO, Tuple, Type, Union)
 
 # backport contextlib.nullcontext for Python < 3.7
 try:
@@ -285,6 +285,10 @@ class Placeholder:
     def __repr__(self) -> str:
         return '{}({!r})'.format(type(self).__name__, self.name)
 
+    def __str__(self) -> 'NoReturn':
+        raise TypeError('Placeholder objects cannot be converted to str, consider using '
+                        'repr() if you want a string representation')
+
     def __add__(self, other: object) -> 'StringInterpolation':
         if isinstance(other, str):
             return StringInterpolation.from_components(('', other), (self,))
@@ -311,7 +315,7 @@ class StringInterpolation:
     >>> s1 = '%(injected)s'
     >>> s2 = 'hello'
     >>> s = StringInterpolation('prefix ', Placeholder('q1'), ' infix ', Placeholder('q2'), ' suffix')
-    >>> (s % {'q1': s1} % {'q2': s2}).result
+    >>> str(s % {'q1': s1} % {'q2': s2})
     'prefix %(injected)s infix hello suffix'
 
     (This can be regarded as an improved version of :meth:`string.Template.safe_substitute`.)
@@ -421,6 +425,28 @@ class StringInterpolation:
     def __repr__(self) -> str:
         return '{}({})'.format(type(self).__name__, ', '.join(repr(c) for c in self.iter_components() if c))
 
+    def __str__(self) -> str:
+        """Returns the fully-substituted string interpolation result.
+
+        >>> str(StringInterpolation('prefix hello suffix'))
+        'prefix hello suffix'
+
+        Returns:
+            the fully-substituted string interpolation result
+
+        Raises:
+            ValueError: if there are still unsubstituted placeholders in this :class:`StringInterpolation` object
+
+        """
+        if self.placeholders:
+            raise ValueError(
+                'cannot convert this StringInterpolation object to str because it contains '
+                'the following unsubstituted placeholders: '
+                + ', '.join(map(repr, sorted(set(placeholder.name for placeholder in self.placeholders))))
+                + '; consider using repr() if you want a string representation of this object'
+            )
+        return self.literals[0]
+
     def __eq__(self, other: object) -> bool:
         if (type(self) is type(other) and self.literals == other.literals   # type: ignore[attr-defined]
                 and self.placeholders == other.placeholders):  # type: ignore[attr-defined]
@@ -482,27 +508,6 @@ class StringInterpolation:
             else:
                 result += component
         return result
-
-    @property
-    def result(self) -> str:
-        """Returns the fully-substituted string interpolation result.
-
-        >>> StringInterpolation('prefix hello suffix').result
-        'prefix hello suffix'
-
-        Returns:
-            the fully-substituted string interpolation result
-
-        Raises:
-            ValueError: if there are still unsubstituted placeholders in this :class:`StringInterpolation` object
-
-        """
-        if self.placeholders:
-            raise ValueError(
-                'string interpolation not complete, the following placeholders have not been substituted: '
-                + ', '.join(map(repr, sorted(set(placeholder.name for placeholder in self.placeholders))))
-            )
-        return self.literals[0]
 
 
 class BPCInternalError(RuntimeError):
