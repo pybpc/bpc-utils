@@ -80,16 +80,21 @@ def test_lock(tmp_path: 'Path', monkeypatch: 'MonkeyPatch', capfd: 'CaptureFixtu
 
 
         def task(task_id):
-            {context}
+            {context1}
                 for i in range({num_print}):
-                    print('Task %d says %d' % (task_id, i), flush=True)
+                    {context2}
+                        print('Task %d says %d' % (task_id, i), flush=True)
 
 
         if __name__ == '__main__':
             map_tasks(task, range({num_tasks}))
     """)
-    code_no_lock = code_template.format(context='for _ in [0]:', num_print=num_print, num_tasks=num_tasks)
-    code_with_lock = code_template.format(context='with TaskLock():', num_print=num_print, num_tasks=num_tasks)
+    context_no_lock = 'for _ in [0]:'
+    context_with_lock = 'with TaskLock():'
+    code_interleave = code_template.format(context1=context_no_lock, context2=context_with_lock,
+                                           num_print=num_print, num_tasks=num_tasks)
+    code_no_interleave = code_template.format(context1=context_with_lock, context2=context_no_lock,
+                                              num_print=num_print, num_tasks=num_tasks)
 
     def has_interleave(output: str) -> bool:
         records = re.findall(r'Task (\d+) says (\d+)', output)  # type: List[Tuple[str, str]]
@@ -109,13 +114,14 @@ def test_lock(tmp_path: 'Path', monkeypatch: 'MonkeyPatch', capfd: 'CaptureFixtu
     shutil.copytree(os.path.dirname(sys.modules['bpc_utils'].__file__), 'bpc_utils')
     test_filename = 'test_lock.py'
 
-    write_text_file(test_filename, code_no_lock)
+    write_text_file(test_filename, code_interleave)
     subprocess.check_call([sys.executable, '-u', test_filename])  # nosec
     captured = capfd.readouterr()
+    # Note: There is actually a small possibility that execution of multiple processes does not interleave.
     assert has_interleave(captured.out) == parallel_available
     assert not captured.err
 
-    write_text_file(test_filename, code_with_lock)
+    write_text_file(test_filename, code_no_interleave)
     subprocess.check_call([sys.executable, '-u', test_filename])  # nosec
     captured = capfd.readouterr()
     assert not has_interleave(captured.out)
