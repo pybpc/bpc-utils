@@ -450,8 +450,8 @@ class StringInterpolation:
         """
         if self.placeholders:
             raise ValueError(
-                'cannot convert this StringInterpolation object to str because it contains '
-                'the following unsubstituted placeholders: '
+                'cannot convert this StringInterpolation object to str (retrieve interpolation result) '
+                'because it contains the following unsubstituted placeholders: '
                 + ', '.join(map(repr, sorted(set(placeholder.name for placeholder in self.placeholders))))
                 + '; consider using repr() if you want a string representation of this object'
             )
@@ -518,6 +518,16 @@ class StringInterpolation:
             else:
                 result += component
         return result
+
+    @property
+    def result(self) -> str:
+        """Alias of :meth:`StringInterpolation.__str__` to get the fully-substituted string interpolation result.
+
+        >>> StringInterpolation('prefix hello suffix').result
+        'prefix hello suffix'
+
+        """
+        return str(self)
 
 
 class BPCInternalError(RuntimeError):

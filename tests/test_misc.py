@@ -324,21 +324,39 @@ def test_string_interpolation() -> None:
     assert si2 == StringInterpolation('s1%s %(q2)s %(q3)s %s2{q3}s3', Placeholder('q3'))
     assert si3 == StringInterpolation('s1%s %(q2)s %(q3)s %s2{q3}s366')
     assert str(si3) == 's1%s %(q2)s %(q3)s %s2{q3}s366'
-    with pytest.raises(ValueError, match=re.escape("cannot convert this StringInterpolation object to str because "
-                                                   "it contains the following unsubstituted placeholders: 'q3'; "
+    assert si3.result == 's1%s %(q2)s %(q3)s %s2{q3}s366'
+    with pytest.raises(ValueError, match=re.escape("cannot convert this StringInterpolation object to str "
+                                                   "(retrieve interpolation result) because it contains the "
+                                                   "following unsubstituted placeholders: 'q3'; "
                                                    "consider using repr() if you want a string representation of "
                                                    "this object")):
         str(si2)
-    with pytest.raises(ValueError, match=re.escape("cannot convert this StringInterpolation object to str because "
-                                                   "it contains the following unsubstituted placeholders: "
-                                                   "'q1', 'q2', 'q3'; consider using repr() if you want a string "
-                                                   "representation of this object")):
+    with pytest.raises(ValueError, match=re.escape("cannot convert this StringInterpolation object to str "
+                                                   "(retrieve interpolation result) because it contains the "
+                                                   "following unsubstituted placeholders: 'q3'; "
+                                                   "consider using repr() if you want a string representation of "
+                                                   "this object")):
+        si2.result  # pylint: disable=pointless-statement
+    with pytest.raises(ValueError, match=re.escape("cannot convert this StringInterpolation object to str "
+                                                   "(retrieve interpolation result) because it contains the "
+                                                   "following unsubstituted placeholders: 'q1', 'q2', 'q3'; "
+                                                   "consider using repr() if you want a string representation of "
+                                                   "this object")):
         str(si1)
+    with pytest.raises(ValueError, match=re.escape("cannot convert this StringInterpolation object to str "
+                                                   "(retrieve interpolation result) because it contains the "
+                                                   "following unsubstituted placeholders: 'q1', 'q2', 'q3'; "
+                                                   "consider using repr() if you want a string representation of "
+                                                   "this object")):
+        si1.result  # pylint: disable=pointless-statement
     assert si3 % {'even': 'more'} == si3
 
     assert str(
         StringInterpolation(Placeholder('x'), ' and ', Placeholder('x')) % {'x': 'banana'}
     ) == 'banana and banana'
+    assert (
+        StringInterpolation(Placeholder('x'), ' and ', Placeholder('x')) % {'x': 'banana'}
+    ).result == 'banana and banana'
 
     with pytest.raises(TypeError, match=re.escape('Placeholder objects cannot be converted to str, consider using '
                                                   'repr() if you want a string representation')):
