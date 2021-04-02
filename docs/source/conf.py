@@ -26,7 +26,7 @@ sys.path.insert(0, PROJECT_ROOT)
 # -- Project information -----------------------------------------------------
 
 project = 'bpc-utils'
-copyright = '2020, Python Backport Compiler Project'  # pylint: disable=redefined-builtin
+copyright = '2019-2021, Python Backport Compiler Project'  # pylint: disable=redefined-builtin
 author = 'Python Backport Compiler Project'
 
 # The full version, including alpha/beta/rc tags

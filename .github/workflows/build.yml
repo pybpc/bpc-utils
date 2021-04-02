@@ -22,6 +22,8 @@ jobs:
   test:
     runs-on: ${{ matrix.os }}
     continue-on-error: ${{ matrix.experimental }}
+    env:
+      PYTEST_ADDOPTS: --color=yes
     strategy:
       fail-fast: false
       matrix:
@@ -54,15 +56,15 @@ jobs:
     - name: First round test (local code, with coverage)
       run: |
         python ci/path_checker.py
-        coverage run -m pytest --color=yes
+        coverage run -m pytest
     - name: Run doctest if on latest Python
       if: ${{ matrix.python-version == '3.9' }}
-      run: pytest --color=yes --doctest-only bpc_utils tests
+      run: pytest --doctest-only bpc_utils tests
     - name: Second round test (installed package, without coverage)
       run: |
         mv bpc_utils bpc_utils~
         python ci/path_checker.py strict
-        pytest --color=yes
+        pytest
         mv bpc_utils~ bpc_utils
     - name: Upload coverage report
       if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9' }}
@@ -79,7 +81,9 @@ jobs:
       with:
         python-version: '3.9'
     - name: Install dependencies
-      run: python -m pip install --upgrade pip setuptools wheel build
+      run: |
+        python -m pip install --upgrade pip setuptools wheel
+        pip install --upgrade build
     - name: Build a binary wheel and a source tarball
       run: python -m build --sdist --wheel --outdir dist/ .
     - name: Publish distribution to PyPI
