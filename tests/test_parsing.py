@@ -38,6 +38,7 @@ def test_parso_grammar_versions() -> None:
     assert len(versions1) - len(versions2) == 1
     assert all(isinstance(x, str) for x in versions2)
     assert all(x.count('.') == 1 for x in versions2)
+    assert versions2[0] == versions1[1]
 
     versions3 = get_parso_grammar_versions(minimum='0.0')
     assert versions1 == versions3
