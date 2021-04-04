@@ -78,12 +78,12 @@
 
 
 <span class="nd">@overload</span>
-<span class="k">def</span> <span class="nf">first_truthy</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="s1">&#39;T&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Optional[T]&#39;</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">first_truthy</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="s1">&#39;Iterable[T]&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Optional[T]&#39;</span><span class="p">:</span>
     <span class="o">...</span>  <span class="c1"># pragma: no cover</span>
 
 
 <span class="nd">@overload</span>
-<span class="k">def</span> <span class="nf">first_truthy</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="s1">&#39;Iterable[T]&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Optional[T]&#39;</span><span class="p">:</span>  <span class="c1"># noqa: F811</span>
+<span class="k">def</span> <span class="nf">first_truthy</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="s1">&#39;T&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Optional[T]&#39;</span><span class="p">:</span>  <span class="c1"># noqa: F811</span>
     <span class="o">...</span>  <span class="c1"># pragma: no cover</span>
 
 
@@ -111,12 +111,12 @@
 
 
 <span class="nd">@overload</span>
-<span class="k">def</span> <span class="nf">first_non_none</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="s1">&#39;T&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Optional[T]&#39;</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">first_non_none</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="s1">&#39;Iterable[T]&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Optional[T]&#39;</span><span class="p">:</span>
     <span class="o">...</span>  <span class="c1"># pragma: no cover</span>
 
 
 <span class="nd">@overload</span>
-<span class="k">def</span> <span class="nf">first_non_none</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="s1">&#39;Iterable[T]&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Optional[T]&#39;</span><span class="p">:</span>  <span class="c1"># noqa: F811</span>
+<span class="k">def</span> <span class="nf">first_non_none</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="s1">&#39;T&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Optional[T]&#39;</span><span class="p">:</span>  <span class="c1"># noqa: F811</span>
     <span class="o">...</span>  <span class="c1"># pragma: no cover</span>
 
 
