@@ -34,7 +34,7 @@ def test_current_time_with_tzinfo() -> None:
         ((0, ()), None),
     ]
 )
-def test_first_truthy(args: 'Tuple[object]', result: object) -> None:
+def test_first_truthy(args: 'Tuple[object, ...]', result: object) -> None:
     assert first_truthy(*args) == result
 
 
@@ -45,7 +45,7 @@ def test_first_truthy(args: 'Tuple[object]', result: object) -> None:
         ((1,), TypeError, 'is not iterable'),
     ]
 )
-def test_first_truthy_error(args: 'Tuple[object]', exc: 'Type[BaseException]', msg: str) -> None:
+def test_first_truthy_error(args: 'Tuple[object, ...]', exc: 'Type[BaseException]', msg: str) -> None:
     with pytest.raises(exc, match=re.escape(msg)):
         first_truthy(*args)
 
@@ -62,7 +62,7 @@ def test_first_truthy_short_circuit_usage() -> None:
         yield log_evaluation(1)
         yield log_evaluation(2)  # pragma: no cover  # should not be evaluated
 
-    assert first_truthy(value_generator()) == 1  # type: ignore[comparison-overlap]
+    assert first_truthy(value_generator()) == 1
     assert evaluated == {0, 1}
 
 
@@ -82,7 +82,7 @@ def test_first_truthy_short_circuit_usage() -> None:
         ((None, None), None),
     ]
 )
-def test_first_non_none(args: 'Tuple[object]', result: object) -> None:
+def test_first_non_none(args: 'Tuple[object, ...]', result: object) -> None:
     assert first_non_none(*args) == result
 
 
@@ -93,7 +93,7 @@ def test_first_non_none(args: 'Tuple[object]', result: object) -> None:
         ((1,), TypeError, 'is not iterable'),
     ]
 )
-def test_first_non_none_error(args: 'Tuple[object]', exc: 'Type[BaseException]', msg: str) -> None:
+def test_first_non_none_error(args: 'Tuple[object, ...]', exc: 'Type[BaseException]', msg: str) -> None:
     with pytest.raises(exc, match=re.escape(msg)):
         first_non_none(*args)
 
@@ -110,7 +110,7 @@ def test_first_non_none_short_circuit_usage() -> None:
         yield log_evaluation(0)
         yield log_evaluation(1)  # pragma: no cover  # should not be evaluated
 
-    assert first_non_none(value_generator()) == 0  # type: ignore[comparison-overlap]
+    assert first_non_none(value_generator()) == 0
     assert evaluated == {None, 0}
 
 
