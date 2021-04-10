@@ -413,8 +413,8 @@ internal attributes and/or configuration variables.</p>
 <p>Placeholder for string interpolation.</p>
 <p><a class="reference internal" href="#bpc_utils.Placeholder" title="bpc_utils.Placeholder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Placeholder</span></code></a> objects can be concatenated with <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, other <a class="reference internal" href="#bpc_utils.Placeholder" title="bpc_utils.Placeholder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Placeholder</span></code></a> objects
 and <a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a> objects via the ‘+’ operator.</p>
-<p><a class="reference internal" href="#bpc_utils.Placeholder" title="bpc_utils.Placeholder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Placeholder</span></code></a> objects should be regarded as immutable. Please do not modify the <code class="docutils literal notranslate"><span class="pre">name</span></code>
-attribute. Build new objects instead.</p>
+<p><a class="reference internal" href="#bpc_utils.Placeholder" title="bpc_utils.Placeholder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Placeholder</span></code></a> objects should be regarded as immutable. Please do not modify the <code class="docutils literal notranslate"><span class="pre">_name</span></code>
+internal attribute. Build new objects instead.</p>
 <p>Initialize Placeholder.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -424,6 +424,17 @@ attribute. Build new objects instead.</p>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><strong>TypeError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">name</span></code> is not <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a></p>
 </dd>
 </dl>
+<dl class="py method">
+<dt id="bpc_utils.Placeholder.name">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">name</span></code><a class="headerlink" href="#bpc_utils.Placeholder.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the name of this placeholder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -462,7 +473,7 @@ correctly and avoid format string injection vulnerabilities, you need to perform
 <p><a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a> objects can be concatenated with <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference internal" href="#bpc_utils.Placeholder" title="bpc_utils.Placeholder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Placeholder</span></code></a> objects
 and other <a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a> objects via the ‘+’ operator.</p>
 <p><a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a> objects should be regarded as immutable. Please do not modify the
-<code class="docutils literal notranslate"><span class="pre">literals</span></code> and <code class="docutils literal notranslate"><span class="pre">placeholders</span></code> attributes. Build new objects instead.</p>
+<code class="docutils literal notranslate"><span class="pre">_literals</span></code> and <code class="docutils literal notranslate"><span class="pre">_placeholders</span></code> internal attributes. Build new objects instead.</p>
 <p>Initialize StringInterpolation. <code class="docutils literal notranslate"><span class="pre">args</span></code> will be concatenated to construct a
 <a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a> object.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">StringInterpolation</span><span class="p">(</span><span class="s1">&#39;prefix&#39;</span><span class="p">,</span> <span class="n">Placeholder</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">),</span> <span class="s1">&#39;suffix&#39;</span><span class="p">)</span>
@@ -568,6 +579,28 @@ intended for internal use.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>generator containing the components of this <a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a> object in order</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bpc_utils.StringInterpolation.literals">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">literals</span></code><a class="headerlink" href="#bpc_utils.StringInterpolation.literals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the literal components in this <a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a> object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, …]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bpc_utils.StringInterpolation.placeholders">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">placeholders</span></code><a class="headerlink" href="#bpc_utils.StringInterpolation.placeholders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the <a class="reference internal" href="#bpc_utils.Placeholder" title="bpc_utils.Placeholder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Placeholder</span></code></a> components in this <a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a> object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Placeholder</span></code>, …]</p>
 </dd>
 </dl>
 </dd></dl>

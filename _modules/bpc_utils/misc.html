@@ -300,8 +300,8 @@
 <span class="sd">    :class:`Placeholder` objects can be concatenated with :obj:`str`, other :class:`Placeholder` objects</span>
 <span class="sd">    and :class:`StringInterpolation` objects via the &#39;+&#39; operator.</span>
 
-<span class="sd">    :class:`Placeholder` objects should be regarded as immutable. Please do not modify the ``name``</span>
-<span class="sd">    attribute. Build new objects instead.</span>
+<span class="sd">    :class:`Placeholder` objects should be regarded as immutable. Please do not modify the ``_name``</span>
+<span class="sd">    internal attribute. Build new objects instead.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -317,7 +317,12 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;placeholder name must be str&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns the name of this placeholder.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">name</span>  <span class="c1"># type: ignore[attr-defined]</span>
@@ -383,7 +388,7 @@
 <span class="sd">    and other :class:`StringInterpolation` objects via the &#39;+&#39; operator.</span>
 
 <span class="sd">    :class:`StringInterpolation` objects should be regarded as immutable. Please do not modify the</span>
-<span class="sd">    ``literals`` and ``placeholders`` attributes. Build new objects instead.</span>
+<span class="sd">    ``_literals`` and ``_placeholders`` internal attributes. Build new objects instead.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -399,12 +404,22 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">literals</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,)</span>  <span class="c1"># type: Tuple[str, ...]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">placeholders</span> <span class="o">=</span> <span class="p">()</span>  <span class="c1"># type: Tuple[Placeholder, ...]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_literals</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,)</span>  <span class="c1"># type: Tuple[str, ...]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_placeholders</span> <span class="o">=</span> <span class="p">()</span>  <span class="c1"># type: Tuple[Placeholder, ...]</span>
             <span class="k">return</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">add</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">StringInterpolation</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">literals</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">literals</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">placeholders</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">placeholders</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_literals</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">literals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_placeholders</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">placeholders</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">literals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Tuple[str, ...]&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns the literal components in this :class:`StringInterpolation` object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_literals</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">placeholders</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Tuple[Placeholder, ...]&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns the :class:`Placeholder` components in this :class:`StringInterpolation` object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_placeholders</span>
 
 <div class="viewcode-block" id="StringInterpolation.from_components"><a class="viewcode-back" href="../../index.html#bpc_utils.StringInterpolation.from_components">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">from_components</span><span class="p">(</span><span class="n">literals</span><span class="p">:</span> <span class="s1">&#39;Iterable[str]&#39;</span><span class="p">,</span> <span class="n">placeholders</span><span class="p">:</span> <span class="s1">&#39;Iterable[Placeholder]&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;StringInterpolation&#39;</span><span class="p">:</span>
@@ -436,8 +451,8 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">literals</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;literals must be a non-string iterable&#39;</span><span class="p">)</span>
 
-        <span class="n">obj</span><span class="o">.</span><span class="n">literals</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">literals</span><span class="p">)</span>
-        <span class="n">obj</span><span class="o">.</span><span class="n">placeholders</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">placeholders</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_literals</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">literals</span><span class="p">)</span>  <span class="c1"># pylint: disable=protected-access</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_placeholders</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">placeholders</span><span class="p">)</span>  <span class="c1"># pylint: disable=protected-access</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">literals</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">placeholders</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;the number of literals must be exactly one more than the number of placeholders&#39;</span><span class="p">)</span>
