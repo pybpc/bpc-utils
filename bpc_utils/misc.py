@@ -267,8 +267,8 @@ class Placeholder:
     :class:`Placeholder` objects can be concatenated with :obj:`str`, other :class:`Placeholder` objects
     and :class:`StringInterpolation` objects via the '+' operator.
 
-    :class:`Placeholder` objects should be regarded as immutable. Please do not modify the ``name``
-    attribute. Build new objects instead.
+    :class:`Placeholder` objects should be regarded as immutable. Please do not modify the ``_name``
+    internal attribute. Build new objects instead.
 
     """
 
@@ -284,7 +284,12 @@ class Placeholder:
         """
         if not isinstance(name, str):
             raise TypeError('placeholder name must be str')
-        self.name = name
+        self._name = name
+
+    @property
+    def name(self) -> str:
+        """Returns the name of this placeholder."""
+        return self._name
 
     def __eq__(self, other: object) -> bool:
         return type(self) is type(other) and self.name == other.name  # type: ignore[attr-defined]
@@ -350,7 +355,7 @@ class StringInterpolation:
     and other :class:`StringInterpolation` objects via the '+' operator.
 
     :class:`StringInterpolation` objects should be regarded as immutable. Please do not modify the
-    ``literals`` and ``placeholders`` attributes. Build new objects instead.
+    ``_literals`` and ``_placeholders`` internal attributes. Build new objects instead.
 
     """
 
@@ -366,12 +371,22 @@ class StringInterpolation:
 
         """
         if not args:
-            self.literals = ('',)  # type: Tuple[str, ...]
-            self.placeholders = ()  # type: Tuple[Placeholder, ...]
+            self._literals = ('',)  # type: Tuple[str, ...]
+            self._placeholders = ()  # type: Tuple[Placeholder, ...]
             return
         obj = functools.reduce(operator.add, args, StringInterpolation())
-        self.literals = obj.literals
-        self.placeholders = obj.placeholders
+        self._literals = obj.literals
+        self._placeholders = obj.placeholders
+
+    @property
+    def literals(self) -> 'Tuple[str, ...]':
+        """Returns the literal components in this :class:`StringInterpolation` object."""
+        return self._literals
+
+    @property
+    def placeholders(self) -> 'Tuple[Placeholder, ...]':
+        """Returns the :class:`Placeholder` components in this :class:`StringInterpolation` object."""
+        return self._placeholders
 
     @staticmethod
     def from_components(literals: 'Iterable[str]', placeholders: 'Iterable[Placeholder]') -> 'StringInterpolation':
@@ -403,8 +418,8 @@ class StringInterpolation:
         if isinstance(literals, str):
             raise TypeError('literals must be a non-string iterable')
 
-        obj.literals = tuple(literals)
-        obj.placeholders = tuple(placeholders)
+        obj._literals = tuple(literals)  # pylint: disable=protected-access
+        obj._placeholders = tuple(placeholders)  # pylint: disable=protected-access
 
         if len(obj.literals) - len(obj.placeholders) != 1:
             raise ValueError('the number of literals must be exactly one more than the number of placeholders')
