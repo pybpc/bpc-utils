@@ -2,7 +2,7 @@ import os
 import subprocess  # nosec
 import sys
 
-from setuptools import setup
+from setuptools import setup  # type: ignore[import]
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 

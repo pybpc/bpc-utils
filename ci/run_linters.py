@@ -3,7 +3,7 @@ import subprocess  # nosec
 import sys
 from typing import List, Sequence
 
-import colorlabels as cl
+import colorlabels as cl  # type: ignore[import]
 from typing_extensions import TypedDict
 
 if not os.path.isfile('setup.py'):
