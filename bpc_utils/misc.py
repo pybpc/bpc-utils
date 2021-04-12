@@ -374,7 +374,7 @@ class StringInterpolation:
             self._literals = ('',)  # type: Tuple[str, ...]
             self._placeholders = ()  # type: Tuple[Placeholder, ...]
             return
-        obj = functools.reduce(operator.add, args, StringInterpolation())
+        obj = functools.reduce(operator.add, args, type(self)())
         self._literals = obj.literals
         self._placeholders = obj.placeholders
 
@@ -388,8 +388,8 @@ class StringInterpolation:
         """Returns the :class:`Placeholder` components in this :class:`StringInterpolation` object."""
         return self._placeholders
 
-    @staticmethod
-    def from_components(literals: 'Iterable[str]', placeholders: 'Iterable[Placeholder]') -> 'StringInterpolation':
+    @classmethod
+    def from_components(cls, literals: 'Iterable[str]', placeholders: 'Iterable[Placeholder]') -> 'StringInterpolation':
         """Construct a :class:`StringInterpolation` object from ``literals`` and ``placeholders`` components.
         This method is more efficient than the :func:`StringInterpolation` constructor, but it is mainly
         intended for internal use.
@@ -413,7 +413,7 @@ class StringInterpolation:
             ValueError: if the length of ``literals`` is not exactly one more than the length of ``placeholders``
 
         """
-        obj = StringInterpolation()
+        obj = cls()
 
         if isinstance(literals, str):
             raise TypeError('literals must be a non-string iterable')
@@ -526,7 +526,7 @@ class StringInterpolation:
             a new :class:`StringInterpolation` object with as many placeholders substituted as possible
 
         """
-        result = StringInterpolation()
+        result = type(self)()
         for component in self.iter_components():
             if isinstance(component, Placeholder) and component.name in substitutions:
                 result += str(substitutions[component.name])
