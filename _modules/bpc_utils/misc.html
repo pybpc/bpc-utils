@@ -407,7 +407,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_literals</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,)</span>  <span class="c1"># type: Tuple[str, ...]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_placeholders</span> <span class="o">=</span> <span class="p">()</span>  <span class="c1"># type: Tuple[Placeholder, ...]</span>
             <span class="k">return</span>
-        <span class="n">obj</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">add</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">StringInterpolation</span><span class="p">())</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">add</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_literals</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">literals</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_placeholders</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">placeholders</span>
 
@@ -421,8 +421,8 @@
         <span class="sd">&quot;&quot;&quot;Returns the :class:`Placeholder` components in this :class:`StringInterpolation` object.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_placeholders</span>
 
-<div class="viewcode-block" id="StringInterpolation.from_components"><a class="viewcode-back" href="../../index.html#bpc_utils.StringInterpolation.from_components">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">from_components</span><span class="p">(</span><span class="n">literals</span><span class="p">:</span> <span class="s1">&#39;Iterable[str]&#39;</span><span class="p">,</span> <span class="n">placeholders</span><span class="p">:</span> <span class="s1">&#39;Iterable[Placeholder]&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;StringInterpolation&#39;</span><span class="p">:</span>
+<div class="viewcode-block" id="StringInterpolation.from_components"><a class="viewcode-back" href="../../index.html#bpc_utils.StringInterpolation.from_components">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_components</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">literals</span><span class="p">:</span> <span class="s1">&#39;Iterable[str]&#39;</span><span class="p">,</span> <span class="n">placeholders</span><span class="p">:</span> <span class="s1">&#39;Iterable[Placeholder]&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;StringInterpolation&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Construct a :class:`StringInterpolation` object from ``literals`` and ``placeholders`` components.</span>
 <span class="sd">        This method is more efficient than the :func:`StringInterpolation` constructor, but it is mainly</span>
 <span class="sd">        intended for internal use.</span>
@@ -446,7 +446,7 @@
 <span class="sd">            ValueError: if the length of ``literals`` is not exactly one more than the length of ``placeholders``</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">obj</span> <span class="o">=</span> <span class="n">StringInterpolation</span><span class="p">()</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">literals</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;literals must be a non-string iterable&#39;</span><span class="p">)</span>
@@ -559,7 +559,7 @@
 <span class="sd">            a new :class:`StringInterpolation` object with as many placeholders substituted as possible</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">StringInterpolation</span><span class="p">()</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)()</span>
         <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_components</span><span class="p">():</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">Placeholder</span><span class="p">)</span> <span class="ow">and</span> <span class="n">component</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">substitutions</span><span class="p">:</span>
                 <span class="n">result</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">substitutions</span><span class="p">[</span><span class="n">component</span><span class="o">.</span><span class="n">name</span><span class="p">])</span>
