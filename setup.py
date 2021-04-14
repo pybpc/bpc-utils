@@ -47,8 +47,8 @@ setup(
     python_requires='>=3.4',
     install_requires=[
         'parso>=0.6.0',
-        'typing>=3.6.2;python_version<"3.5"',  # NoReturn is 3.6.2+
-        'typing_extensions>=3.7.2',            # Literal, Final, ...
+        'typing;python_version<"3.5"',
+        'typing_extensions>=3.7.2',  # Literal, Final, ...
     ],
     extras_require={
         'lint': [
