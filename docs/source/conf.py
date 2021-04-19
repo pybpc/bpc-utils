@@ -23,6 +23,9 @@ PROJECT_ROOT = os.path.abspath(
 )
 sys.path.insert(0, PROJECT_ROOT)
 
+# Let our module detect whether Sphinx build is running.
+os.environ['SPHINX_BUILD_HAPPENING'] = '1'
+
 # -- Project information -----------------------------------------------------
 
 project = 'bpc-utils'

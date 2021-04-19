@@ -2,7 +2,6 @@
 
 """Type annotations for this package."""
 import os
-import re
 import sys
 from typing import (Callable, Dict, Generator, Iterable, Iterator, List, Mapping, Optional, Set,
                     TextIO, Tuple, TypeVar, Union, cast)
@@ -16,8 +15,8 @@ Linesep = Literal['\n', '\r\n', '\r']
 
 # If running Sphinx build, set :data:`typing.TYPE_CHECKING` to :data:`True`.
 # This is a workaround because module import happens before sphinx-autodoc-typehints gains control.
-print('!!! DEBUG !!!, sys.argv[0] = ', sys.argv[0])
-if re.fullmatch(r'(?ai)sphinx-build(?:\.exe)?', os.path.basename(sys.argv[0])):  # pragma: no cover
+# (We've set SPHINX_BUILD_HAPPENING in docs/source/conf.py)
+if os.getenv('SPHINX_BUILD_HAPPENING'):  # pragma: no cover
     import typing
     import typing_extensions
     typing.TYPE_CHECKING = True
