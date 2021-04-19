@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     from .typing import Dict, Final, Linesep, Optional, Union
 
 
-def parse_positive_integer(s: 'Optional[Union[str, int]]') -> 'Optional[int]':
+def parse_positive_integer(s: 'Optional[str | int]') -> 'Optional[int]':
     """Parse a positive integer from a string representation.
 
     Args:

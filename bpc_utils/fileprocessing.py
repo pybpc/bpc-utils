@@ -65,7 +65,7 @@ def expand_glob_iter(pattern: str) -> 'Iterator[str]':
     return glob.iglob(pattern, recursive=True)  # pragma: no cover  # novermin
 
 
-def detect_files(files: 'Iterable[str]') -> 'List[str]':
+def detect_files(files: 'Iterable[str]') -> 'list[str]':
     """Get a list of Python files to be processed according to user input.
 
     This will perform *glob* expansion on Windows, make all paths absolute,
