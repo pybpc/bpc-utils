@@ -28,7 +28,7 @@ finally:    # alias and aftermath
 parallel_available = mp is not None and CPU_CNT > 1
 
 
-def _mp_map_wrapper(args: 'tuple[Callable[..., T], Iterable[object], Mapping[str, object]]') -> 'T':
+def _mp_map_wrapper(args: 'Tuple[Callable[..., T], Iterable[object], Mapping[str, object]]') -> 'T':
     """Map wrapper function for :mod:`multiprocessing`.
 
     Args:
