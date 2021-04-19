@@ -61,7 +61,7 @@
 <span class="n">parallel_available</span> <span class="o">=</span> <span class="n">mp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">CPU_CNT</span> <span class="o">&gt;</span> <span class="mi">1</span>
 
 
-<div class="viewcode-block" id="_mp_map_wrapper"><a class="viewcode-back" href="../../index.html#bpc_utils._mp_map_wrapper">[docs]</a><span class="k">def</span> <span class="nf">_mp_map_wrapper</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="s1">&#39;tuple[Callable[..., T], Iterable[object], Mapping[str, object]]&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;T&#39;</span><span class="p">:</span>
+<div class="viewcode-block" id="_mp_map_wrapper"><a class="viewcode-back" href="../../index.html#bpc_utils._mp_map_wrapper">[docs]</a><span class="k">def</span> <span class="nf">_mp_map_wrapper</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="s1">&#39;Tuple[Callable[..., T], Iterable[object], Mapping[str, object]]&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;T&#39;</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Map wrapper function for :mod:`multiprocessing`.</span>
 
 <span class="sd">    Args:</span>
