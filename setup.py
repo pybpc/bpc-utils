@@ -56,7 +56,7 @@ setup(
             'pylint',
             'mypy',
             'bandit>=1.6.3',
-            'vermin>=1.1.0',
+            'vermin>=1.1.1',
             'colorlabels>=0.7.0',
             'parso>=0.8.0',
             'pytest>=6.2.0',
