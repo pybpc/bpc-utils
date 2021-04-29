@@ -201,13 +201,13 @@
 <span class="sd">    Specifying both ``rr`` and ``rs`` as :data:`True` is not accepted.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        archive_file: path to the *tar* archive file, or the archive directory</span>
+<span class="sd">        archive_file_or_dir: path to the *tar* archive file, or the archive directory</span>
 <span class="sd">        rr: whether to run in &quot;recover and remove&quot; mode</span>
 <span class="sd">        rs: whether to run in &quot;recover from the only file in the archive directory&quot; mode</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        ValueError: when ``rr`` and ``rs`` are both :data:`True`</span>
-<span class="sd">        :exc:`BPCRecoveryError`: when ``rs`` is :data:`True`, and the directory specified by ``archive_file_or_dir``</span>
+<span class="sd">        BPCRecoveryError: when ``rs`` is :data:`True`, and the directory specified by ``archive_file_or_dir``</span>
 <span class="sd">            is empty, contains more than one item, or contains a non-regular file</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>

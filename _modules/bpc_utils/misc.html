@@ -87,7 +87,7 @@
     <span class="o">...</span>  <span class="c1"># pragma: no cover</span>
 
 
-<div class="viewcode-block" id="first_truthy"><a class="viewcode-back" href="../../index.html#bpc_utils.first_truthy">[docs]</a><span class="k">def</span> <span class="nf">first_truthy</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>  <span class="c1"># type: ignore[no-untyped-def]  # noqa: F811</span>
+<div class="viewcode-block" id="first_truthy"><a class="viewcode-back" href="../../index.html#bpc_utils.first_truthy">[docs]</a><span class="k">def</span> <span class="nf">first_truthy</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>  <span class="c1"># type: ignore[no-untyped-def]  # noqa: F811  # pylint: disable=missing-return-type-doc</span>
     <span class="sd">&quot;&quot;&quot;Return the first *truthy* value from a list of values.</span>
 
 <span class="sd">    Args:</span>
@@ -120,7 +120,7 @@
     <span class="o">...</span>  <span class="c1"># pragma: no cover</span>
 
 
-<div class="viewcode-block" id="first_non_none"><a class="viewcode-back" href="../../index.html#bpc_utils.first_non_none">[docs]</a><span class="k">def</span> <span class="nf">first_non_none</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>  <span class="c1"># type: ignore[no-untyped-def]  # noqa: F811</span>
+<div class="viewcode-block" id="first_non_none"><a class="viewcode-back" href="../../index.html#bpc_utils.first_non_none">[docs]</a><span class="k">def</span> <span class="nf">first_non_none</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>  <span class="c1"># type: ignore[no-untyped-def]  # noqa: F811  # pylint: disable=missing-return-type-doc</span>
     <span class="sd">&quot;&quot;&quot;Return the first non-:data:`None` value from a list of values.</span>
 
 <span class="sd">    Args:</span>
@@ -471,8 +471,8 @@
 <span class="sd">        &gt;&gt;&gt; list(StringInterpolation(&#39;prefix&#39;, Placeholder(&#39;data&#39;), &#39;suffix&#39;).iter_components())</span>
 <span class="sd">        [&#39;prefix&#39;, Placeholder(&#39;data&#39;), &#39;suffix&#39;]</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            generator containing the components of this :class:`StringInterpolation` object in order</span>
+<span class="sd">        Yields:</span>
+<span class="sd">            the components of this :class:`StringInterpolation` object in order</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">literal</span><span class="p">,</span> <span class="n">placeholder</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">literals</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">placeholders</span><span class="p">):</span>
