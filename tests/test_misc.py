@@ -110,7 +110,7 @@ def test_first_non_none_short_circuit_usage() -> None:
         yield log_evaluation(0)
         yield log_evaluation(1)  # pragma: no cover  # should not be evaluated
 
-    assert first_non_none(value_generator()) == 0
+    assert first_non_none(value_generator()) == 0  # pylint: disable=compare-to-zero
     assert evaluated == {None, 0}
 
 

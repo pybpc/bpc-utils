@@ -54,7 +54,7 @@ def first_truthy(*args: 'T') -> 'Optional[T]':  # noqa: F811
     ...  # pragma: no cover
 
 
-def first_truthy(*args):  # type: ignore[no-untyped-def]  # noqa: F811
+def first_truthy(*args):  # type: ignore[no-untyped-def]  # noqa: F811  # pylint: disable=missing-return-type-doc
     """Return the first *truthy* value from a list of values.
 
     Args:
@@ -87,7 +87,7 @@ def first_non_none(*args: 'T') -> 'Optional[T]':  # noqa: F811
     ...  # pragma: no cover
 
 
-def first_non_none(*args):  # type: ignore[no-untyped-def]  # noqa: F811
+def first_non_none(*args):  # type: ignore[no-untyped-def]  # noqa: F811  # pylint: disable=missing-return-type-doc
     """Return the first non-:data:`None` value from a list of values.
 
     Args:
@@ -438,8 +438,8 @@ class StringInterpolation:
         >>> list(StringInterpolation('prefix', Placeholder('data'), 'suffix').iter_components())
         ['prefix', Placeholder('data'), 'suffix']
 
-        Returns:
-            generator containing the components of this :class:`StringInterpolation` object in order
+        Yields:
+            the components of this :class:`StringInterpolation` object in order
 
         """
         for literal, placeholder in zip(self.literals, self.placeholders):

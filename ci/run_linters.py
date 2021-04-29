@@ -39,7 +39,7 @@ def run_linter(linter: Linter) -> bool:
     linter_name = linter['name']
     cl.progress('Running linter {}'.format(linter_name))
     result = subprocess.call(linter['command'])  # nosec
-    if result == 0:
+    if result == 0:  # pylint: disable=compare-to-zero
         cl.success('Linter {} success'.format(linter_name))
         return True
     cl.error('Linter {} failed'.format(linter_name))

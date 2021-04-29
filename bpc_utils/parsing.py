@@ -175,7 +175,7 @@ def parso_parse(code: 'Union[str, bytes]', filename: 'Optional[str]' = None, *,
         parso AST
 
     Raises:
-        :exc:`BPCSyntaxError`: when source code contains syntax errors
+        BPCSyntaxError: when source code contains syntax errors
 
     """
     filename = first_non_none(filename, '<unknown>')

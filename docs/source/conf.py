@@ -3,7 +3,7 @@ import sys
 from typing import List
 
 # Configuration file for the Sphinx documentation builder.
-#
+
 # This file only contains a selection of the most common options. For a full
 # list see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
@@ -13,7 +13,7 @@ from typing import List
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#
+
 PROJECT_ROOT = os.path.abspath(
     os.path.dirname(  # docs/
         os.path.dirname(  # docs/source
@@ -93,7 +93,7 @@ exclude_patterns = []  # type: List[str]
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#
+
 html_theme = 'alabaster'
 
 # Add any paths that contain custom static files (such as style sheets) here,

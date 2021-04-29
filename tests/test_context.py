@@ -57,7 +57,7 @@ def test_BaseContext() -> None:
     assert context._linesep == '\n'  # pylint: disable=protected-access
     assert context._pep8 is True  # pylint: disable=protected-access
     assert context._root is node  # pylint: disable=protected-access
-    assert context._indent_level == 0  # pylint: disable=protected-access
+    assert context._indent_level == 0  # pylint: disable=protected-access,compare-to-zero
     assert isinstance(context._uuid_gen, UUID4Generator)  # pylint: disable=protected-access
     assert context.string == converted_result + ' \u0200 '
     assert str(context) == converted_result + ' \u0200'

@@ -168,13 +168,13 @@ def recover_files(archive_file_or_dir: str, *, rr: bool = False, rs: bool = Fals
     Specifying both ``rr`` and ``rs`` as :data:`True` is not accepted.
 
     Args:
-        archive_file: path to the *tar* archive file, or the archive directory
+        archive_file_or_dir: path to the *tar* archive file, or the archive directory
         rr: whether to run in "recover and remove" mode
         rs: whether to run in "recover from the only file in the archive directory" mode
 
     Raises:
         ValueError: when ``rr`` and ``rs`` are both :data:`True`
-        :exc:`BPCRecoveryError`: when ``rs`` is :data:`True`, and the directory specified by ``archive_file_or_dir``
+        BPCRecoveryError: when ``rs`` is :data:`True`, and the directory specified by ``archive_file_or_dir``
             is empty, contains more than one item, or contains a non-regular file
 
     """

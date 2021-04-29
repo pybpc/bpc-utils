@@ -10,10 +10,9 @@ if not os.path.isfile('setup.py'):
 
 # pylint: disable=line-too-long
 pylint_args = [
-    '--load-plugins=pylint.extensions.check_elif,pylint.extensions.docstyle,pylint.extensions.emptystring,pylint.extensions.overlapping_exceptions',
-    '--disable=all',
-    '--enable=F,E,W,R,basic,classes,format,imports,refactoring,else_if_used,docstyle,compare-to-empty-string,overlapping-except',
-    '--disable=blacklisted-name,invalid-name,missing-class-docstring,missing-function-docstring,missing-module-docstring,design,too-many-lines,eq-without-hash,old-division,no-absolute-import,input-builtin,too-many-nested-blocks',
+    '--load-plugins=pylint.extensions.emptystring,pylint.extensions.comparetozero,pylint.extensions.docstyle,pylint.extensions.check_elif,pylint.extensions.redefined_variable_type,pylint.extensions.overlapping_exceptions,pylint.extensions.docparams,pylint.extensions.empty_comment,pylint.extensions.typing',
+    '--enable=all',
+    '--disable=I,disallowed-name,invalid-name,missing-class-docstring,missing-function-docstring,missing-module-docstring,design,too-many-lines,eq-without-hash,old-division,no-absolute-import,input-builtin,too-many-nested-blocks,spelling',
     '--max-line-length=120',
     '--init-import=yes',
 ]  # type: List[str]
