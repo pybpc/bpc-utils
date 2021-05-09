@@ -14,7 +14,8 @@ T = TypeVar('T')
 Linesep = Literal['\n', '\r\n', '\r']
 
 # If running Sphinx build, set :data:`typing.TYPE_CHECKING` to :data:`True`.
-# This is a workaround because module import happens before sphinx-autodoc-typehints gains control.
+# This workaround may not always be necessary, but it is safer to do so as the import of this module
+# or `typing_extensions` may potentially happen before `sphinx-autodoc-typehints` gains control.
 # (We've set SPHINX_BUILD_HAPPENING in docs/source/conf.py)
 if os.getenv('SPHINX_BUILD_HAPPENING'):  # pragma: no cover
     import typing

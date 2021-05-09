@@ -1,4 +1,5 @@
 import os
+import subprocess  # nosec
 import sys
 from typing import List
 
@@ -33,8 +34,9 @@ copyright = '2019-2021, Python Backport Compiler Project'  # pylint: disable=red
 author = 'Python Backport Compiler Project'
 
 # The full version, including alpha/beta/rc tags
-release = __import__('bpc_utils').__version__
-
+release = subprocess.check_output([sys.executable,  # nosec
+                                   os.path.join(PROJECT_ROOT, 'scripts', 'find_version.py')],
+                                  universal_newlines=True).strip()
 
 # -- General configuration ---------------------------------------------------
 
