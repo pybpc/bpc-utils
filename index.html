@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Python Backport Compiler Utilities &#8212; bpc-utils 0.10.1 documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
@@ -30,18 +31,18 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="python-backport-compiler-utilities">
+  <section id="python-backport-compiler-utilities">
 <h1>Python Backport Compiler Utilities<a class="headerlink" href="#python-backport-compiler-utilities" title="Permalink to this headline">¶</a></h1>
 <p>Utility library for the Python <a class="reference external" href="https://github.com/pybpc/bpc"><code class="docutils literal notranslate"><span class="pre">bpc</span></code></a> backport compiler.</p>
 <p>Currently, the three individual tools (<a class="reference external" href="https://github.com/pybpc/f2format"><code class="docutils literal notranslate"><span class="pre">f2format</span></code></a>, <a class="reference external" href="https://github.com/pybpc/poseur"><code class="docutils literal notranslate"><span class="pre">poseur</span></code></a>,
 <a class="reference external" href="https://github.com/pybpc/walrus"><code class="docutils literal notranslate"><span class="pre">walrus</span></code></a>) depend on this repo. The <a class="reference external" href="https://github.com/pybpc/bpc"><code class="docutils literal notranslate"><span class="pre">bpc</span></code></a> compiler is a
 work in progress.</p>
-<div class="section" id="module-bpc_utils">
+<section id="module-bpc_utils">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bpc_utils" title="Permalink to this headline">¶</a></h2>
 <p>Utility library for the Python bpc backport compiler.</p>
 <dl class="py exception">
-<dt id="bpc_utils.BPCInternalError">
-<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">bpc_utils.</span></code><code class="sig-name descname"><span class="pre">BPCInternalError</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#BPCInternalError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.BPCInternalError" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.BPCInternalError">
+<em class="property"><span class="pre">exception</span> </em><span class="sig-prename descclassname"><span class="pre">bpc_utils.</span></span><span class="sig-name descname"><span class="pre">BPCInternalError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#BPCInternalError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.BPCInternalError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></a></p>
 <p>Internal bug happened in BPC tools.</p>
 <p>Initialize BPCInternalError.</p>
@@ -63,22 +64,22 @@ work in progress.</p>
 </dd></dl>
 
 <dl class="py exception">
-<dt id="bpc_utils.BPCRecoveryError">
-<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">bpc_utils.</span></code><code class="sig-name descname"><span class="pre">BPCRecoveryError</span></code><a class="reference internal" href="_modules/bpc_utils/fileprocessing.html#BPCRecoveryError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.BPCRecoveryError" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.BPCRecoveryError">
+<em class="property"><span class="pre">exception</span> </em><span class="sig-prename descclassname"><span class="pre">bpc_utils.</span></span><span class="sig-name descname"><span class="pre">BPCRecoveryError</span></span><a class="reference internal" href="_modules/bpc_utils/fileprocessing.html#BPCRecoveryError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.BPCRecoveryError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></a></p>
 <p>Error during file recovery.</p>
 </dd></dl>
 
 <dl class="py exception">
-<dt id="bpc_utils.BPCSyntaxError">
-<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">bpc_utils.</span></code><code class="sig-name descname"><span class="pre">BPCSyntaxError</span></code><a class="reference internal" href="_modules/bpc_utils/parsing.html#BPCSyntaxError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.BPCSyntaxError" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.BPCSyntaxError">
+<em class="property"><span class="pre">exception</span> </em><span class="sig-prename descclassname"><span class="pre">bpc_utils.</span></span><span class="sig-name descname"><span class="pre">BPCSyntaxError</span></span><a class="reference internal" href="_modules/bpc_utils/parsing.html#BPCSyntaxError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.BPCSyntaxError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#SyntaxError" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyntaxError</span></code></a></p>
 <p>Syntax error detected when parsing code.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="bpc_utils.BaseContext">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">bpc_utils.</span></code><code class="sig-name descname"><span class="pre">BaseContext</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/context.html#BaseContext"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.BaseContext" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.BaseContext">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">bpc_utils.</span></span><span class="sig-name descname"><span class="pre">BaseContext</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/context.html#BaseContext"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.BaseContext" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></a></p>
 <p>Abstract base class for general conversion context.</p>
 <p>Initialize BaseContext.</p>
@@ -93,8 +94,8 @@ work in progress.</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="bpc_utils.BaseContext.__iadd__">
-<em class="property"><span class="pre">final</span> </em><code class="sig-name descname"><span class="pre">__iadd__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/context.html#BaseContext.__iadd__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.BaseContext.__iadd__" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.BaseContext.__iadd__">
+<em class="property"><span class="pre">final</span> </em><span class="sig-name descname"><span class="pre">__iadd__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/context.html#BaseContext.__iadd__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.BaseContext.__iadd__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Support of the <code class="docutils literal notranslate"><span class="pre">+=</span></code> operator.</p>
 <p>If <a class="reference internal" href="#bpc_utils.BaseContext._prefix_or_suffix" title="bpc_utils.BaseContext._prefix_or_suffix"><code class="xref py py-attr docutils literal notranslate"><span class="pre">self._prefix_or_suffix</span></code></a> is <a class="reference external" href="https://docs.python.org/3/library/constants.html#True" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a>,
 then the <code class="docutils literal notranslate"><span class="pre">code</span></code> will be appended to <a class="reference internal" href="#bpc_utils.BaseContext._prefix" title="bpc_utils.BaseContext._prefix"><code class="xref py py-attr docutils literal notranslate"><span class="pre">self._prefix</span></code></a>;
@@ -113,8 +114,8 @@ else it will be appended to <a class="reference internal" href="#bpc_utils.BaseC
 </dd></dl>
 
 <dl class="py method">
-<dt id="bpc_utils.BaseContext.__str__">
-<em class="property"><span class="pre">final</span> </em><code class="sig-name descname"><span class="pre">__str__</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/context.html#BaseContext.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.BaseContext.__str__" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.BaseContext.__str__">
+<em class="property"><span class="pre">final</span> </em><span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/context.html#BaseContext.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.BaseContext.__str__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a <em>stripped</em> version of <a class="reference internal" href="#bpc_utils.BaseContext._buffer" title="bpc_utils.BaseContext._buffer"><code class="xref py py-attr docutils literal notranslate"><span class="pre">self._buffer</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -124,8 +125,8 @@ else it will be appended to <a class="reference internal" href="#bpc_utils.BaseC
 </dd></dl>
 
 <dl class="py method">
-<dt id="bpc_utils.BaseContext._concat">
-<em class="property"><span class="pre">abstract</span> </em><code class="sig-name descname"><span class="pre">_concat</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/context.html#BaseContext._concat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.BaseContext._concat" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.BaseContext._concat">
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">_concat</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/context.html#BaseContext._concat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.BaseContext._concat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Concatenate final string.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -135,8 +136,8 @@ else it will be appended to <a class="reference internal" href="#bpc_utils.BaseC
 </dd></dl>
 
 <dl class="py method">
-<dt id="bpc_utils.BaseContext._process">
-<em class="property"><span class="pre">final</span> </em><code class="sig-name descname"><span class="pre">_process</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/context.html#BaseContext._process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.BaseContext._process" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.BaseContext._process">
+<em class="property"><span class="pre">final</span> </em><span class="sig-name descname"><span class="pre">_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/context.html#BaseContext._process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.BaseContext._process" title="Permalink to this definition">¶</a></dt>
 <dd><p>Recursively process parso AST.</p>
 <p>All processing methods for a specific <code class="docutils literal notranslate"><span class="pre">node</span></code> type are defined as
 <code class="docutils literal notranslate"><span class="pre">_process_{type}</span></code>. This method first checks if such processing
@@ -154,8 +155,8 @@ the same logic on each child.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="bpc_utils.BaseContext._walk">
-<em class="property"><span class="pre">final</span> </em><code class="sig-name descname"><span class="pre">_walk</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/context.html#BaseContext._walk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.BaseContext._walk" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.BaseContext._walk">
+<em class="property"><span class="pre">final</span> </em><span class="sig-name descname"><span class="pre">_walk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/context.html#BaseContext._walk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.BaseContext._walk" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start traversing the AST module.</p>
 <p>The method traverses through all <em>children</em> of <code class="docutils literal notranslate"><span class="pre">node</span></code>. It first checks
 if such child has the target expression. If so, it will toggle
@@ -174,8 +175,8 @@ Then it processes the child with <a class="reference internal" href="#bpc_utils.
 </dd></dl>
 
 <dl class="py method">
-<dt id="bpc_utils.BaseContext.extract_whitespaces">
-<em class="property"><span class="pre">final</span> <span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">extract_whitespaces</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/context.html#BaseContext.extract_whitespaces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.BaseContext.extract_whitespaces" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.BaseContext.extract_whitespaces">
+<em class="property"><span class="pre">final</span> <span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">extract_whitespaces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/context.html#BaseContext.extract_whitespaces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.BaseContext.extract_whitespaces" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extract preceding and succeeding whitespaces from the code given.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -191,8 +192,8 @@ Then it processes the child with <a class="reference internal" href="#bpc_utils.
 </dd></dl>
 
 <dl class="py method">
-<dt id="bpc_utils.BaseContext.has_expr">
-<em class="property"><span class="pre">abstract</span> </em><code class="sig-name descname"><span class="pre">has_expr</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/context.html#BaseContext.has_expr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.BaseContext.has_expr" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.BaseContext.has_expr">
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">has_expr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/context.html#BaseContext.has_expr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.BaseContext.has_expr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if node has the target expression.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -208,8 +209,8 @@ Then it processes the child with <a class="reference internal" href="#bpc_utils.
 </dd></dl>
 
 <dl class="py method">
-<dt id="bpc_utils.BaseContext.mangle">
-<em class="property"><span class="pre">final</span> <span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">mangle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/context.html#BaseContext.mangle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.BaseContext.mangle" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.BaseContext.mangle">
+<em class="property"><span class="pre">final</span> <span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">mangle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/context.html#BaseContext.mangle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.BaseContext.mangle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mangle variable names.</p>
 <p>This method mangles variable names as described in <a class="reference external" href="https://docs.python.org/3/reference/expressions.html#atom-identifiers">Python documentation about mangling</a>
 and further normalizes the mangled variable name through <a class="reference internal" href="#bpc_utils.BaseContext.normalize" title="bpc_utils.BaseContext.normalize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">normalize()</span></code></a>.</p>
@@ -230,8 +231,8 @@ and further normalizes the mangled variable name through <a class="reference int
 </dd></dl>
 
 <dl class="py method">
-<dt id="bpc_utils.BaseContext.missing_newlines">
-<em class="property"><span class="pre">final</span> <span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">missing_newlines</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linesep</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/context.html#BaseContext.missing_newlines"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.BaseContext.missing_newlines" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.BaseContext.missing_newlines">
+<em class="property"><span class="pre">final</span> <span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">missing_newlines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linesep</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/context.html#BaseContext.missing_newlines"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.BaseContext.missing_newlines" title="Permalink to this definition">¶</a></dt>
 <dd><p>Count missing blank lines for code insertion given surrounding code.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -252,8 +253,8 @@ and further normalizes the mangled variable name through <a class="reference int
 </dd></dl>
 
 <dl class="py method">
-<dt id="bpc_utils.BaseContext.normalize">
-<em class="property"><span class="pre">final</span> <span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">normalize</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/context.html#BaseContext.normalize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.BaseContext.normalize" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.BaseContext.normalize">
+<em class="property"><span class="pre">final</span> <span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">normalize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/context.html#BaseContext.normalize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.BaseContext.normalize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Normalize variable names.</p>
 <p>This method normalizes variable names as described in <a class="reference external" href="https://docs.python.org/3/reference/lexical_analysis.html#identifiers">Python documentation about identifiers</a>
 and <span class="target" id="index-0"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-3131"><strong>PEP 3131</strong></a>.</p>
@@ -271,8 +272,8 @@ and <span class="target" id="index-0"></span><a class="pep reference external" h
 </dd></dl>
 
 <dl class="py method">
-<dt id="bpc_utils.BaseContext.split_comments">
-<em class="property"><span class="pre">final</span> <span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">split_comments</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linesep</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/context.html#BaseContext.split_comments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.BaseContext.split_comments" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.BaseContext.split_comments">
+<em class="property"><span class="pre">final</span> <span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">split_comments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linesep</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/context.html#BaseContext.split_comments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.BaseContext.split_comments" title="Permalink to this definition">¶</a></dt>
 <dd><p>Separates prefixing comments from code.</p>
 <p>This method separates <em>prefixing</em> comments and <em>suffixing</em> code. It is
 rather useful when inserting code might break <a class="reference external" href="https://en.wikipedia.org/wiki/Shebang_(Unix)">shebang</a> and encoding
@@ -294,26 +295,26 @@ cookies (<span class="target" id="index-1"></span><a class="pep reference extern
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="bpc_utils.BaseContext._buffer">
-<code class="sig-name descname"><span class="pre">_buffer</span></code><em class="property"><span class="pre">:</span> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></em><a class="headerlink" href="#bpc_utils.BaseContext._buffer" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.BaseContext._buffer">
+<span class="sig-name descname"><span class="pre">_buffer</span></span><em class="property"><span class="pre">:</span> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></em><a class="headerlink" href="#bpc_utils.BaseContext._buffer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Final converted result.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="bpc_utils.BaseContext._indent_level">
-<code class="sig-name descname"><span class="pre">_indent_level</span></code><em class="property"><span class="pre">:</span> <span class="pre">Final</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#bpc_utils.BaseContext._indent_level" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.BaseContext._indent_level">
+<span class="sig-name descname"><span class="pre">_indent_level</span></span><em class="property"><span class="pre">:</span> <span class="pre">Final</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#bpc_utils.BaseContext._indent_level" title="Permalink to this definition">¶</a></dt>
 <dd><p>Current indentation level.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="bpc_utils.BaseContext._indentation">
-<code class="sig-name descname"><span class="pre">_indentation</span></code><em class="property"><span class="pre">:</span> <span class="pre">Final</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#bpc_utils.BaseContext._indentation" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.BaseContext._indentation">
+<span class="sig-name descname"><span class="pre">_indentation</span></span><em class="property"><span class="pre">:</span> <span class="pre">Final</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#bpc_utils.BaseContext._indentation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Indentation sequence.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="bpc_utils.BaseContext._linesep">
-<code class="sig-name descname"><span class="pre">_linesep</span></code><em class="property"><span class="pre">:</span> <span class="pre">Final[Literal[</span>
+<dt class="sig sig-object py" id="bpc_utils.BaseContext._linesep">
+<span class="sig-name descname"><span class="pre">_linesep</span></span><em class="property"><span class="pre">:</span> <span class="pre">Final[Literal[</span>
 <span class="pre">,</span>  
 <span class="pre">,</span> <span class="pre">]]</span></em><a class="headerlink" href="#bpc_utils.BaseContext._linesep" title="Permalink to this definition">¶</a></dt>
 <dd><p>Line seperator.</p>
@@ -325,56 +326,56 @@ cookies (<span class="target" id="index-1"></span><a class="pep reference extern
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="bpc_utils.BaseContext._node_before_expr">
-<code class="sig-name descname"><span class="pre">_node_before_expr</span></code><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://parso.readthedocs.io/en/latest/docs/parser-tree.html#parso.tree.NodeOrLeaf" title="(in parso v0.7)"><span class="pre">parso.tree.NodeOrLeaf</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#bpc_utils.BaseContext._node_before_expr" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.BaseContext._node_before_expr">
+<span class="sig-name descname"><span class="pre">_node_before_expr</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://parso.readthedocs.io/en/latest/docs/parser-tree.html#parso.tree.NodeOrLeaf" title="(in parso v0.7)"><span class="pre">parso.tree.NodeOrLeaf</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#bpc_utils.BaseContext._node_before_expr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Preceding node with the target expression, i.e. the <em>insertion point</em>.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="bpc_utils.BaseContext._pep8">
-<code class="sig-name descname"><span class="pre">_pep8</span></code><em class="property"><span class="pre">:</span> <span class="pre">Final</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#bpc_utils.BaseContext._pep8" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.BaseContext._pep8">
+<span class="sig-name descname"><span class="pre">_pep8</span></span><em class="property"><span class="pre">:</span> <span class="pre">Final</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#bpc_utils.BaseContext._pep8" title="Permalink to this definition">¶</a></dt>
 <dd><p><span class="target" id="index-2"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-0008"><strong>PEP 8</strong></a> compliant conversion flag.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="bpc_utils.BaseContext._prefix">
-<code class="sig-name descname"><span class="pre">_prefix</span></code><em class="property"><span class="pre">:</span> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></em><a class="headerlink" href="#bpc_utils.BaseContext._prefix" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.BaseContext._prefix">
+<span class="sig-name descname"><span class="pre">_prefix</span></span><em class="property"><span class="pre">:</span> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></em><a class="headerlink" href="#bpc_utils.BaseContext._prefix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Code before insertion point.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="bpc_utils.BaseContext._prefix_or_suffix">
-<code class="sig-name descname"><span class="pre">_prefix_or_suffix</span></code><em class="property"><span class="pre">:</span> <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><span class="pre">bool</span></a></em><a class="headerlink" href="#bpc_utils.BaseContext._prefix_or_suffix" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.BaseContext._prefix_or_suffix">
+<span class="sig-name descname"><span class="pre">_prefix_or_suffix</span></span><em class="property"><span class="pre">:</span> <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><span class="pre">bool</span></a></em><a class="headerlink" href="#bpc_utils.BaseContext._prefix_or_suffix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Flag to indicate whether buffer is now <a class="reference internal" href="#bpc_utils.BaseContext._prefix" title="bpc_utils.BaseContext._prefix"><code class="xref py py-attr docutils literal notranslate"><span class="pre">self._prefix</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="bpc_utils.BaseContext._root">
-<code class="sig-name descname"><span class="pre">_root</span></code><em class="property"><span class="pre">:</span> <span class="pre">Final</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://parso.readthedocs.io/en/latest/docs/parser-tree.html#parso.tree.NodeOrLeaf" title="(in parso v0.7)"><span class="pre">parso.tree.NodeOrLeaf</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#bpc_utils.BaseContext._root" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.BaseContext._root">
+<span class="sig-name descname"><span class="pre">_root</span></span><em class="property"><span class="pre">:</span> <span class="pre">Final</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://parso.readthedocs.io/en/latest/docs/parser-tree.html#parso.tree.NodeOrLeaf" title="(in parso v0.7)"><span class="pre">parso.tree.NodeOrLeaf</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#bpc_utils.BaseContext._root" title="Permalink to this definition">¶</a></dt>
 <dd><p>Root node given by the <code class="docutils literal notranslate"><span class="pre">node</span></code> parameter.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="bpc_utils.BaseContext._suffix">
-<code class="sig-name descname"><span class="pre">_suffix</span></code><em class="property"><span class="pre">:</span> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></em><a class="headerlink" href="#bpc_utils.BaseContext._suffix" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.BaseContext._suffix">
+<span class="sig-name descname"><span class="pre">_suffix</span></span><em class="property"><span class="pre">:</span> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></em><a class="headerlink" href="#bpc_utils.BaseContext._suffix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Code after insertion point.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="bpc_utils.BaseContext._uuid_gen">
-<code class="sig-name descname"><span class="pre">_uuid_gen</span></code><em class="property"><span class="pre">:</span> <span class="pre">Final</span><span class="p"><span class="pre">[</span></span><span class="pre">bpc_utils.misc.UUID4Generator</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#bpc_utils.BaseContext._uuid_gen" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.BaseContext._uuid_gen">
+<span class="sig-name descname"><span class="pre">_uuid_gen</span></span><em class="property"><span class="pre">:</span> <span class="pre">Final</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#bpc_utils.UUID4Generator" title="bpc_utils.misc.UUID4Generator"><span class="pre">bpc_utils.misc.UUID4Generator</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#bpc_utils.BaseContext._uuid_gen" title="Permalink to this definition">¶</a></dt>
 <dd><p>UUID generator.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="bpc_utils.BaseContext.config">
-<code class="sig-name descname"><span class="pre">config</span></code><em class="property"><span class="pre">:</span> <span class="pre">Final</span><span class="p"><span class="pre">[</span></span><span class="pre">bpc_utils.misc.Config</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#bpc_utils.BaseContext.config" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.BaseContext.config">
+<span class="sig-name descname"><span class="pre">config</span></span><em class="property"><span class="pre">:</span> <span class="pre">Final</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#bpc_utils.Config" title="bpc_utils.misc.Config"><span class="pre">bpc_utils.misc.Config</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#bpc_utils.BaseContext.config" title="Permalink to this definition">¶</a></dt>
 <dd><p>Internal configurations.</p>
 </dd></dl>
 
-<dl class="py method">
-<dt id="bpc_utils.BaseContext.string">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">string</span></code><a class="headerlink" href="#bpc_utils.BaseContext.string" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bpc_utils.BaseContext.string">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">string</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><a class="headerlink" href="#bpc_utils.BaseContext.string" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns conversion buffer (<a class="reference internal" href="#bpc_utils.BaseContext._buffer" title="bpc_utils.BaseContext._buffer"><code class="xref py py-attr docutils literal notranslate"><span class="pre">self._buffer</span></code></a>).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -386,8 +387,8 @@ cookies (<span class="target" id="index-1"></span><a class="pep reference extern
 </dd></dl>
 
 <dl class="py class">
-<dt id="bpc_utils.Config">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">bpc_utils.</span></code><code class="sig-name descname"><span class="pre">Config</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#Config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.Config" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.Config">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">bpc_utils.</span></span><span class="sig-name descname"><span class="pre">Config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#Config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.Config" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.MutableMapping</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a>]</p>
 <p>Configuration namespace.</p>
 <p>This class is inspired from <a class="reference external" href="https://docs.python.org/3/library/argparse.html#argparse.Namespace" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">argparse.Namespace</span></code></a> for storing
@@ -406,8 +407,8 @@ internal attributes and/or configuration variables.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="bpc_utils.Placeholder">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">bpc_utils.</span></code><code class="sig-name descname"><span class="pre">Placeholder</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#Placeholder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.Placeholder" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.Placeholder">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">bpc_utils.</span></span><span class="sig-name descname"><span class="pre">Placeholder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#Placeholder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.Placeholder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Placeholder for string interpolation.</p>
 <p><a class="reference internal" href="#bpc_utils.Placeholder" title="bpc_utils.Placeholder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Placeholder</span></code></a> objects can be concatenated with <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, other <a class="reference internal" href="#bpc_utils.Placeholder" title="bpc_utils.Placeholder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Placeholder</span></code></a> objects
@@ -423,9 +424,9 @@ internal attribute. Build new objects instead.</p>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><strong>TypeError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">name</span></code> is not <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a></p>
 </dd>
 </dl>
-<dl class="py method">
-<dt id="bpc_utils.Placeholder.name">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">name</span></code><a class="headerlink" href="#bpc_utils.Placeholder.name" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bpc_utils.Placeholder.name">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><a class="headerlink" href="#bpc_utils.Placeholder.name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the name of this placeholder.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -437,8 +438,8 @@ internal attribute. Build new objects instead.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="bpc_utils.StringInterpolation">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">bpc_utils.</span></code><code class="sig-name descname"><span class="pre">StringInterpolation</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#StringInterpolation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.StringInterpolation" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.StringInterpolation">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">bpc_utils.</span></span><span class="sig-name descname"><span class="pre">StringInterpolation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#StringInterpolation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.StringInterpolation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>A string with placeholders to be filled in.</p>
 <p>This looks like an object-oriented format string, but making sure that string literals are
@@ -481,12 +482,12 @@ and other <a class="reference internal" href="#bpc_utils.StringInterpolation" ti
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>args</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Placeholder</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code>]) – the components to construct a <a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a> object</p>
+<dd class="field-odd"><p><strong>args</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference internal" href="#bpc_utils.Placeholder" title="bpc_utils.misc.Placeholder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Placeholder</span></code></a>, <a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.misc.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a>]) – the components to construct a <a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a> object</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="bpc_utils.StringInterpolation.__mod__">
-<code class="sig-name descname"><span class="pre">__mod__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">substitutions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#StringInterpolation.__mod__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.StringInterpolation.__mod__" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.StringInterpolation.__mod__">
+<span class="sig-name descname"><span class="pre">__mod__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">substitutions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#StringInterpolation.__mod__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.StringInterpolation.__mod__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Substitute the placeholders in this <a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a> object with string values (if possible)
 according to the <code class="docutils literal notranslate"><span class="pre">substitutions</span></code> mapping.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">StringInterpolation</span><span class="p">(</span><span class="s1">&#39;prefix &#39;</span><span class="p">,</span> <span class="n">Placeholder</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">),</span> <span class="s1">&#39; suffix&#39;</span><span class="p">)</span> <span class="o">%</span> <span class="p">{</span><span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="s1">&#39;hello&#39;</span><span class="p">}</span>
@@ -499,7 +500,7 @@ according to the <code class="docutils literal notranslate"><span class="pre">su
 are converted into <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a></p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></p>
+<dd class="field-even"><p><a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.misc.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a></p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>a new <a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a> object with as many placeholders substituted as possible</p>
@@ -508,8 +509,8 @@ are converted into <a class="reference external" href="https://docs.python.org/3
 </dd></dl>
 
 <dl class="py method">
-<dt id="bpc_utils.StringInterpolation.__str__">
-<code class="sig-name descname"><span class="pre">__str__</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#StringInterpolation.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.StringInterpolation.__str__" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.StringInterpolation.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#StringInterpolation.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.StringInterpolation.__str__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the fully-substituted string interpolation result.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">StringInterpolation</span><span class="p">(</span><span class="s1">&#39;prefix hello suffix&#39;</span><span class="p">))</span>
 <span class="go">&#39;prefix hello suffix&#39;</span>
@@ -529,8 +530,8 @@ are converted into <a class="reference external" href="https://docs.python.org/3
 </dd></dl>
 
 <dl class="py method">
-<dt id="bpc_utils.StringInterpolation.from_components">
-<em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">from_components</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">literals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">placeholders</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#StringInterpolation.from_components"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.StringInterpolation.from_components" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.StringInterpolation.from_components">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_components</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">literals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">placeholders</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#StringInterpolation.from_components"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.StringInterpolation.from_components" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct a <a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a> object from <code class="docutils literal notranslate"><span class="pre">literals</span></code> and <code class="docutils literal notranslate"><span class="pre">placeholders</span></code> components.
 This method is more efficient than the <a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-func docutils literal notranslate"><span class="pre">StringInterpolation()</span></code></a> constructor, but it is mainly
 intended for internal use.</p>
@@ -545,11 +546,11 @@ intended for internal use.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>literals</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – the literal components in order</p></li>
-<li><p><strong>placeholders</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Placeholder</span></code>]) – the <a class="reference internal" href="#bpc_utils.Placeholder" title="bpc_utils.Placeholder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Placeholder</span></code></a> components in order</p></li>
+<li><p><strong>placeholders</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a>[<a class="reference internal" href="#bpc_utils.Placeholder" title="bpc_utils.misc.Placeholder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Placeholder</span></code></a>]) – the <a class="reference internal" href="#bpc_utils.Placeholder" title="bpc_utils.Placeholder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Placeholder</span></code></a> components in order</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></p>
+<dd class="field-even"><p><a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.misc.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a></p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>the constructed <a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a> object</p>
@@ -565,8 +566,8 @@ intended for internal use.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="bpc_utils.StringInterpolation.iter_components">
-<code class="sig-name descname"><span class="pre">iter_components</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#StringInterpolation.iter_components"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.StringInterpolation.iter_components" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.StringInterpolation.iter_components">
+<span class="sig-name descname"><span class="pre">iter_components</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#StringInterpolation.iter_components"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.StringInterpolation.iter_components" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generator to iterate all components of this <a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a> object in order.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">StringInterpolation</span><span class="p">(</span><span class="s1">&#39;prefix&#39;</span><span class="p">,</span> <span class="n">Placeholder</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">),</span> <span class="s1">&#39;suffix&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">iter_components</span><span class="p">())</span>
 <span class="go">[&#39;prefix&#39;, Placeholder(&#39;data&#39;), &#39;suffix&#39;]</span>
@@ -577,14 +578,14 @@ intended for internal use.</p>
 <dd class="field-odd"><p>the components of this <a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a> object in order</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generator" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Placeholder</span></code>], <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generator" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference internal" href="#bpc_utils.Placeholder" title="bpc_utils.misc.Placeholder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Placeholder</span></code></a>], <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]</p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="bpc_utils.StringInterpolation.literals">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">literals</span></code><a class="headerlink" href="#bpc_utils.StringInterpolation.literals" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bpc_utils.StringInterpolation.literals">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">literals</span></span><em class="property"><span class="pre">:</span> <span class="pre">Tuple[str,</span> <span class="pre">...]</span></em><a class="headerlink" href="#bpc_utils.StringInterpolation.literals" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the literal components in this <a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a> object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -593,20 +594,20 @@ intended for internal use.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="bpc_utils.StringInterpolation.placeholders">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">placeholders</span></code><a class="headerlink" href="#bpc_utils.StringInterpolation.placeholders" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bpc_utils.StringInterpolation.placeholders">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">placeholders</span></span><em class="property"><span class="pre">:</span> <span class="pre">Tuple[bpc_utils.misc.Placeholder,</span> <span class="pre">...]</span></em><a class="headerlink" href="#bpc_utils.StringInterpolation.placeholders" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the <a class="reference internal" href="#bpc_utils.Placeholder" title="bpc_utils.Placeholder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Placeholder</span></code></a> components in this <a class="reference internal" href="#bpc_utils.StringInterpolation" title="bpc_utils.StringInterpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringInterpolation</span></code></a> object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Placeholder</span></code>, …]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></a>[<a class="reference internal" href="#bpc_utils.Placeholder" title="bpc_utils.misc.Placeholder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Placeholder</span></code></a>, …]</p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="bpc_utils.StringInterpolation.result">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">result</span></code><a class="headerlink" href="#bpc_utils.StringInterpolation.result" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bpc_utils.StringInterpolation.result">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">result</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><a class="headerlink" href="#bpc_utils.StringInterpolation.result" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias of <a class="reference internal" href="#bpc_utils.StringInterpolation.__str__" title="bpc_utils.StringInterpolation.__str__"><code class="xref py py-meth docutils literal notranslate"><span class="pre">StringInterpolation.__str__()</span></code></a> to get the fully-substituted string interpolation result.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">StringInterpolation</span><span class="p">(</span><span class="s1">&#39;prefix hello suffix&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">result</span>
 <span class="go">&#39;prefix hello suffix&#39;</span>
@@ -622,8 +623,8 @@ intended for internal use.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="bpc_utils.UUID4Generator">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">bpc_utils.</span></code><code class="sig-name descname"><span class="pre">UUID4Generator</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dash</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#UUID4Generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.UUID4Generator" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.UUID4Generator">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">bpc_utils.</span></span><span class="sig-name descname"><span class="pre">UUID4Generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dash</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#UUID4Generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.UUID4Generator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>UUID 4 generator wrapper to prevent UUID collisions.</p>
 <p>Constructor of UUID 4 generator wrapper.</p>
@@ -633,8 +634,8 @@ intended for internal use.</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="bpc_utils.UUID4Generator.gen">
-<code class="sig-name descname"><span class="pre">gen</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#UUID4Generator.gen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.UUID4Generator.gen" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.UUID4Generator.gen">
+<span class="sig-name descname"><span class="pre">gen</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#UUID4Generator.gen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.UUID4Generator.gen" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a new UUID 4 string that is guaranteed not to collide with used UUIDs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -649,8 +650,8 @@ intended for internal use.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="bpc_utils.TaskLock">
-<code class="sig-prename descclassname"><span class="pre">bpc_utils.</span></code><code class="sig-name descname"><span class="pre">TaskLock</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/multiprocessing.html#TaskLock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.TaskLock" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.TaskLock">
+<span class="sig-prename descclassname"><span class="pre">bpc_utils.</span></span><span class="sig-name descname"><span class="pre">TaskLock</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/multiprocessing.html#TaskLock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.TaskLock" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function that returns a lock for possibly concurrent tasks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -663,8 +664,8 @@ intended for internal use.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="bpc_utils.archive_files">
-<code class="sig-prename descclassname"><span class="pre">bpc_utils.</span></code><code class="sig-name descname"><span class="pre">archive_files</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">archive_dir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/fileprocessing.html#archive_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.archive_files" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.archive_files">
+<span class="sig-prename descclassname"><span class="pre">bpc_utils.</span></span><span class="sig-name descname"><span class="pre">archive_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">archive_dir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/fileprocessing.html#archive_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.archive_files" title="Permalink to this definition">¶</a></dt>
 <dd><p>Archive the list of files into a <em>tar</em> file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -683,8 +684,8 @@ intended for internal use.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="bpc_utils.detect_encoding">
-<code class="sig-prename descclassname"><span class="pre">bpc_utils.</span></code><code class="sig-name descname"><span class="pre">detect_encoding</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/parsing.html#detect_encoding"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.detect_encoding" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.detect_encoding">
+<span class="sig-prename descclassname"><span class="pre">bpc_utils.</span></span><span class="sig-name descname"><span class="pre">detect_encoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/parsing.html#detect_encoding"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.detect_encoding" title="Permalink to this definition">¶</a></dt>
 <dd><p>Detect encoding of Python source code as specified in <span class="target" id="index-3"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-0263"><strong>PEP 263</strong></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -706,8 +707,8 @@ intended for internal use.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="bpc_utils.detect_files">
-<code class="sig-prename descclassname"><span class="pre">bpc_utils.</span></code><code class="sig-name descname"><span class="pre">detect_files</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/fileprocessing.html#detect_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.detect_files" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.detect_files">
+<span class="sig-prename descclassname"><span class="pre">bpc_utils.</span></span><span class="sig-name descname"><span class="pre">detect_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/fileprocessing.html#detect_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.detect_files" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a list of Python files to be processed according to user input.</p>
 <p>This will perform <em>glob</em> expansion on Windows, make all paths absolute,
 resolve symbolic links and remove duplicates.</p>
@@ -729,8 +730,8 @@ resolve symbolic links and remove duplicates.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="bpc_utils.detect_indentation">
-<code class="sig-prename descclassname"><span class="pre">bpc_utils.</span></code><code class="sig-name descname"><span class="pre">detect_indentation</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/parsing.html#detect_indentation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.detect_indentation" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.detect_indentation">
+<span class="sig-prename descclassname"><span class="pre">bpc_utils.</span></span><span class="sig-name descname"><span class="pre">detect_indentation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/parsing.html#detect_indentation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.detect_indentation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Detect indentation of Python source code.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -756,8 +757,8 @@ each indentation value (<em>spaces</em> and <em>tabs</em>).</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="bpc_utils.detect_linesep">
-<code class="sig-prename descclassname"><span class="pre">bpc_utils.</span></code><code class="sig-name descname"><span class="pre">detect_linesep</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/parsing.html#detect_linesep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.detect_linesep" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.detect_linesep">
+<span class="sig-prename descclassname"><span class="pre">bpc_utils.</span></span><span class="sig-name descname"><span class="pre">detect_linesep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/parsing.html#detect_linesep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.detect_linesep" title="Permalink to this definition">¶</a></dt>
 <dd><p>Detect linesep of Python source code.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -778,8 +779,8 @@ each indentation value (<em>spaces</em> and <em>tabs</em>).</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="bpc_utils.first_non_none">
-<code class="sig-prename descclassname"><span class="pre">bpc_utils.</span></code><code class="sig-name descname"><span class="pre">first_non_none</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#first_non_none"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.first_non_none" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.first_non_none">
+<span class="sig-prename descclassname"><span class="pre">bpc_utils.</span></span><span class="sig-name descname"><span class="pre">first_non_none</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#first_non_none"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.first_non_none" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the first non-<a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> value from a list of values.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -800,8 +801,8 @@ each indentation value (<em>spaces</em> and <em>tabs</em>).</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="bpc_utils.first_truthy">
-<code class="sig-prename descclassname"><span class="pre">bpc_utils.</span></code><code class="sig-name descname"><span class="pre">first_truthy</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#first_truthy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.first_truthy" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.first_truthy">
+<span class="sig-prename descclassname"><span class="pre">bpc_utils.</span></span><span class="sig-name descname"><span class="pre">first_truthy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#first_truthy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.first_truthy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the first <em>truthy</em> value from a list of values.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -822,8 +823,8 @@ each indentation value (<em>spaces</em> and <em>tabs</em>).</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="bpc_utils.getLogger">
-<code class="sig-prename descclassname"><span class="pre">bpc_utils.</span></code><code class="sig-name descname"><span class="pre">getLogger</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/logging.html#getLogger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.getLogger" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.getLogger">
+<span class="sig-prename descclassname"><span class="pre">bpc_utils.</span></span><span class="sig-name descname"><span class="pre">getLogger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/logging.html#getLogger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.getLogger" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a BPC logger.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -842,8 +843,8 @@ each indentation value (<em>spaces</em> and <em>tabs</em>).</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="bpc_utils.get_parso_grammar_versions">
-<code class="sig-prename descclassname"><span class="pre">bpc_utils.</span></code><code class="sig-name descname"><span class="pre">get_parso_grammar_versions</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">minimum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/parsing.html#get_parso_grammar_versions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.get_parso_grammar_versions" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.get_parso_grammar_versions">
+<span class="sig-prename descclassname"><span class="pre">bpc_utils.</span></span><span class="sig-name descname"><span class="pre">get_parso_grammar_versions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">minimum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/parsing.html#get_parso_grammar_versions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.get_parso_grammar_versions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get Python versions that parso supports to parse grammar.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -865,8 +866,8 @@ each indentation value (<em>spaces</em> and <em>tabs</em>).</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="bpc_utils.map_tasks">
-<code class="sig-prename descclassname"><span class="pre">bpc_utils.</span></code><code class="sig-name descname"><span class="pre">map_tasks</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">posargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">processes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunksize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/multiprocessing.html#map_tasks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.map_tasks" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.map_tasks">
+<span class="sig-prename descclassname"><span class="pre">bpc_utils.</span></span><span class="sig-name descname"><span class="pre">map_tasks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">posargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">processes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunksize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/multiprocessing.html#map_tasks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.map_tasks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Execute tasks in parallel if <a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#module-multiprocessing" title="(in Python v3.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">multiprocessing</span></code></a> is available, otherwise execute them sequentially.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -889,8 +890,8 @@ each indentation value (<em>spaces</em> and <em>tabs</em>).</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="bpc_utils.parse_boolean_state">
-<code class="sig-prename descclassname"><span class="pre">bpc_utils.</span></code><code class="sig-name descname"><span class="pre">parse_boolean_state</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/argparse.html#parse_boolean_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.parse_boolean_state" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.parse_boolean_state">
+<span class="sig-prename descclassname"><span class="pre">bpc_utils.</span></span><span class="sig-name descname"><span class="pre">parse_boolean_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/argparse.html#parse_boolean_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.parse_boolean_state" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse a boolean state from a string representation.</p>
 <ul class="simple">
 <li><p>These values are regarded as <a class="reference external" href="https://docs.python.org/3/library/constants.html#True" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a>: <code class="docutils literal notranslate"><span class="pre">'1'</span></code>, <code class="docutils literal notranslate"><span class="pre">'yes'</span></code>, <code class="docutils literal notranslate"><span class="pre">'y'</span></code>, <code class="docutils literal notranslate"><span class="pre">'true'</span></code>, <code class="docutils literal notranslate"><span class="pre">'on'</span></code></p></li>
@@ -918,8 +919,8 @@ each indentation value (<em>spaces</em> and <em>tabs</em>).</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="bpc_utils.parse_indentation">
-<code class="sig-prename descclassname"><span class="pre">bpc_utils.</span></code><code class="sig-name descname"><span class="pre">parse_indentation</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/argparse.html#parse_indentation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.parse_indentation" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.parse_indentation">
+<span class="sig-prename descclassname"><span class="pre">bpc_utils.</span></span><span class="sig-name descname"><span class="pre">parse_indentation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/argparse.html#parse_indentation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.parse_indentation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse indentation from a string representation.</p>
 <ul class="simple">
 <li><p>If an integer or a string of positive integer <code class="docutils literal notranslate"><span class="pre">n</span></code> is specified, then indentation is <code class="docutils literal notranslate"><span class="pre">n</span></code> spaces.</p></li>
@@ -948,8 +949,8 @@ is specified, it is returned directly.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="bpc_utils.parse_linesep">
-<code class="sig-prename descclassname"><span class="pre">bpc_utils.</span></code><code class="sig-name descname"><span class="pre">parse_linesep</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/argparse.html#parse_linesep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.parse_linesep" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.parse_linesep">
+<span class="sig-prename descclassname"><span class="pre">bpc_utils.</span></span><span class="sig-name descname"><span class="pre">parse_linesep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/argparse.html#parse_linesep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.parse_linesep" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse linesep from a string representation.</p>
 <ul class="simple">
 <li><p>These values are regarded as <code class="docutils literal notranslate"><span class="pre">'\n'</span></code>: <code class="docutils literal notranslate"><span class="pre">'\n'</span></code>, <code class="docutils literal notranslate"><span class="pre">'lf'</span></code></p></li>
@@ -979,8 +980,8 @@ return <a class="reference external" href="https://docs.python.org/3/library/con
 </dd></dl>
 
 <dl class="py function">
-<dt id="bpc_utils.parse_positive_integer">
-<code class="sig-prename descclassname"><span class="pre">bpc_utils.</span></code><code class="sig-name descname"><span class="pre">parse_positive_integer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/argparse.html#parse_positive_integer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.parse_positive_integer" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.parse_positive_integer">
+<span class="sig-prename descclassname"><span class="pre">bpc_utils.</span></span><span class="sig-name descname"><span class="pre">parse_positive_integer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/argparse.html#parse_positive_integer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.parse_positive_integer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse a positive integer from a string representation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1002,8 +1003,8 @@ return <a class="reference external" href="https://docs.python.org/3/library/con
 </dd></dl>
 
 <dl class="py function">
-<dt id="bpc_utils.parso_parse">
-<code class="sig-prename descclassname"><span class="pre">bpc_utils.</span></code><code class="sig-name descname"><span class="pre">parso_parse</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/parsing.html#parso_parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.parso_parse" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.parso_parse">
+<span class="sig-prename descclassname"><span class="pre">bpc_utils.</span></span><span class="sig-name descname"><span class="pre">parso_parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/parsing.html#parso_parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.parso_parse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse Python source code with parso.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1026,8 +1027,8 @@ return <a class="reference external" href="https://docs.python.org/3/library/con
 </dd></dl>
 
 <dl class="py function">
-<dt id="bpc_utils.recover_files">
-<code class="sig-prename descclassname"><span class="pre">bpc_utils.</span></code><code class="sig-name descname"><span class="pre">recover_files</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">archive_file_or_dir</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/fileprocessing.html#recover_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.recover_files" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.recover_files">
+<span class="sig-prename descclassname"><span class="pre">bpc_utils.</span></span><span class="sig-name descname"><span class="pre">recover_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">archive_file_or_dir</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/fileprocessing.html#recover_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.recover_files" title="Permalink to this definition">¶</a></dt>
 <dd><p>Recover files from a <em>tar</em> archive, optionally removing the archive file and archive directory after recovery.</p>
 <p>This function supports three modes:</p>
 <ul class="simple">
@@ -1071,17 +1072,17 @@ file and remove the archive directory.</p>
 </dd></dl>
 
 <dl class="py data">
-<dt id="bpc_utils.bpc_utils.Linesep">
-<code class="sig-prename descclassname"><span class="pre">bpc_utils.</span></code><code class="sig-name descname"><span class="pre">Linesep</span></code><a class="headerlink" href="#bpc_utils.bpc_utils.Linesep" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.bpc_utils.Linesep">
+<span class="sig-prename descclassname"><span class="pre">bpc_utils.</span></span><span class="sig-name descname"><span class="pre">Linesep</span></span><a class="headerlink" href="#bpc_utils.bpc_utils.Linesep" title="Permalink to this definition">¶</a></dt>
 <dd><p>Type alias for <code class="docutils literal notranslate"><span class="pre">Literal['\n',</span> <span class="pre">'\r\n',</span> <span class="pre">'\r']</span></code>.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="internal-utilities">
+</section>
+<section id="internal-utilities">
 <h2>Internal utilities<a class="headerlink" href="#internal-utilities" title="Permalink to this headline">¶</a></h2>
 <dl class="py data">
-<dt id="bpc_utils.bpc_utils.argparse._boolean_state_lookup">
-<code class="sig-prename descclassname"><span class="pre">bpc_utils.argparse.</span></code><code class="sig-name descname"><span class="pre">_boolean_state_lookup</span></code><a class="headerlink" href="#bpc_utils.bpc_utils.argparse._boolean_state_lookup" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.bpc_utils.argparse._boolean_state_lookup">
+<span class="sig-prename descclassname"><span class="pre">bpc_utils.argparse.</span></span><span class="sig-name descname"><span class="pre">_boolean_state_lookup</span></span><a class="headerlink" href="#bpc_utils.bpc_utils.argparse._boolean_state_lookup" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>Final[Dict[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a>]]</p>
@@ -1092,8 +1093,8 @@ The values are used for <a class="reference internal" href="#bpc_utils.parse_boo
 </dd></dl>
 
 <dl class="py data">
-<dt id="bpc_utils.bpc_utils.argparse._linesep_lookup">
-<code class="sig-prename descclassname"><span class="pre">bpc_utils.argparse.</span></code><code class="sig-name descname"><span class="pre">_linesep_lookup</span></code><a class="headerlink" href="#bpc_utils.bpc_utils.argparse._linesep_lookup" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.bpc_utils.argparse._linesep_lookup">
+<span class="sig-prename descclassname"><span class="pre">bpc_utils.argparse.</span></span><span class="sig-name descname"><span class="pre">_linesep_lookup</span></span><a class="headerlink" href="#bpc_utils.bpc_utils.argparse._linesep_lookup" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>Final[Dict[str, <a class="reference internal" href="#bpc_utils.bpc_utils.Linesep" title="bpc_utils.bpc_utils.Linesep"><code class="xref py py-data docutils literal notranslate"><span class="pre">Linesep</span></code></a>]]</p>
@@ -1104,8 +1105,8 @@ The values are used for <a class="reference internal" href="#bpc_utils.parse_lin
 </dd></dl>
 
 <dl class="py data">
-<dt id="bpc_utils.bpc_utils.fileprocessing.has_gz_support">
-<code class="sig-prename descclassname"><span class="pre">bpc_utils.fileprocessing.</span></code><code class="sig-name descname"><span class="pre">has_gz_support</span></code><a class="headerlink" href="#bpc_utils.bpc_utils.fileprocessing.has_gz_support" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.bpc_utils.fileprocessing.has_gz_support">
+<span class="sig-prename descclassname"><span class="pre">bpc_utils.fileprocessing.</span></span><span class="sig-name descname"><span class="pre">has_gz_support</span></span><a class="headerlink" href="#bpc_utils.bpc_utils.fileprocessing.has_gz_support" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
@@ -1115,8 +1116,8 @@ The values are used for <a class="reference internal" href="#bpc_utils.parse_lin
 </dd></dl>
 
 <dl class="py data">
-<dt id="bpc_utils.fileprocessing.LOOKUP_TABLE">
-<code class="sig-prename descclassname"><span class="pre">bpc_utils.fileprocessing.</span></code><code class="sig-name descname"><span class="pre">LOOKUP_TABLE</span></code><em class="property"><span class="pre">:</span> <span class="pre">Final</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">=</span> <span class="pre">'_lookup_table.json'</span></em><a class="headerlink" href="#bpc_utils.fileprocessing.LOOKUP_TABLE" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.fileprocessing.LOOKUP_TABLE">
+<span class="sig-prename descclassname"><span class="pre">bpc_utils.fileprocessing.</span></span><span class="sig-name descname"><span class="pre">LOOKUP_TABLE</span></span><em class="property"><span class="pre">:</span> <span class="pre">Final</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">=</span> <span class="pre">'_lookup_table.json'</span></em><a class="headerlink" href="#bpc_utils.fileprocessing.LOOKUP_TABLE" title="Permalink to this definition">¶</a></dt>
 <dd><p>File name for the lookup table in the archive file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1126,8 +1127,8 @@ The values are used for <a class="reference internal" href="#bpc_utils.parse_lin
 </dd></dl>
 
 <dl class="py function">
-<dt id="bpc_utils.fileprocessing.is_python_filename">
-<code class="sig-prename descclassname"><span class="pre">bpc_utils.fileprocessing.</span></code><code class="sig-name descname"><span class="pre">is_python_filename</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/fileprocessing.html#is_python_filename"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.fileprocessing.is_python_filename" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.fileprocessing.is_python_filename">
+<span class="sig-prename descclassname"><span class="pre">bpc_utils.fileprocessing.</span></span><span class="sig-name descname"><span class="pre">is_python_filename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/fileprocessing.html#is_python_filename"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.fileprocessing.is_python_filename" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determine whether a file is a Python source file by its extension.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1143,8 +1144,8 @@ The values are used for <a class="reference internal" href="#bpc_utils.parse_lin
 </dd></dl>
 
 <dl class="py function">
-<dt id="bpc_utils.fileprocessing.expand_glob_iter">
-<code class="sig-prename descclassname"><span class="pre">bpc_utils.fileprocessing.</span></code><code class="sig-name descname"><span class="pre">expand_glob_iter</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/fileprocessing.html#expand_glob_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.fileprocessing.expand_glob_iter" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.fileprocessing.expand_glob_iter">
+<span class="sig-prename descclassname"><span class="pre">bpc_utils.fileprocessing.</span></span><span class="sig-name descname"><span class="pre">expand_glob_iter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/fileprocessing.html#expand_glob_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.fileprocessing.expand_glob_iter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper function to perform glob expansion.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1160,14 +1161,14 @@ The values are used for <a class="reference internal" href="#bpc_utils.parse_lin
 </dd></dl>
 
 <dl class="py class">
-<dt id="bpc_utils.logging.BPCLogHandler">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">bpc_utils.logging.</span></code><code class="sig-name descname"><span class="pre">BPCLogHandler</span></code><a class="reference internal" href="_modules/bpc_utils/logging.html#BPCLogHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.logging.BPCLogHandler" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.logging.BPCLogHandler">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">bpc_utils.logging.</span></span><span class="sig-name descname"><span class="pre">BPCLogHandler</span></span><a class="reference internal" href="_modules/bpc_utils/logging.html#BPCLogHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.logging.BPCLogHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/logging.handlers.html#logging.StreamHandler" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.StreamHandler</span></code></a></p>
 <p>Handler used to format BPC logging records.</p>
 <p>Initialize BPCLogHandler.</p>
 <dl class="py method">
-<dt id="bpc_utils.logging.BPCLogHandler.format">
-<code class="sig-name descname"><span class="pre">format</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">record</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/logging.html#BPCLogHandler.format"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.logging.BPCLogHandler.format" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.logging.BPCLogHandler.format">
+<span class="sig-name descname"><span class="pre">format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">record</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/logging.html#BPCLogHandler.format"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.logging.BPCLogHandler.format" title="Permalink to this definition">¶</a></dt>
 <dd><p>Format the specified record based on log level.</p>
 <p>The record will be formatted based on its log level
 in the following flavour:</p>
@@ -1208,20 +1209,20 @@ in the following flavour:</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="bpc_utils.logging.BPCLogHandler.format_templates">
-<code class="sig-name descname"><span class="pre">format_templates</span></code><em class="property"><span class="pre">:</span> <span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">=</span> <span class="pre">{'CRITICAL':</span> <span class="pre">'Error:</span> <span class="pre">%(message)s',</span> <span class="pre">'DEBUG':</span> <span class="pre">'[%(levelname)s]</span> <span class="pre">%(asctime)s</span> <span class="pre">%(message)s',</span> <span class="pre">'ERROR':</span> <span class="pre">'Error:</span> <span class="pre">%(message)s',</span> <span class="pre">'INFO':</span> <span class="pre">'%(message)s',</span> <span class="pre">'WARNING':</span> <span class="pre">'Warning:</span> <span class="pre">%(message)s'}</span></em><a class="headerlink" href="#bpc_utils.logging.BPCLogHandler.format_templates" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.logging.BPCLogHandler.format_templates">
+<span class="sig-name descname"><span class="pre">format_templates</span></span><em class="property"><span class="pre">:</span> <span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">=</span> <span class="pre">{'CRITICAL':</span> <span class="pre">'Error:</span> <span class="pre">%(message)s',</span> <span class="pre">'DEBUG':</span> <span class="pre">'[%(levelname)s]</span> <span class="pre">%(asctime)s</span> <span class="pre">%(message)s',</span> <span class="pre">'ERROR':</span> <span class="pre">'Error:</span> <span class="pre">%(message)s',</span> <span class="pre">'INFO':</span> <span class="pre">'%(message)s',</span> <span class="pre">'WARNING':</span> <span class="pre">'Warning:</span> <span class="pre">%(message)s'}</span></em><a class="headerlink" href="#bpc_utils.logging.BPCLogHandler.format_templates" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="bpc_utils.logging.BPCLogHandler.time_format">
-<code class="sig-name descname"><span class="pre">time_format</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'%Y-%m-%d</span> <span class="pre">%H:%M:%S.%f%z'</span></em><a class="headerlink" href="#bpc_utils.logging.BPCLogHandler.time_format" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.logging.BPCLogHandler.time_format">
+<span class="sig-name descname"><span class="pre">time_format</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'%Y-%m-%d</span> <span class="pre">%H:%M:%S.%f%z'</span></em><a class="headerlink" href="#bpc_utils.logging.BPCLogHandler.time_format" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py data">
-<dt id="bpc_utils.bpc_utils.misc.is_windows">
-<code class="sig-prename descclassname"><span class="pre">bpc_utils.misc.</span></code><code class="sig-name descname"><span class="pre">is_windows</span></code><a class="headerlink" href="#bpc_utils.bpc_utils.misc.is_windows" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.bpc_utils.misc.is_windows">
+<span class="sig-prename descclassname"><span class="pre">bpc_utils.misc.</span></span><span class="sig-name descname"><span class="pre">is_windows</span></span><a class="headerlink" href="#bpc_utils.bpc_utils.misc.is_windows" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
@@ -1231,8 +1232,8 @@ in the following flavour:</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="bpc_utils.misc.current_time_with_tzinfo">
-<code class="sig-prename descclassname"><span class="pre">bpc_utils.misc.</span></code><code class="sig-name descname"><span class="pre">current_time_with_tzinfo</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#current_time_with_tzinfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.misc.current_time_with_tzinfo" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.misc.current_time_with_tzinfo">
+<span class="sig-prename descclassname"><span class="pre">bpc_utils.misc.</span></span><span class="sig-name descname"><span class="pre">current_time_with_tzinfo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#current_time_with_tzinfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.misc.current_time_with_tzinfo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the current time with local time zone information.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -1245,17 +1246,17 @@ in the following flavour:</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="bpc_utils.misc.MakeTextIO">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">bpc_utils.misc.</span></code><code class="sig-name descname"><span class="pre">MakeTextIO</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#MakeTextIO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.misc.MakeTextIO" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.misc.MakeTextIO">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">bpc_utils.misc.</span></span><span class="sig-name descname"><span class="pre">MakeTextIO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#MakeTextIO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.misc.MakeTextIO" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Context wrapper class to handle <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> and <em>file</em> objects together.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><a class="reference internal" href="#bpc_utils.misc.MakeTextIO.obj" title="bpc_utils.misc.MakeTextIO.obj"><strong>obj</strong></a> (<em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>TextIO</em><em>]</em>) – the object to manage in the context</p></li>
-<li><p><a class="reference internal" href="#bpc_utils.misc.MakeTextIO.sio" title="bpc_utils.misc.MakeTextIO.sio"><strong>sio</strong></a> (<em>Optional</em><em>[</em><em>StringIO</em><em>]</em>) – the I/O object to manage in the context
+<li><p><strong>obj</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>TextIO</em><em>]</em>) – the object to manage in the context</p></li>
+<li><p><strong>sio</strong> (<em>Optional</em><em>[</em><em>StringIO</em><em>]</em>) – the I/O object to manage in the context
 only if <a class="reference internal" href="#bpc_utils.misc.MakeTextIO.obj" title="bpc_utils.misc.MakeTextIO.obj"><code class="xref py py-attr docutils literal notranslate"><span class="pre">self.obj</span></code></a> is <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a></p></li>
-<li><p><a class="reference internal" href="#bpc_utils.misc.MakeTextIO.pos" title="bpc_utils.misc.MakeTextIO.pos"><strong>pos</strong></a> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – the original offset of <a class="reference internal" href="#bpc_utils.misc.MakeTextIO.obj" title="bpc_utils.misc.MakeTextIO.obj"><code class="xref py py-attr docutils literal notranslate"><span class="pre">self.obj</span></code></a>,
+<li><p><strong>pos</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – the original offset of <a class="reference internal" href="#bpc_utils.misc.MakeTextIO.obj" title="bpc_utils.misc.MakeTextIO.obj"><code class="xref py py-attr docutils literal notranslate"><span class="pre">self.obj</span></code></a>,
 only if <a class="reference internal" href="#bpc_utils.misc.MakeTextIO.obj" title="bpc_utils.misc.MakeTextIO.obj"><code class="xref py py-attr docutils literal notranslate"><span class="pre">self.obj</span></code></a> is a seekable <em>file</em> object</p></li>
 </ul>
 </dd>
@@ -1267,8 +1268,8 @@ only if <a class="reference internal" href="#bpc_utils.misc.MakeTextIO.obj" titl
 </dd>
 </dl>
 <dl class="py attribute">
-<dt id="bpc_utils.misc.MakeTextIO.obj">
-<code class="sig-name descname"><span class="pre">obj</span></code><a class="headerlink" href="#bpc_utils.misc.MakeTextIO.obj" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.misc.MakeTextIO.obj">
+<span class="sig-name descname"><span class="pre">obj</span></span><a class="headerlink" href="#bpc_utils.misc.MakeTextIO.obj" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>Union[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a>, TextIO]</p>
@@ -1278,8 +1279,8 @@ only if <a class="reference internal" href="#bpc_utils.misc.MakeTextIO.obj" titl
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="bpc_utils.misc.MakeTextIO.sio">
-<code class="sig-name descname"><span class="pre">sio</span></code><a class="headerlink" href="#bpc_utils.misc.MakeTextIO.sio" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.misc.MakeTextIO.sio">
+<span class="sig-name descname"><span class="pre">sio</span></span><a class="headerlink" href="#bpc_utils.misc.MakeTextIO.sio" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>StringIO</p>
@@ -1290,8 +1291,8 @@ only if <a class="reference internal" href="#bpc_utils.misc.MakeTextIO.obj" titl
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="bpc_utils.misc.MakeTextIO.pos">
-<code class="sig-name descname"><span class="pre">pos</span></code><a class="headerlink" href="#bpc_utils.misc.MakeTextIO.pos" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.misc.MakeTextIO.pos">
+<span class="sig-name descname"><span class="pre">pos</span></span><a class="headerlink" href="#bpc_utils.misc.MakeTextIO.pos" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
@@ -1303,8 +1304,8 @@ if only <a class="reference internal" href="#bpc_utils.misc.MakeTextIO.obj" titl
 </dd></dl>
 
 <dl class="py method">
-<dt id="bpc_utils.misc.MakeTextIO.__enter__">
-<code class="sig-name descname"><span class="pre">__enter__</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#MakeTextIO.__enter__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.misc.MakeTextIO.__enter__" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.misc.MakeTextIO.__enter__">
+<span class="sig-name descname"><span class="pre">__enter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#MakeTextIO.__enter__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.misc.MakeTextIO.__enter__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Enter context.</p>
 <ul class="simple">
 <li><p>If <a class="reference internal" href="#bpc_utils.misc.MakeTextIO.obj" title="bpc_utils.misc.MakeTextIO.obj"><code class="xref py py-attr docutils literal notranslate"><span class="pre">self.obj</span></code></a> is <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, a
@@ -1322,8 +1323,8 @@ it will be returned directly.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt id="bpc_utils.misc.MakeTextIO.__exit__">
-<code class="sig-name descname"><span class="pre">__exit__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exc_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traceback</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#MakeTextIO.__exit__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.misc.MakeTextIO.__exit__" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.misc.MakeTextIO.__exit__">
+<span class="sig-name descname"><span class="pre">__exit__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exc_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traceback</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/misc.html#MakeTextIO.__exit__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.misc.MakeTextIO.__exit__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Exit context.</p>
 <ul class="simple">
 <li><p>If <a class="reference internal" href="#bpc_utils.misc.MakeTextIO.obj" title="bpc_utils.misc.MakeTextIO.obj"><code class="xref py py-attr docutils literal notranslate"><span class="pre">self.obj</span></code></a> is <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, the
@@ -1341,8 +1342,8 @@ its stream position (<a class="reference internal" href="#bpc_utils.misc.MakeTex
 </dd></dl>
 
 <dl class="py data">
-<dt id="bpc_utils.bpc_utils.multiprocessing.CPU_CNT">
-<code class="sig-prename descclassname"><span class="pre">bpc_utils.multiprocessing.</span></code><code class="sig-name descname"><span class="pre">CPU_CNT</span></code><a class="headerlink" href="#bpc_utils.bpc_utils.multiprocessing.CPU_CNT" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.bpc_utils.multiprocessing.CPU_CNT">
+<span class="sig-prename descclassname"><span class="pre">bpc_utils.multiprocessing.</span></span><span class="sig-name descname"><span class="pre">CPU_CNT</span></span><a class="headerlink" href="#bpc_utils.bpc_utils.multiprocessing.CPU_CNT" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
@@ -1352,8 +1353,8 @@ its stream position (<a class="reference internal" href="#bpc_utils.misc.MakeTex
 </dd></dl>
 
 <dl class="py data">
-<dt id="bpc_utils.bpc_utils.multiprocessing.mp">
-<code class="sig-prename descclassname"><span class="pre">bpc_utils.multiprocessing.</span></code><code class="sig-name descname"><span class="pre">mp</span></code><a class="headerlink" href="#bpc_utils.bpc_utils.multiprocessing.mp" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.bpc_utils.multiprocessing.mp">
+<span class="sig-prename descclassname"><span class="pre">bpc_utils.multiprocessing.</span></span><span class="sig-name descname"><span class="pre">mp</span></span><a class="headerlink" href="#bpc_utils.bpc_utils.multiprocessing.mp" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>Optional[ModuleType]</p>
@@ -1366,8 +1367,8 @@ its stream position (<a class="reference internal" href="#bpc_utils.misc.MakeTex
 </dd></dl>
 
 <dl class="py data">
-<dt id="bpc_utils.bpc_utils.multiprocessing.parallel_available">
-<code class="sig-prename descclassname"><span class="pre">bpc_utils.multiprocessing.</span></code><code class="sig-name descname"><span class="pre">parallel_available</span></code><a class="headerlink" href="#bpc_utils.bpc_utils.multiprocessing.parallel_available" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.bpc_utils.multiprocessing.parallel_available">
+<span class="sig-prename descclassname"><span class="pre">bpc_utils.multiprocessing.</span></span><span class="sig-name descname"><span class="pre">parallel_available</span></span><a class="headerlink" href="#bpc_utils.bpc_utils.multiprocessing.parallel_available" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
@@ -1377,8 +1378,8 @@ its stream position (<a class="reference internal" href="#bpc_utils.misc.MakeTex
 </dd></dl>
 
 <dl class="py function">
-<dt id="bpc_utils.multiprocessing._mp_map_wrapper">
-<code class="sig-prename descclassname"><span class="pre">bpc_utils.multiprocessing.</span></code><code class="sig-name descname"><span class="pre">_mp_map_wrapper</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/multiprocessing.html#_mp_map_wrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.multiprocessing._mp_map_wrapper" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.multiprocessing._mp_map_wrapper">
+<span class="sig-prename descclassname"><span class="pre">bpc_utils.multiprocessing.</span></span><span class="sig-name descname"><span class="pre">_mp_map_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/multiprocessing.html#_mp_map_wrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.multiprocessing._mp_map_wrapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>Map wrapper function for <a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#module-multiprocessing" title="(in Python v3.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">multiprocessing</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1394,8 +1395,8 @@ its stream position (<a class="reference internal" href="#bpc_utils.misc.MakeTex
 </dd></dl>
 
 <dl class="py function">
-<dt id="bpc_utils.multiprocessing._mp_init_lock">
-<code class="sig-prename descclassname"><span class="pre">bpc_utils.multiprocessing.</span></code><code class="sig-name descname"><span class="pre">_mp_init_lock</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lock</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/multiprocessing.html#_mp_init_lock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.multiprocessing._mp_init_lock" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.multiprocessing._mp_init_lock">
+<span class="sig-prename descclassname"><span class="pre">bpc_utils.multiprocessing.</span></span><span class="sig-name descname"><span class="pre">_mp_init_lock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lock</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bpc_utils/multiprocessing.html#_mp_init_lock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bpc_utils.multiprocessing._mp_init_lock" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize lock for <a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#module-multiprocessing" title="(in Python v3.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">multiprocessing</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1408,8 +1409,8 @@ its stream position (<a class="reference internal" href="#bpc_utils.misc.MakeTex
 </dd></dl>
 
 <dl class="py data">
-<dt id="bpc_utils.bpc_utils.multiprocessing.task_lock">
-<code class="sig-prename descclassname"><span class="pre">bpc_utils.multiprocessing.</span></code><code class="sig-name descname"><span class="pre">task_lock</span></code><a class="headerlink" href="#bpc_utils.bpc_utils.multiprocessing.task_lock" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bpc_utils.bpc_utils.multiprocessing.task_lock">
+<span class="sig-prename descclassname"><span class="pre">bpc_utils.multiprocessing.</span></span><span class="sig-name descname"><span class="pre">task_lock</span></span><a class="headerlink" href="#bpc_utils.bpc_utils.multiprocessing.task_lock" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>ContextManager[<a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a>]</p>
@@ -1418,16 +1419,16 @@ its stream position (<a class="reference internal" href="#bpc_utils.misc.MakeTex
 <p>A lock for possibly concurrent tasks.</p>
 </dd></dl>
 
-</div>
-</div>
-<div class="section" id="indices-and-tables">
+</section>
+</section>
+<section id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
-</div>
+</section>
 
 
           </div>
