@@ -32,7 +32,7 @@ class BaseContext(abc.ABC):
         self.config = config  # type: Final[Config]
         #: Indentation sequence.
         self._indentation = config.indentation  # type: Final[str]  # type: ignore[attr-defined]
-        #: Final[:data:`~bpc_utils.Linesep`]: Line seperator.
+        #: Final[:data:`~bpc_utils.Linesep`]: Line separator.
         self._linesep = config.linesep  # type: Final[Linesep]  # type: ignore[attr-defined]
         #: :pep:`8` compliant conversion flag.
         self._pep8 = config.pep8  # type: Final[bool]  # type: ignore[attr-defined]
@@ -184,7 +184,7 @@ class BaseContext(abc.ABC):
 
         Args:
             code: the code to split comments
-            linesep (:data:`~bpc_utils.Linesep`): line seperator
+            linesep (:data:`~bpc_utils.Linesep`): line separator
 
         Returns:
             a tuple of *prefix comments* and *suffix code*
@@ -218,7 +218,7 @@ class BaseContext(abc.ABC):
             prefix: preceding source code
             suffix: succeeding source code
             expected: number of expected blank lines
-            linesep (:data:`~bpc_utils.Linesep`): line seperator
+            linesep (:data:`~bpc_utils.Linesep`): line separator
 
         Returns:
             number of blank lines to add
