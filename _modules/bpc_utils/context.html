@@ -65,7 +65,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>  <span class="c1"># type: Final[Config]</span>
         <span class="c1">#: Indentation sequence.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_indentation</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">indentation</span>  <span class="c1"># type: Final[str]  # type: ignore[attr-defined]</span>
-        <span class="c1">#: Final[:data:`~bpc_utils.Linesep`]: Line seperator.</span>
+        <span class="c1">#: Final[:data:`~bpc_utils.Linesep`]: Line separator.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_linesep</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">linesep</span>  <span class="c1"># type: Final[Linesep]  # type: ignore[attr-defined]</span>
         <span class="c1">#: :pep:`8` compliant conversion flag.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pep8</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">pep8</span>  <span class="c1"># type: Final[bool]  # type: ignore[attr-defined]</span>
@@ -217,7 +217,7 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            code: the code to split comments</span>
-<span class="sd">            linesep (:data:`~bpc_utils.Linesep`): line seperator</span>
+<span class="sd">            linesep (:data:`~bpc_utils.Linesep`): line separator</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            a tuple of *prefix comments* and *suffix code*</span>
@@ -251,7 +251,7 @@
 <span class="sd">            prefix: preceding source code</span>
 <span class="sd">            suffix: succeeding source code</span>
 <span class="sd">            expected: number of expected blank lines</span>
-<span class="sd">            linesep (:data:`~bpc_utils.Linesep`): line seperator</span>
+<span class="sd">            linesep (:data:`~bpc_utils.Linesep`): line separator</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            number of blank lines to add</span>
