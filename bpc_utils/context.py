@@ -3,11 +3,12 @@
 import abc
 import unicodedata
 
+import parso.tree
+
 from .misc import UUID4Generator
 from .typing import TYPE_CHECKING, TypeVar, final
 
 if TYPE_CHECKING:
-    import parso.tree  # isort: split
     from .misc import Config
     from .typing import Callable, Final, Linesep, Optional, Tuple
 
@@ -112,9 +113,9 @@ class BaseContext(abc.ABC):
 
         """
         # process node
-        if hasattr(node, 'children'):
+        if isinstance(node, parso.tree.BaseNode):
             last_node = None
-            for child in node.children:  # type: ignore[attr-defined]
+            for child in node.children:
                 if self._prefix_or_suffix and self.has_expr(child):
                     self._prefix_or_suffix = False
                     self._node_before_expr = last_node
@@ -145,8 +146,9 @@ class BaseContext(abc.ABC):
             func(node)
             return
 
-        if hasattr(node, 'children'):
-            for child in node.children:  # type: ignore[attr-defined]
+        # process node
+        if isinstance(node, parso.tree.BaseNode):
+            for child in node.children:
                 self._process(child)
             return
 
