@@ -48,6 +48,7 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.napoleon',
     'sphinx.ext.autodoc',
+    'sphinx.ext.githubpages',
     'sphinx_autodoc_typehints',
 ]
 
