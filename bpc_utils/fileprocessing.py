@@ -195,7 +195,7 @@ def recover_files(archive_file_or_dir: str, *, rr: bool = False, rs: bool = Fals
     with tarfile.open(archive_file, 'r') as tarf:
         with tempfile.TemporaryDirectory(prefix='bpc-archive-extract-') as tmpd:
             tarf.extractall(tmpd)
-            with open(os.path.join(tmpd, LOOKUP_TABLE)) as lookupf:
+            with open(os.path.join(tmpd, LOOKUP_TABLE), 'r', encoding='utf-8') as lookupf:
                 lookup_table = json.load(lookupf)  # type: Dict[str, str]
             for arcname, realname in lookup_table.items():
                 os.makedirs(os.path.dirname(realname), exist_ok=True)

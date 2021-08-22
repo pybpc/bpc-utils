@@ -4,7 +4,6 @@ import os
 import re
 import shutil
 import subprocess  # nosec
-# This comment is here to prevent pylint from reporting duplicate-code (R0801).
 import sys
 import textwrap
 
