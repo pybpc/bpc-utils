@@ -9,7 +9,7 @@ from typing_extensions import TypedDict
 if not os.path.isfile('setup.py'):
     sys.exit('Please execute this script in the project root directory.')
 
-Linter = TypedDict('Linter', {'name': str, 'command': Sequence[str]})
+Linter = TypedDict('Linter', {'name': str, 'command': Sequence[str]})  # pylint: disable=deprecated-typing-alias
 
 linters = [
     {

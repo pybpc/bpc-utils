@@ -74,7 +74,7 @@ def first_truthy(*args):  # type: ignore[no-untyped-def]  # noqa: F811  # pylint
         raise TypeError('no arguments provided')
     if len(args) == 1:
         args = args[0]
-    return next(filter(bool, args), None)  # pylint: disable=filter-builtin-not-iterating
+    return next(filter(bool, args), None)
 
 
 @overload
@@ -107,7 +107,7 @@ def first_non_none(*args):  # type: ignore[no-untyped-def]  # noqa: F811  # pyli
         raise TypeError('no arguments provided')
     if len(args) == 1:
         args = args[0]
-    return next(filter(lambda x: x is not None, args), None)  # pylint: disable=filter-builtin-not-iterating
+    return next(filter(lambda x: x is not None, args), None)
 
 
 class UUID4Generator:

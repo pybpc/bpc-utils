@@ -37,7 +37,7 @@ def lock_user_multiple_times(x: int) -> int:
     'args,result',
     [
         ((square, (6,), {}), 36),
-        ((square, range(6, 7), {}), 36),  # pylint: disable=range-builtin-not-iterating
+        ((square, range(6, 7), {}), 36),
         ((int, ('0x10',), {'base': 16}), 16),
         ((int, ('0x10',), Config(base=16)), 16),
     ]
@@ -50,10 +50,10 @@ def test__mp_map_wrapper(args: 'Tuple[Callable[..., T], Iterable[object], Mappin
     'func,iterable,posargs,kwargs,result',
     [
         (square, [1, 2, 3], None, None, [1, 4, 9]),
-        (square, range(1, 4), None, None, [1, 4, 9]),  # pylint: disable=range-builtin-not-iterating
+        (square, range(1, 4), None, None, [1, 4, 9]),
         (divmod, [4, 7, 9], (3,), None, [(1, 1), (2, 1), (3, 0)]),
         (int, ['0x%c' % c for c in 'abc'], None, {'base': 0}, [10, 11, 12]),
-        (max, [4, -7, 9], range(6, 7), Config(key=abs), [6, -7, 9]),  # pylint: disable=range-builtin-not-iterating
+        (max, [4, -7, 9], range(6, 7), Config(key=abs), [6, -7, 9]),
     ]
 )
 @pytest.mark.parametrize('processes', [None, 1, 2])
@@ -133,4 +133,4 @@ def test_lock_use_multiple_times(parallel: bool, monkeypatch: 'MonkeyPatch') -> 
     # test both under normal condition and when parallel execution is not available
     if not parallel:
         monkeypatch.setattr(sys.modules['bpc_utils.multiprocessing'], 'parallel_available', False)
-    assert map_tasks(lock_user_multiple_times, range(32)) == list(range(32))  # pylint: disable=W1638
+    assert map_tasks(lock_user_multiple_times, range(32)) == list(range(32))

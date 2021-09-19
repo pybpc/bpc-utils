@@ -53,7 +53,7 @@ setup(
     extras_require={
         'lint': [
             'flake8',
-            'pylint>=2.10.0',
+            'pylint>=2.11.0',
             'mypy',
             'bandit>=1.6.3',
             'vermin>=1.2.0',
