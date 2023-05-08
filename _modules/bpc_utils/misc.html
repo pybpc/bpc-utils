@@ -1,17 +1,18 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>bpc_utils.misc &#8212; bpc-utils 0.10.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
    
@@ -68,7 +69,7 @@
 
 
 <div class="viewcode-block" id="current_time_with_tzinfo"><a class="viewcode-back" href="../../index.html#bpc_utils.current_time_with_tzinfo">[docs]</a><span class="k">def</span> <span class="nf">current_time_with_tzinfo</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="s1">&#39;datetime.datetime&#39;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Get the current time with local time zone information.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the current time with local time zone information.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        datetime object representing current time with local time zone information</span>
@@ -88,7 +89,7 @@
 
 
 <div class="viewcode-block" id="first_truthy"><a class="viewcode-back" href="../../index.html#bpc_utils.first_truthy">[docs]</a><span class="k">def</span> <span class="nf">first_truthy</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>  <span class="c1"># type: ignore[no-untyped-def]  # noqa: F811  # pylint: disable=missing-return-type-doc</span>
-    <span class="sd">&quot;&quot;&quot;Return the first *truthy* value from a list of values.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the first *truthy* value from a list of values.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        *args: variable length argument list</span>
@@ -121,7 +122,7 @@
 
 
 <div class="viewcode-block" id="first_non_none"><a class="viewcode-back" href="../../index.html#bpc_utils.first_non_none">[docs]</a><span class="k">def</span> <span class="nf">first_non_none</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>  <span class="c1"># type: ignore[no-untyped-def]  # noqa: F811  # pylint: disable=missing-return-type-doc</span>
-    <span class="sd">&quot;&quot;&quot;Return the first non-:data:`None` value from a list of values.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the first non-:data:`None` value from a list of values.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        *args: variable length argument list</span>
@@ -144,10 +145,10 @@
 
 
 <div class="viewcode-block" id="UUID4Generator"><a class="viewcode-back" href="../../index.html#bpc_utils.UUID4Generator">[docs]</a><span class="k">class</span> <span class="nc">UUID4Generator</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;UUID 4 generator wrapper to prevent UUID collisions.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;UUID 4 generator wrapper to prevent UUID collisions.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dash</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Constructor of UUID 4 generator wrapper.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructor of UUID 4 generator wrapper.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            dash: whether the generated UUID string has dashes or not</span>
@@ -157,7 +158,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">dash</span> <span class="o">=</span> <span class="n">dash</span>
 
 <div class="viewcode-block" id="UUID4Generator.gen"><a class="viewcode-back" href="../../index.html#bpc_utils.UUID4Generator.gen">[docs]</a>    <span class="k">def</span> <span class="nf">gen</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Generate a new UUID 4 string that is guaranteed not to collide with used UUIDs.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a new UUID 4 string that is guaranteed not to collide with used UUIDs.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            a new UUID 4 string</span>
@@ -173,7 +174,7 @@
 
 
 <div class="viewcode-block" id="MakeTextIO"><a class="viewcode-back" href="../../index.html#bpc_utils.MakeTextIO">[docs]</a><span class="k">class</span> <span class="nc">MakeTextIO</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Context wrapper class to handle :obj:`str` and *file* objects together.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Context wrapper class to handle :obj:`str` and *file* objects together.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        obj (Union[str, TextIO]): the object to manage in the context</span>
@@ -185,7 +186,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="s1">&#39;Union[str, TextIO]&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Initialize context.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize context.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            obj: the object to manage in the context</span>
@@ -194,7 +195,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span>
 
 <div class="viewcode-block" id="MakeTextIO.__enter__"><a class="viewcode-back" href="../../index.html#bpc_utils.MakeTextIO.__enter__">[docs]</a>    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;TextIO&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Enter context.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Enter context.</span>
 
 <span class="sd">        * If :attr:`self.obj &lt;MakeTextIO.obj&gt;` is :obj:`str`, a</span>
 <span class="sd">          :class:`~io.StringIO` will be created and returned.</span>
@@ -222,7 +223,7 @@
 
 <div class="viewcode-block" id="MakeTextIO.__exit__"><a class="viewcode-back" href="../../index.html#bpc_utils.MakeTextIO.__exit__">[docs]</a>    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">:</span> <span class="s1">&#39;Optional[Type[BaseException]]&#39;</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">:</span> <span class="s1">&#39;Optional[BaseException]&#39;</span><span class="p">,</span>
                  <span class="n">traceback</span><span class="p">:</span> <span class="s1">&#39;Optional[TracebackType]&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Exit context.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Exit context.</span>
 
 <span class="sd">        * If :attr:`self.obj &lt;MakeTextIO.obj&gt;` is :obj:`str`, the</span>
 <span class="sd">          :class:`~io.StringIO` (:attr:`self.sio &lt;MakeTextIO.sio&gt;`) will be closed.</span>
@@ -238,7 +239,7 @@
 
 
 <div class="viewcode-block" id="Config"><a class="viewcode-back" href="../../index.html#bpc_utils.Config">[docs]</a><span class="k">class</span> <span class="nc">Config</span><span class="p">(</span><span class="n">MutableMapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]):</span>
-    <span class="sd">&quot;&quot;&quot;Configuration namespace.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration namespace.</span>
 
 <span class="sd">    This class is inspired from :class:`argparse.Namespace` for storing</span>
 <span class="sd">    internal attributes and/or configuration variables.</span>
@@ -295,7 +296,7 @@
 
 
 <div class="viewcode-block" id="Placeholder"><a class="viewcode-back" href="../../index.html#bpc_utils.Placeholder">[docs]</a><span class="k">class</span> <span class="nc">Placeholder</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Placeholder for string interpolation.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Placeholder for string interpolation.</span>
 
 <span class="sd">    :class:`Placeholder` objects can be concatenated with :obj:`str`, other :class:`Placeholder` objects</span>
 <span class="sd">    and :class:`StringInterpolation` objects via the &#39;+&#39; operator.</span>
@@ -306,7 +307,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Initialize Placeholder.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize Placeholder.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            name: name of the placeholder</span>
@@ -321,7 +322,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns the name of this placeholder.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the name of this placeholder.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -353,7 +354,7 @@
 
 
 <div class="viewcode-block" id="StringInterpolation"><a class="viewcode-back" href="../../index.html#bpc_utils.StringInterpolation">[docs]</a><span class="k">class</span> <span class="nc">StringInterpolation</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;A string with placeholders to be filled in.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A string with placeholders to be filled in.</span>
 
 <span class="sd">    This looks like an object-oriented format string, but making sure that string literals are</span>
 <span class="sd">    always interpreted literally (so no need to manually do escaping). The boundaries between string</span>
@@ -393,7 +394,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="s1">&#39;Union[str, Placeholder, StringInterpolation]&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Initialize StringInterpolation. ``args`` will be concatenated to construct a</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize StringInterpolation. ``args`` will be concatenated to construct a</span>
 <span class="sd">        :class:`StringInterpolation` object.</span>
 
 <span class="sd">        &gt;&gt;&gt; StringInterpolation(&#39;prefix&#39;, Placeholder(&#39;data&#39;), &#39;suffix&#39;)</span>
@@ -413,17 +414,17 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">literals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Tuple[str, ...]&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns the literal components in this :class:`StringInterpolation` object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the literal components in this :class:`StringInterpolation` object.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_literals</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">placeholders</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Tuple[Placeholder, ...]&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns the :class:`Placeholder` components in this :class:`StringInterpolation` object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the :class:`Placeholder` components in this :class:`StringInterpolation` object.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_placeholders</span>
 
 <div class="viewcode-block" id="StringInterpolation.from_components"><a class="viewcode-back" href="../../index.html#bpc_utils.StringInterpolation.from_components">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_components</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">literals</span><span class="p">:</span> <span class="s1">&#39;Iterable[str]&#39;</span><span class="p">,</span> <span class="n">placeholders</span><span class="p">:</span> <span class="s1">&#39;Iterable[Placeholder]&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;StringInterpolation&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Construct a :class:`StringInterpolation` object from ``literals`` and ``placeholders`` components.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Construct a :class:`StringInterpolation` object from ``literals`` and ``placeholders`` components.</span>
 <span class="sd">        This method is more efficient than the :func:`StringInterpolation` constructor, but it is mainly</span>
 <span class="sd">        intended for internal use.</span>
 
@@ -466,7 +467,7 @@
         <span class="k">return</span> <span class="n">obj</span></div>
 
 <div class="viewcode-block" id="StringInterpolation.iter_components"><a class="viewcode-back" href="../../index.html#bpc_utils.StringInterpolation.iter_components">[docs]</a>    <span class="k">def</span> <span class="nf">iter_components</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Generator[Union[str, Placeholder], None, None]&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Generator to iterate all components of this :class:`StringInterpolation` object in order.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generator to iterate all components of this :class:`StringInterpolation` object in order.</span>
 
 <span class="sd">        &gt;&gt;&gt; list(StringInterpolation(&#39;prefix&#39;, Placeholder(&#39;data&#39;), &#39;suffix&#39;).iter_components())</span>
 <span class="sd">        [&#39;prefix&#39;, Placeholder(&#39;data&#39;), &#39;suffix&#39;]</span>
@@ -484,7 +485,7 @@
         <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">(</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_components</span><span class="p">()</span> <span class="k">if</span> <span class="n">c</span><span class="p">))</span>
 
 <div class="viewcode-block" id="StringInterpolation.__str__"><a class="viewcode-back" href="../../index.html#bpc_utils.StringInterpolation.__str__">[docs]</a>    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns the fully-substituted string interpolation result.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the fully-substituted string interpolation result.</span>
 
 <span class="sd">        &gt;&gt;&gt; str(StringInterpolation(&#39;prefix hello suffix&#39;))</span>
 <span class="sd">        &#39;prefix hello suffix&#39;</span>
@@ -545,7 +546,7 @@
         <span class="k">return</span> <span class="bp">NotImplemented</span>
 
 <div class="viewcode-block" id="StringInterpolation.__mod__"><a class="viewcode-back" href="../../index.html#bpc_utils.StringInterpolation.__mod__">[docs]</a>    <span class="k">def</span> <span class="fm">__mod__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">substitutions</span><span class="p">:</span> <span class="s1">&#39;Mapping[str, object]&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;StringInterpolation&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Substitute the placeholders in this :class:`StringInterpolation` object with string values (if possible)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Substitute the placeholders in this :class:`StringInterpolation` object with string values (if possible)</span>
 <span class="sd">        according to the ``substitutions`` mapping.</span>
 
 <span class="sd">        &gt;&gt;&gt; StringInterpolation(&#39;prefix &#39;, Placeholder(&#39;data&#39;), &#39; suffix&#39;) % {&#39;data&#39;: &#39;hello&#39;}</span>
@@ -569,7 +570,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">result</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Alias of :meth:`StringInterpolation.__str__` to get the fully-substituted string interpolation result.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Alias of :meth:`StringInterpolation.__str__` to get the fully-substituted string interpolation result.</span>
 
 <span class="sd">        &gt;&gt;&gt; StringInterpolation(&#39;prefix hello suffix&#39;).result</span>
 <span class="sd">        &#39;prefix hello suffix&#39;</span>
@@ -579,10 +580,10 @@
 
 
 <div class="viewcode-block" id="BPCInternalError"><a class="viewcode-back" href="../../index.html#bpc_utils.BPCInternalError">[docs]</a><span class="k">class</span> <span class="nc">BPCInternalError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Internal bug happened in BPC tools.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Internal bug happened in BPC tools.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize BPCInternalError.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize BPCInternalError.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            message: the error message</span>
@@ -604,7 +605,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span><span class="se">\</span>
 <span class="s1">            An internal bug happened in </span><span class="si">{}</span><span class="s1">:</span>
 
-<span class="s1">            </span><span class="si">{}</span><span class="s1"></span>
+<span class="s1">            </span><span class="si">{}</span>
 
 <span class="s1">            Please report this error to project maintainers.&#39;&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">msg_string</span><span class="p">))</span></div>
 
@@ -655,7 +656,7 @@
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -669,7 +670,7 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2019-2021, Python Backport Compiler Project.
+      &copy;2019-2023, Python Backport Compiler Project.
       
     </div>
 

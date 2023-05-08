@@ -1,17 +1,18 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>bpc_utils.fileprocessing &#8212; bpc-utils 0.10.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
    
@@ -69,7 +70,7 @@
 
 
 <div class="viewcode-block" id="is_python_filename"><a class="viewcode-back" href="../../index.html#bpc_utils.is_python_filename">[docs]</a><span class="k">def</span> <span class="nf">is_python_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Determine whether a file is a Python source file by its extension.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Determine whether a file is a Python source file by its extension.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        filename: the name of the file</span>
@@ -84,7 +85,7 @@
 
 
 <div class="viewcode-block" id="expand_glob_iter"><a class="viewcode-back" href="../../index.html#bpc_utils.expand_glob_iter">[docs]</a><span class="k">def</span> <span class="nf">expand_glob_iter</span><span class="p">(</span><span class="n">pattern</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Iterator[str]&#39;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Wrapper function to perform glob expansion.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper function to perform glob expansion.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        pattern: the pattern to expand</span>
@@ -99,7 +100,7 @@
 
 
 <div class="viewcode-block" id="detect_files"><a class="viewcode-back" href="../../index.html#bpc_utils.detect_files">[docs]</a><span class="k">def</span> <span class="nf">detect_files</span><span class="p">(</span><span class="n">files</span><span class="p">:</span> <span class="s1">&#39;Iterable[str]&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;List[str]&#39;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Get a list of Python files to be processed according to user input.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a list of Python files to be processed according to user input.</span>
 
 <span class="sd">    This will perform *glob* expansion on Windows, make all paths absolute,</span>
 <span class="sd">    resolve symbolic links and remove duplicates.</span>
@@ -153,7 +154,7 @@
 
 
 <div class="viewcode-block" id="archive_files"><a class="viewcode-back" href="../../index.html#bpc_utils.archive_files">[docs]</a><span class="k">def</span> <span class="nf">archive_files</span><span class="p">(</span><span class="n">files</span><span class="p">:</span> <span class="s1">&#39;Iterable[str]&#39;</span><span class="p">,</span> <span class="n">archive_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Archive the list of files into a *tar* file.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Archive the list of files into a *tar* file.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        files: a list of files to be archived (should be *absolute path*)</span>
@@ -186,7 +187,7 @@
 
 
 <div class="viewcode-block" id="recover_files"><a class="viewcode-back" href="../../index.html#bpc_utils.recover_files">[docs]</a><span class="k">def</span> <span class="nf">recover_files</span><span class="p">(</span><span class="n">archive_file_or_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">rr</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">rs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Recover files from a *tar* archive, optionally removing the archive file and archive directory after recovery.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Recover files from a *tar* archive, optionally removing the archive file and archive directory after recovery.</span>
 
 <span class="sd">    This function supports three modes:</span>
 
@@ -241,7 +242,7 @@
 
 
 <div class="viewcode-block" id="BPCRecoveryError"><a class="viewcode-back" href="../../index.html#bpc_utils.BPCRecoveryError">[docs]</a><span class="k">class</span> <span class="nc">BPCRecoveryError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Error during file recovery.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Error during file recovery.&quot;&quot;&quot;</span></div>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;detect_files&#39;</span><span class="p">,</span> <span class="s1">&#39;archive_files&#39;</span><span class="p">,</span> <span class="s1">&#39;recover_files&#39;</span><span class="p">,</span> <span class="s1">&#39;BPCRecoveryError&#39;</span><span class="p">]</span>
@@ -289,7 +290,7 @@
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -303,7 +304,7 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2019-2021, Python Backport Compiler Project.
+      &copy;2019-2023, Python Backport Compiler Project.
       
     </div>
 

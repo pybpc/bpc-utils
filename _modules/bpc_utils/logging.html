@@ -1,17 +1,18 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>bpc_utils.logging &#8212; bpc-utils 0.10.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
    
@@ -43,7 +44,7 @@
 
 
 <div class="viewcode-block" id="BPCLogHandler"><a class="viewcode-back" href="../../index.html#bpc_utils.BPCLogHandler">[docs]</a><span class="k">class</span> <span class="nc">BPCLogHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Handler used to format BPC logging records.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler used to format BPC logging records.&quot;&quot;&quot;</span>
 
     <span class="n">format_templates</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;DEBUG&#39;</span><span class="p">:</span> <span class="s1">&#39;[</span><span class="si">%(levelname)s</span><span class="s1">] </span><span class="si">%(asctime)s</span><span class="s1"> </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">,</span>
@@ -57,7 +58,7 @@
     <span class="n">time_format</span> <span class="o">=</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S.</span><span class="si">%f</span><span class="s1">%z&#39;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Initialize BPCLogHandler.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize BPCLogHandler.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
     <span class="c1"># Let `BPCLogHandler` instances equal to each other.</span>
@@ -69,7 +70,7 @@
         <span class="k">return</span> <span class="nb">hash</span><span class="p">(())</span>
 
 <div class="viewcode-block" id="BPCLogHandler.format"><a class="viewcode-back" href="../../index.html#bpc_utils.BPCLogHandler.format">[docs]</a>    <span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">:</span> <span class="s1">&#39;logging.LogRecord&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Format the specified record based on log level.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Format the specified record based on log level.</span>
 
 <span class="sd">        The record will be formatted based on its log level</span>
 <span class="sd">        in the following flavour:</span>
@@ -103,7 +104,7 @@
 
 
 <div class="viewcode-block" id="getLogger"><a class="viewcode-back" href="../../index.html#bpc_utils.getLogger">[docs]</a><span class="k">def</span> <span class="nf">getLogger</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;logging.Logger&#39;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Create a BPC logger.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a BPC logger.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        name: name for the logger</span>
@@ -167,7 +168,7 @@
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -181,7 +182,7 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2019-2021, Python Backport Compiler Project.
+      &copy;2019-2023, Python Backport Compiler Project.
       
     </div>
 
