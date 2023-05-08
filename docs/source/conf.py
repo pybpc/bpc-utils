@@ -1,3 +1,4 @@
+import datetime
 import os
 import subprocess  # nosec
 import sys
@@ -30,7 +31,7 @@ os.environ['SPHINX_BUILD_HAPPENING'] = '1'
 # -- Project information -----------------------------------------------------
 
 project = 'bpc-utils'
-copyright = '2019-2021, Python Backport Compiler Project'  # pylint: disable=redefined-builtin
+copyright = '2019-%d, Python Backport Compiler Project' % datetime.date.today().year  # pylint: disable=redefined-builtin
 author = 'Python Backport Compiler Project'
 
 # The full version, including alpha/beta/rc tags
@@ -50,6 +51,8 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.githubpages',
     'sphinx_autodoc_typehints',
+    "sphinxext.opengraph",
+    'sphinx_copybutton',
 ]
 
 intersphinx_mapping = {  # pylint: disable=consider-using-namedtuple-or-dataclass
