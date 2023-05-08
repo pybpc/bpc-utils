@@ -4,7 +4,7 @@
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/bpc-utils.svg)](https://pypi.org/project/bpc-utils)
 
 [![GitHub Actions - Status](https://github.com/pybpc/bpc-utils/workflows/Build/badge.svg)](https://github.com/pybpc/bpc-utils/actions?query=workflow%3ABuild)
-[![Codecov - Coverage](https://codecov.io/gh/pybpc/bpc-utils/branch/master/graph/badge.svg)](https://codecov.io/gh/pybpc/bpc-utils)
+[![Codecov - Coverage](https://codecov.io/gh/pybpc/bpc-utils/branch/main/graph/badge.svg)](https://codecov.io/gh/pybpc/bpc-utils)
 [![Documentation Status](https://readthedocs.org/projects/bpc-utils/badge/?version=latest)](https://bpc-utils.readthedocs.io/en/latest/)
 
 Documentation: https://bpc-utils.readthedocs.io
