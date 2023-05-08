@@ -9,6 +9,7 @@ __pycache__
 /htmlcov
 /archive
 
+/.env
 /.venv
 /Pipfile.lock
 /docs/build
