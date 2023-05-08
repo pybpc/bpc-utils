@@ -1,14 +1,4 @@
 [[source]]
-name = "tuna"
-url = "https://pypi.tuna.tsinghua.edu.cn/simple"
-verify_ssl = true
-
-[[source]]
-name = "sjtu"
-url = "https://mirrors.sjtug.sjtu.edu.cn/pypi/web/simple"
-verify_ssl = true
-
-[[source]]
 name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
@@ -16,9 +6,21 @@ verify_ssl = true
 [dev-packages]
 bpc-utils = {editable = true, path = ".", extras = ["lint", "test", "docs"]}
 autopep8 = "*"
-rstcheck = "*"
+bandit = "*"
+mypy = "*"
+pylint = "*"
 ipython = "*"
-tox = "*"
+coverage = "*"
+codecov = "*"
+sphinx = "*"
+sphinx-autodoc-typehints = "*"
+sphinxext-opengraph = "*"
+sphinx-copybutton = "*"
+rstcheck = {extras = ["sphinx","toml"],version = "*"}
+esbonio = "*"
+vermin = "*"
+build = "*"
+twine = "*"
 
 [requires]
-python_version = "*"
+python_version = "3"
